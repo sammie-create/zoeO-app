@@ -1,8 +1,9 @@
 "use client";
 
+import { createClient as createBrowserClient } from "@zoeallure/supabase/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "sonner";
 import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { LINE_META, STOCK_BADGE, stockLevel } from "@/lib/catalog";
 import { ngn } from "@/lib/format";
+import { deleteImage, uploadImage, validateUploadImage } from "@/lib/image-upload";
 import { createProduct, updateProduct } from "./actions";
 import type { ProductCategory, Tables } from "@zoeallure/supabase";
 
@@ -24,6 +26,8 @@ export function ProductForm({
 }) {
   const router = useRouter();
   const isEdit = !!product;
+  const [supabase] = useState(() => createBrowserClient());
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(product?.name ?? "");
   const [description, setDescription] = useState(product?.description ?? "");
@@ -33,13 +37,47 @@ export function ProductForm({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(product?.image_url ?? null);
+  const [removeImage, setRemoveImage] = useState(false);
+
   const level = STOCK_BADGE[stockLevel(units, lowStockThreshold)];
+
+  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const validationError = validateUploadImage(file);
+    if (validationError) {
+      toast.error(validationError);
+      e.target.value = "";
+      return;
+    }
+    setImageFile(file);
+    setRemoveImage(false);
+    setImagePreview(URL.createObjectURL(file));
+  }
+
+  function handleRemoveImage() {
+    setImageFile(null);
+    setImagePreview(null);
+    setRemoveImage(true);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
     setSaving(true);
     try {
+      let imageUrl = product?.image_url ?? null;
+      if (imageFile) {
+        imageUrl = await uploadImage(supabase, "product-images", imageFile);
+        if (product?.image_url) await deleteImage(supabase, "product-images", product.image_url);
+      } else if (removeImage) {
+        if (product?.image_url) await deleteImage(supabase, "product-images", product.image_url);
+        imageUrl = null;
+      }
+
       const slug = name
         .toLowerCase()
         .trim()
@@ -51,6 +89,7 @@ export function ProductForm({
         category,
         price,
         stock_units: units,
+        image_url: imageUrl,
         ...(isEdit ? {} : { slug: slug || `product-${Date.now()}` }),
       };
       if (isEdit) {
@@ -73,16 +112,54 @@ export function ProductForm({
   return (
     <form onSubmit={handleSubmit}>
       <div className="mt-7 grid grid-cols-1 items-start gap-8 lg:grid-cols-[.55fr_1fr]">
-        <div className="aspect-square rounded-[20px] border-[1.5px] border-dashed border-noir-200 bg-noir-50 p-5">
-          <div className="flex h-full flex-col items-center justify-center gap-2.5 text-center">
-            <span
-              className="flex h-[46px] w-[46px] items-center justify-center rounded-full text-white"
-              style={{ background: LINE_META[category].swatch }}
+        <div className="relative aspect-square overflow-hidden rounded-[20px] border-[1.5px] border-dashed border-noir-200 bg-noir-50">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          {imagePreview ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element -- local object URL / Supabase Storage URL, no next/image loader configured */}
+              <img src={imagePreview} alt={name || "Product photo"} className="h-full w-full object-cover" />
+              <div className="absolute inset-x-0 bottom-0 flex justify-center gap-2 bg-gradient-to-t from-black/55 to-transparent p-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-auto rounded-full border-white/40 bg-white/10 px-3.5 py-1.5 text-[11.5px] font-bold text-white backdrop-blur-sm hover:bg-white/20"
+                >
+                  Change
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleRemoveImage}
+                  className="h-auto rounded-full border-white/40 bg-white/10 px-3.5 py-1.5 text-[11.5px] font-bold text-white backdrop-blur-sm hover:bg-white/20"
+                >
+                  Remove
+                </Button>
+              </div>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex h-full w-full flex-col items-center justify-center gap-2.5 p-5 text-center"
             >
-              {LINE_META[category].initials}
-            </span>
-            <span className="text-[12.5px] font-bold text-noir-600">{LINE_META[category].line}</span>
-          </div>
+              <span
+                className="flex h-[46px] w-[46px] items-center justify-center rounded-full text-white"
+                style={{ background: LINE_META[category].swatch }}
+              >
+                {LINE_META[category].initials}
+              </span>
+              <span className="text-[12.5px] font-bold text-noir-600">{LINE_META[category].line}</span>
+              <span className="text-[11.5px] font-semibold text-violet-500">Click to add a photo</span>
+              <span className="text-[10.5px] text-noir-400">JPG or PNG, up to 5MB</span>
+            </button>
+          )}
         </div>
 
         <div className="grid gap-4">

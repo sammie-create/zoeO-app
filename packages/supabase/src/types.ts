@@ -92,6 +92,7 @@ export interface Database {
           stock_units: number;
           is_hidden: boolean;
           description: string | null;
+          image_url: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -104,6 +105,7 @@ export interface Database {
           stock_units?: number;
           is_hidden?: boolean;
           description?: string | null;
+          image_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -116,6 +118,7 @@ export interface Database {
           stock_units?: number;
           is_hidden?: boolean;
           description?: string | null;
+          image_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -522,6 +525,7 @@ export interface Database {
           title: string;
           initials: string;
           accent_color: string;
+          photo_url: string | null;
           status: "draft" | "published";
           sort_order: number;
           created_at: string;
@@ -534,6 +538,7 @@ export interface Database {
           title: string;
           initials: string;
           accent_color: string;
+          photo_url?: string | null;
           status?: "draft" | "published";
           sort_order?: number;
           created_at?: string;
@@ -546,6 +551,7 @@ export interface Database {
           title?: string;
           initials?: string;
           accent_color?: string;
+          photo_url?: string | null;
           status?: "draft" | "published";
           sort_order?: number;
           created_at?: string;

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "../../badge";
 import { Button } from "@/components/ui/button";
+import { ProductThumb } from "@/components/product-thumb";
 import { LINE_META, STOCK_BADGE, stockLevel } from "@/lib/catalog";
 import { getLowStockThreshold } from "@/lib/settings";
 import { ngn } from "@/lib/format";
@@ -29,12 +30,13 @@ export default async function ProductViewPage({ params }: { params: Promise<{ id
         ← Back to products
       </Link>
       <div className="mt-6 grid grid-cols-1 items-start gap-8 lg:max-w-[920px] lg:grid-cols-[.55fr_1fr]">
-        <div
+        <ProductThumb
+          imageUrl={product.image_url}
+          category={product.category}
+          name={product.name}
           className="flex aspect-square items-center justify-center rounded-[20px]"
-          style={{ background: meta.swatch }}
-        >
-          <span className="font-display text-[44px] text-white/85">{meta.initials}</span>
-        </div>
+          initialsClassName="font-display text-[44px] text-white/85"
+        />
         <div>
           <div className="flex items-center gap-2.5">
             <span className="font-mono text-[11px] text-violet-500">{meta.line}</span>

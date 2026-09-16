@@ -8,6 +8,7 @@ import { Badge } from "../badge";
 import { RowMenu } from "../row-menu";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ProductThumb } from "@/components/product-thumb";
 import { LINE_META, STOCK_BADGE, stockLevel } from "@/lib/catalog";
 import { ngn } from "@/lib/format";
 import { deleteProduct, toggleProductHidden } from "./actions";
@@ -67,12 +68,13 @@ export function ProductsTable({
               <TableRow key={p.id} style={p.is_hidden ? { opacity: 0.55 } : undefined}>
                 <TableCell className="px-5 py-3.5">
                   <Link href={`/products/${p.id}`} className="flex min-w-0 items-center gap-3">
-                    <span
+                    <ProductThumb
+                      imageUrl={p.image_url}
+                      category={p.category}
+                      name={p.name}
                       className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-[10px] text-[11px] font-extrabold text-white"
-                      style={{ background: meta.swatch }}
-                    >
-                      {meta.initials}
-                    </span>
+                      initialsClassName="text-[11px] font-extrabold text-white"
+                    />
                     <span className="min-w-0">
                       <span className="block truncate text-[13.5px] font-bold text-noir-800">{p.name}</span>
                       <span className="mt-0.5 block text-[11.5px] text-noir-400">{meta.line}</span>
