@@ -2,26 +2,21 @@
 
 import { useState, type ReactNode } from "react";
 import { Sidebar } from "./sidebar";
-import { Topbar } from "./topbar";
-
-type PendingOrder = { id: string; ref: string; order_date: string; phone: string };
-type PendingBooking = { id: string; ref: string; scheduled_at: string; phone: string };
+import { Topbar, type PendingPreview } from "./topbar";
 
 export function Shell({
   name,
   roleLabel,
   pendingOrders,
-  pendingOrdersPreview,
   pendingBookings,
-  pendingBookingsPreview,
+  pendingPreviewPromise,
   children,
 }: {
   name: string;
   roleLabel: string;
   pendingOrders: number;
-  pendingOrdersPreview: PendingOrder[];
   pendingBookings: number;
-  pendingBookingsPreview: PendingBooking[];
+  pendingPreviewPromise: Promise<PendingPreview>;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -45,10 +40,9 @@ export function Shell({
           name={name}
           roleLabel={roleLabel}
           onMenuClick={() => setOpen(true)}
-          pendingOrdersPreview={pendingOrdersPreview}
           pendingOrdersCount={pendingOrders}
-          pendingBookingsPreview={pendingBookingsPreview}
           pendingBookingsCount={pendingBookings}
+          pendingPreviewPromise={pendingPreviewPromise}
         />
         <div className="flex-1 px-4 pt-6 pb-16 sm:px-6 lg:px-9 lg:pt-[34px]">{children}</div>
       </div>

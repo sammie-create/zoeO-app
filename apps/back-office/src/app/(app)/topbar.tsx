@@ -2,25 +2,24 @@ import { AccountMenu } from "./account-menu";
 import { GlobalSearch } from "./global-search";
 import { Notifications } from "./notifications";
 
-type PendingOrder = { id: string; ref: string; order_date: string; phone: string };
-type PendingBooking = { id: string; ref: string; scheduled_at: string; phone: string };
+export type PendingOrder = { id: string; ref: string; order_date: string; phone: string };
+export type PendingBooking = { id: string; ref: string; scheduled_at: string; phone: string };
+export type PendingPreview = { pendingOrdersPreview: PendingOrder[]; pendingBookingsPreview: PendingBooking[] };
 
 export function Topbar({
   name,
   roleLabel,
   onMenuClick,
-  pendingOrdersPreview,
   pendingOrdersCount,
-  pendingBookingsPreview,
   pendingBookingsCount,
+  pendingPreviewPromise,
 }: {
   name: string;
   roleLabel: string;
   onMenuClick: () => void;
-  pendingOrdersPreview: PendingOrder[];
   pendingOrdersCount: number;
-  pendingBookingsPreview: PendingBooking[];
   pendingBookingsCount: number;
+  pendingPreviewPromise: Promise<PendingPreview>;
 }) {
   return (
     <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-noir-100 bg-white/92 px-4 py-3 backdrop-blur-md sm:gap-6 sm:px-6 sm:py-4 lg:px-9">
@@ -39,10 +38,9 @@ export function Topbar({
 
       <div className="flex flex-none items-center gap-3 sm:gap-[18px]">
         <Notifications
-          pendingOrders={pendingOrdersPreview}
           pendingOrdersCount={pendingOrdersCount}
-          pendingBookings={pendingBookingsPreview}
           pendingBookingsCount={pendingBookingsCount}
+          pendingPreviewPromise={pendingPreviewPromise}
         />
         <AccountMenu name={name} roleLabel={roleLabel} />
       </div>
