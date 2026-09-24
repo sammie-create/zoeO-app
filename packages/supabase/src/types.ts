@@ -133,6 +133,11 @@ export interface Database {
           duration_label: string;
           description: string | null;
           status: "draft" | "published";
+          category: "Hair" | "Bridal" | "Lashes" | "Nails";
+          icon: string | null;
+          image_url: string | null;
+          duration_mins: number;
+          object_position: string;
           created_at: string;
           updated_at: string;
         };
@@ -144,6 +149,11 @@ export interface Database {
           duration_label: string;
           description?: string | null;
           status?: "draft" | "published";
+          category?: "Hair" | "Bridal" | "Lashes" | "Nails";
+          icon?: string | null;
+          image_url?: string | null;
+          duration_mins?: number;
+          object_position?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -155,6 +165,11 @@ export interface Database {
           duration_label?: string;
           description?: string | null;
           status?: "draft" | "published";
+          category?: "Hair" | "Bridal" | "Lashes" | "Nails";
+          icon?: string | null;
+          image_url?: string | null;
+          duration_mins?: number;
+          object_position?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -629,6 +644,31 @@ export interface Database {
       is_owner: {
         Args: Record<PropertyKey, never>;
         Returns: boolean;
+      };
+      create_guest_order: {
+        Args: {
+          p_name: string;
+          p_phone: string;
+          p_email: string | null;
+          p_fulfilment_type: string;
+          p_fulfilment_detail: string | null;
+          p_address: string | null;
+          p_items: Json;
+        };
+        Returns: Database["public"]["Tables"]["orders"]["Row"];
+      };
+      create_guest_booking: {
+        Args: {
+          p_name: string;
+          p_phone: string;
+          p_email: string | null;
+          p_service_id: string;
+          p_scheduled_at: string;
+          p_location_type: string;
+          p_location_detail: string | null;
+          p_notes: string | null;
+        };
+        Returns: Database["public"]["Tables"]["bookings"]["Row"];
       };
     };
     Enums: {

@@ -1,26 +1,226 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Mirrors packages/ui/tokens.ts — keep in sync if the brand palette changes. */
+@theme inline {
+  --font-display: var(--font-playfair);
+  --font-body: var(--font-manrope);
+  --font-sans: var(--font-manrope);
+
+  --color-violet-50: #f4ecfe;
+  --color-violet-100: #e7d8fd;
+  --color-violet-200: #cfb1fb;
+  --color-violet-300: #b689f6;
+  --color-violet-400: #9c5aee;
+  --color-violet-500: #7f23e0;
+  --color-violet-600: #6a17c0;
+  --color-violet-700: #55129b;
+  --color-violet-800: #3f0e74;
+  --color-violet-900: #290a4d;
+
+  --color-noir-50: #f7f6f9;
+  --color-noir-100: #edebf1;
+  --color-noir-200: #d8d5e0;
+  --color-noir-300: #b4afc0;
+  --color-noir-400: #837d93;
+  --color-noir-500: #5b5568;
+  --color-noir-600: #403b4c;
+  --color-noir-700: #2a2633;
+  --color-noir-800: #1a1720;
+  --color-noir-900: #0e0c12;
+
+  --color-petal-50: #fdf0f4;
+  --color-petal-100: #f8d7e1;
+  --color-petal-300: #f2c3d2;
+  --color-petal-500: #d98fa6;
+  --color-petal-700: #a85a73;
+
+  --color-champagne-50: #fbf4e6;
+  --color-champagne-100: #f6e7c8;
+  --color-champagne-300: #e8ce95;
+  --color-champagne-500: #d4af6a;
+  --color-champagne-700: #a9853f;
+
+  --color-status-booked: #2e9e6b;
+  --color-status-pending: #d9a21b;
+  --color-status-cancelled: #d3455b;
+  --color-status-info: #4a7be0;
+
+  /* Semantic surfaces — dark theme only for now (see plan). */
+  --color-bg: var(--color-noir-900);
+  --color-bg-alt: #15121b;
+  --color-surface: var(--color-noir-800);
+  --color-surface-2: #211d29;
+
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --ease: cubic-bezier(0.22, 0.7, 0.28, 1);
+  --t-fast: 120ms;
+  --t-base: 280ms;
+  --t-slow: 420ms;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* shadcn tokens, retinted to the brand palette — front-office is dark-only,
+     so these live directly on :root rather than behind a `.dark` class. */
+  --background: var(--color-noir-900);
+  --foreground: #ffffff;
+  --card: var(--color-noir-800);
+  --card-foreground: #ffffff;
+  --popover: var(--color-noir-800);
+  --popover-foreground: #ffffff;
+  --primary: var(--color-violet-500);
+  --primary-foreground: #ffffff;
+  --secondary: var(--color-noir-700);
+  --secondary-foreground: #ffffff;
+  --muted: var(--color-noir-800);
+  --muted-foreground: var(--color-noir-300);
+  --accent: var(--color-noir-700);
+  --accent-foreground: #ffffff;
+  --destructive: var(--color-status-cancelled);
+  --border: rgb(255 255 255 / 16%);
+  --input: rgb(255 255 255 / 8%);
+  --ring: var(--color-violet-400);
+  --radius: 0.625rem;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-noir-900);
+  color: #fff;
+}
+
+/* ---------- Scroll-reveal primitives (see Reveal/SplitText components) ---------- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 700ms var(--ease),
+    transform 700ms var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+[data-reveal="fade"] {
+  transform: none;
+}
+[data-reveal="left"] {
+  transform: translateX(-16px);
+}
+[data-reveal="right"] {
+  transform: translateX(16px);
+}
+[data-reveal="zoom"] {
+  transform: scale(0.97);
+}
+[data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+.img-reveal {
+  overflow: hidden;
+}
+.img-reveal img {
+  transform: scale(1.08);
+  transition: transform 1400ms var(--ease);
+}
+.img-reveal.is-in img {
+  transform: scale(1);
+}
+
+.split .w {
+  display: inline-block;
+  overflow: hidden;
+}
+.split .w > span {
+  display: inline-block;
+  transform: translateY(105%);
+  transition: transform 900ms var(--ease);
+  transition-delay: calc(var(--i, 0) * 45ms + var(--d, 0ms));
+}
+.split.is-in .w > span {
+  transform: translateY(0);
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes kenburns {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes bump {
+  30% {
+    transform: scale(1.25);
+  }
+}
+@keyframes slide-down {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+  [data-reveal],
+  .split .w > span {
+    transform: none !important;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }
