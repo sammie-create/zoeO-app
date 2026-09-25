@@ -87,10 +87,12 @@ export interface Database {
           id: string;
           slug: string;
           name: string;
+          brand: string | null;
           category: ProductCategory;
           price: number;
           stock_units: number;
           is_hidden: boolean;
+          is_bestseller: boolean;
           description: string | null;
           image_url: string | null;
           created_at: string;
@@ -100,10 +102,12 @@ export interface Database {
           id?: string;
           slug: string;
           name: string;
+          brand?: string | null;
           category: ProductCategory;
           price: number;
           stock_units?: number;
           is_hidden?: boolean;
+          is_bestseller?: boolean;
           description?: string | null;
           image_url?: string | null;
           created_at?: string;
@@ -113,10 +117,12 @@ export interface Database {
           id?: string;
           slug?: string;
           name?: string;
+          brand?: string | null;
           category?: ProductCategory;
           price?: number;
           stock_units?: number;
           is_hidden?: boolean;
+          is_bestseller?: boolean;
           description?: string | null;
           image_url?: string | null;
           created_at?: string;
@@ -445,6 +451,7 @@ export interface Database {
           quote: string;
           customer_name: string;
           service_label: string | null;
+          photo_url: string | null;
           status: "draft" | "published";
           created_at: string;
           updated_at: string;
@@ -454,6 +461,7 @@ export interface Database {
           quote: string;
           customer_name: string;
           service_label?: string | null;
+          photo_url?: string | null;
           status?: "draft" | "published";
           created_at?: string;
           updated_at?: string;
@@ -463,6 +471,7 @@ export interface Database {
           quote?: string;
           customer_name?: string;
           service_label?: string | null;
+          photo_url?: string | null;
           status?: "draft" | "published";
           created_at?: string;
           updated_at?: string;

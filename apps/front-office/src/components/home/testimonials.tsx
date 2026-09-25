@@ -7,6 +7,7 @@ import type { Testimonial } from "@/lib/queries";
 
 export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) {
   const [active, setActive] = useState(0);
+  const hasPhotos = testimonials.some((t) => t.photo_url);
 
   useEffect(() => {
     if (testimonials.length < 2) return;
@@ -19,35 +20,63 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
 
   return (
     <>
-      <section className="bg-noir-900 px-4 py-14 text-center sm:px-6 lg:px-8">
+      <section className="bg-noir-900 pt-[clamp(64px,8vw,110px)] pb-[clamp(48px,5vw,72px)] text-center">
         <Reveal as="h2" className="font-display block text-3xl font-bold sm:text-4xl">What Our Clients Say</Reveal>
-        <div className="mx-auto mt-4 h-[3px] w-20 bg-violet-500" />
+        <Reveal
+          variant="zoom"
+          as="span"
+          className="mx-auto mt-[22px] block h-[3px] w-[60px] rounded-[2px] bg-violet-500"
+        />
       </section>
 
-      <section className="bg-[#ece1ef] px-4 py-16 text-[#0e0c12] sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-        <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-12 lg:grid-cols-[460px_1fr]">
-          <Reveal variant="left" className="mx-auto flex size-[280px] items-center justify-center sm:size-[380px]">
-            <div className="flex size-[300px] items-center justify-center rounded-3xl bg-white text-6xl font-bold text-violet-400">
-              &ldquo;
-            </div>
-          </Reveal>
+      <section
+        className="py-[clamp(56px,7vw,96px)] text-[#0e0c12]"
+        style={{ background: "#EDE2F1" }}
+      >
+        <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-[clamp(40px,7vw,120px)] px-4 sm:px-6 lg:grid-cols-[460px_1fr] lg:px-8">
+          {hasPhotos ? (
+            <Reveal variant="left" className="tst__photo">
+              <div className="tst__photo-stack">
+                {testimonials.map(
+                  (t, i) =>
+                    t.photo_url && (
+                      // eslint-disable-next-line @next/next/no-img-element -- Supabase Storage URL, no next/image loader configured
+                      <img
+                        key={t.id}
+                        src={t.photo_url}
+                        alt={t.customer_name}
+                        className={i === active ? "is-active" : ""}
+                      />
+                    ),
+                )}
+              </div>
+            </Reveal>
+          ) : (
+            <Reveal variant="left" className="mx-auto flex size-[280px] items-center justify-center sm:size-[380px]">
+              <div className="flex size-[300px] items-center justify-center rounded-3xl bg-white text-6xl font-bold text-violet-400">
+                &ldquo;
+              </div>
+            </Reveal>
+          )}
 
           <Reveal>
-            <p className="font-display mb-6 text-[100px] leading-[.6] text-violet-400 opacity-70">&rdquo;</p>
-            <div className="mb-6 flex gap-1.5 text-violet-800" aria-label="5 out of 5 stars">
+            <p className="font-display mb-11 h-[50px] text-[100px] leading-[.6] text-violet-400">&rdquo;</p>
+            <div className="mb-[26px] flex gap-1.5 text-violet-800" aria-label="5 out of 5 stars">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Icon key={i} name="star" className="size-6 fill-current" />
+                <Icon key={i} name="star" className="size-[26px] fill-current" />
               ))}
             </div>
-            <blockquote className="font-display text-2xl leading-[1.45] sm:text-[31px]">{current.quote}</blockquote>
-            <div className="mt-7 flex items-center gap-3 text-lg font-bold">
+            <blockquote className="font-display mb-7 text-[clamp(22px,2.2vw,31px)] leading-[1.45]">
+              {current.quote}
+            </blockquote>
+            <div className="flex items-center gap-3 text-[19px] font-bold">
               <span className="size-3 rounded-full bg-violet-400" />
               {current.customer_name}
             </div>
             {current.service_label && (
-              <p className="mt-5 text-[15px] text-[#5b5568]">Service: {current.service_label}</p>
+              <p className="mt-[22px] text-[15px] text-noir-500">Service: {current.service_label}</p>
             )}
-            <div className="mt-11 flex items-center gap-5">
+            <div className="mt-11 flex items-center gap-[22px]">
               <button
                 type="button"
                 aria-label="Previous testimonial"
@@ -62,7 +91,7 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
                     key={i}
                     onClick={() => setActive(i)}
                     aria-label={`Testimonial ${i + 1}`}
-                    className={`h-1 rounded-full transition-all ${i === active ? "w-11 bg-violet-400" : "w-4 bg-[#403b4c]/30"}`}
+                    className={`h-1 rounded-[2px] transition-all ${i === active ? "w-11 bg-violet-400" : "w-4 bg-noir-600"}`}
                   />
                 ))}
               </div>

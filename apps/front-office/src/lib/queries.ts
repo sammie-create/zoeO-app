@@ -23,12 +23,20 @@ export async function getProduct(id: string) {
 
 export async function getBestsellers(limit = 4) {
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data: flagged } = await supabase
+    .from("products")
+    .select("*")
+    .eq("is_bestseller", true)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (flagged && flagged.length >= limit) return flagged;
+
+  const { data: recent } = await supabase
     .from("products")
     .select("*")
     .order("created_at", { ascending: false })
     .limit(limit);
-  return data ?? [];
+  return recent ?? [];
 }
 
 export async function getServices() {

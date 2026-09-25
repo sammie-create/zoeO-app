@@ -9,14 +9,10 @@ import { ServicesTeaser } from "@/components/home/services-teaser";
 import { Testimonials } from "@/components/home/testimonials";
 import { Transformation } from "@/components/home/transformation";
 import { Why } from "@/components/home/why";
-import { getBestsellers, getServices, getTestimonials } from "@/lib/queries";
+import { getBestsellers, getTestimonials } from "@/lib/queries";
 
 export default async function Home() {
-  const [bestsellers, services, testimonials] = await Promise.all([
-    getBestsellers(4),
-    getServices(),
-    getTestimonials(),
-  ]);
+  const [bestsellers, testimonials] = await Promise.all([getBestsellers(4), getTestimonials()]);
 
   return (
     <div className="flex flex-col bg-noir-900">
@@ -26,7 +22,7 @@ export default async function Home() {
       <Why />
       <Transformation />
       <Bestsellers products={bestsellers} />
-      <ServicesTeaser services={services} />
+      <ServicesTeaser />
       <Testimonials testimonials={testimonials} />
       <Community />
       <Marquee />

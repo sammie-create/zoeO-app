@@ -46,9 +46,14 @@ export default async function ProductViewPage({ params }: { params: Promise<{ id
               fg={product.is_hidden ? "#5B5568" : "#1F7A50"}
             />
           </div>
-          <h1 className="mt-3 font-display text-[30px] leading-tight font-normal sm:text-[38px]">
-            {product.name}
-          </h1>
+          <div className="mt-3">
+            {product.brand && (
+              <div className="mb-1.5 text-[12px] font-bold tracking-[0.08em] text-noir-400 uppercase">
+                {product.brand}
+              </div>
+            )}
+            <h1 className="font-display text-[30px] leading-tight font-normal sm:text-[38px]">{product.name}</h1>
+          </div>
           <div className="mt-3 text-xl font-extrabold sm:text-[22px]">{ngn(product.price)}</div>
           {product.description && (
             <p className="mt-4.5 max-w-[56ch] text-[14.5px] leading-relaxed text-noir-500">

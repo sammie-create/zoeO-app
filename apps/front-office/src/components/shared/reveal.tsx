@@ -24,7 +24,7 @@ type RevealProps = {
   variant?: "up" | "fade" | "left" | "right" | "zoom";
   delay?: number;
   className?: string;
-  children: ReactNode;
+  children?: ReactNode;
   [key: string]: unknown;
 };
 

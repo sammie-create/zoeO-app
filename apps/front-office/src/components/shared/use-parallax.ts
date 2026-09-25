@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 
 /** Ports the reference site's `data-parallax` scroll-driven translate. `strength` is in px. */
-export function useParallax<T extends HTMLElement>(strength = 16) {
+export function useParallax<T extends HTMLElement>(strength = 16, baseScale = 1.06) {
   const ref = useRef<T | null>(null);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export function useParallax<T extends HTMLElement>(strength = 16) {
       const center = rect.top + rect.height / 2;
       const viewportCenter = window.innerHeight / 2;
       const progress = (center - viewportCenter) / window.innerHeight;
-      el.style.transform = `translateY(${progress * -strength}px) scale(1.06)`;
+      el.style.transform = `translateY(${progress * -strength}px) scale(${baseScale})`;
     }
 
     function onScroll() {
@@ -34,7 +34,7 @@ export function useParallax<T extends HTMLElement>(strength = 16) {
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [strength]);
+  }, [strength, baseScale]);
 
   return ref;
 }

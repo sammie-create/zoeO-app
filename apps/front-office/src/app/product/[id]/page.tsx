@@ -39,6 +39,9 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             </Link>
           </nav>
           <span className="text-sm font-semibold text-violet-400 uppercase">{categoryLabels[product.category]}</span>
+          {product.brand && (
+            <div className="mt-1.5 text-[13px] font-semibold text-champagne-100 uppercase">{product.brand}</div>
+          )}
           <h1 className="font-display mt-2 text-3xl font-bold sm:text-4xl">{product.name}</h1>
           <div className="mt-3 text-2xl font-bold text-champagne-100">
             <MoneyLabel ngn={product.price} decimals />

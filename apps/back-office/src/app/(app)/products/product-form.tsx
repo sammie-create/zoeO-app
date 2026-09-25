@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Spinner } from "@/components/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { LINE_META, STOCK_BADGE, stockLevel } from "@/lib/catalog";
 import { ngn } from "@/lib/format";
@@ -30,10 +31,12 @@ export function ProductForm({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(product?.name ?? "");
+  const [brand, setBrand] = useState(product?.brand ?? "");
   const [description, setDescription] = useState(product?.description ?? "");
   const [category, setCategory] = useState<ProductCategory>(product?.category ?? "hair");
   const [price, setPrice] = useState(product?.price ?? 5000);
   const [units, setUnits] = useState(product?.stock_units ?? 20);
+  const [isBestseller, setIsBestseller] = useState(product?.is_bestseller ?? false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -85,10 +88,12 @@ export function ProductForm({
         .replace(/(^-|-$)/g, "");
       const input = {
         name,
+        brand: brand || null,
         description: description || null,
         category,
         price,
         stock_units: units,
+        is_bestseller: isBestseller,
         image_url: imageUrl,
         ...(isEdit ? {} : { slug: slug || `product-${Date.now()}` }),
       };
@@ -171,6 +176,18 @@ export function ProductForm({
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="h-auto w-full rounded-control border-noir-200 px-3.5 py-3 text-sm font-semibold focus-visible:border-violet-500 focus-visible:ring-violet-100"
+            />
+          </div>
+
+          <div>
+            <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">
+              Brand <span className="font-medium text-noir-300 normal-case">(optional)</span>
+            </div>
+            <Input
+              value={brand}
+              onChange={(e) => setBrand(e.target.value)}
+              placeholder="e.g. HELicia"
               className="h-auto w-full rounded-control border-noir-200 px-3.5 py-3 text-sm font-semibold focus-visible:border-violet-500 focus-visible:ring-violet-100"
             />
           </div>
@@ -283,6 +300,13 @@ export function ProductForm({
             >
               {level.label}
             </span>
+          </div>
+
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-noir-100 bg-noir-50 px-4 py-3.5">
+            <span className="text-[12.5px] text-noir-500">
+              Feature this product in the storefront&apos;s &quot;Best Selling Products&quot; section
+            </span>
+            <Switch checked={isBestseller} onCheckedChange={setIsBestseller} />
           </div>
 
           {error && <p className="text-[12.5px] font-medium text-status-cancelled">{error}</p>}
