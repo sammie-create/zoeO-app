@@ -1,14 +1,22 @@
 "use client";
 
+import { createClient as createBrowserClient } from "@zoeallure/supabase/client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/spinner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { TeamPhoto } from "@/components/team-photo";
+import { deleteImage, uploadImage, validateUploadImage } from "@/lib/image-upload";
 import { createTeamMember, updateTeamMember } from "./actions";
 import type { Tables } from "@zoeallure/supabase";
+
+function initialsOf(name: string) {
+  const parts = name.trim().split(/\s+/);
+  return (parts[0]?.[0] ?? "").concat(parts[1]?.[0] ?? "").toUpperCase();
+}
 
 export function TeamModal({
   open,
@@ -21,26 +29,69 @@ export function TeamModal({
 }) {
   const router = useRouter();
   const isEdit = !!member;
+  const [supabase] = useState(() => createBrowserClient());
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [removePhoto, setRemovePhoto] = useState(false);
+
+  // Reset the form fields whenever the dialog transitions to open, rather
+  // than in an effect, so this runs synchronously before paint.
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (open) {
       setName(member?.name ?? "");
       setRole(member?.title ?? "");
+      setPhotoFile(null);
+      setPhotoPreview(member?.photo_url ?? null);
+      setRemovePhoto(false);
     }
-  }, [open, member]);
+  }
+
+  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const validationError = validateUploadImage(file);
+    if (validationError) {
+      toast.error(validationError);
+      e.target.value = "";
+      return;
+    }
+    setPhotoFile(file);
+    setRemovePhoto(false);
+    setPhotoPreview(URL.createObjectURL(file));
+  }
+
+  function handleRemovePhoto() {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    setRemovePhoto(true);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
 
   async function submit(status: "draft" | "published") {
     setSaving(true);
     try {
+      let photoUrl = member?.photo_url ?? null;
+      if (photoFile) {
+        photoUrl = await uploadImage(supabase, "team-photos", photoFile);
+        if (member?.photo_url) await deleteImage(supabase, "team-photos", member.photo_url);
+      } else if (removePhoto) {
+        if (member?.photo_url) await deleteImage(supabase, "team-photos", member.photo_url);
+        photoUrl = null;
+      }
+
       if (isEdit) {
-        await updateTeamMember(member.id, { name, title: role, status });
+        await updateTeamMember(member.id, { name, title: role, status, photo_url: photoUrl });
         toast.success("Team member updated");
       } else {
-        await createTeamMember({ name, title: role, status, accent_color: "#7F23E0" });
+        await createTeamMember({ name, title: role, status, accent_color: "#7F23E0", photo_url: photoUrl });
         toast.success(status === "published" ? "Published" : "Saved as draft");
       }
       router.refresh();
@@ -61,6 +112,44 @@ export function TeamModal({
           </DialogTitle>
         </DialogHeader>
         <div className="grid gap-3.5">
+          <div className="flex items-center gap-4">
+            <div className="h-16 w-16 flex-none overflow-hidden rounded-full border border-noir-200">
+              <TeamPhoto
+                photoUrl={photoPreview}
+                accentColor={member?.accent_color ?? "#7F23E0"}
+                initials={initialsOf(name || "?")}
+                name={name || "Artist"}
+                className="flex h-full w-full items-center justify-center"
+                initialsClassName="text-sm font-extrabold text-white"
+              />
+            </div>
+            <div className="flex flex-col items-start gap-1">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                className="h-auto rounded-full border-noir-200 px-3.5 py-1.5 text-[11.5px] font-bold"
+              >
+                {photoPreview ? "Change photo" : "Upload photo"}
+              </Button>
+              {photoPreview && (
+                <button
+                  type="button"
+                  onClick={handleRemovePhoto}
+                  className="text-[11px] font-semibold text-noir-400 hover:text-status-cancelled"
+                >
+                  Remove photo
+                </button>
+              )}
+            </div>
+          </div>
           <div>
             <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">Name</div>
             <Input

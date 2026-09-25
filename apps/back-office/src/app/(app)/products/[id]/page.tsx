@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "../../badge";
 import { Button } from "@/components/ui/button";
+import { ProductThumb } from "@/components/product-thumb";
 import { LINE_META, STOCK_BADGE, stockLevel } from "@/lib/catalog";
 import { getLowStockThreshold } from "@/lib/settings";
 import { ngn } from "@/lib/format";
@@ -29,12 +30,13 @@ export default async function ProductViewPage({ params }: { params: Promise<{ id
         ← Back to products
       </Link>
       <div className="mt-6 grid grid-cols-1 items-start gap-8 lg:max-w-[920px] lg:grid-cols-[.55fr_1fr]">
-        <div
+        <ProductThumb
+          imageUrl={product.image_url}
+          category={product.category}
+          name={product.name}
           className="flex aspect-square items-center justify-center rounded-[20px]"
-          style={{ background: meta.swatch }}
-        >
-          <span className="font-display text-[44px] text-white/85">{meta.initials}</span>
-        </div>
+          initialsClassName="font-display text-[44px] text-white/85"
+        />
         <div>
           <div className="flex items-center gap-2.5">
             <span className="font-mono text-[11px] text-violet-500">{meta.line}</span>
@@ -44,9 +46,14 @@ export default async function ProductViewPage({ params }: { params: Promise<{ id
               fg={product.is_hidden ? "#5B5568" : "#1F7A50"}
             />
           </div>
-          <h1 className="mt-3 font-display text-[30px] leading-tight font-normal sm:text-[38px]">
-            {product.name}
-          </h1>
+          <div className="mt-3">
+            {product.brand && (
+              <div className="mb-1.5 text-[12px] font-bold tracking-[0.08em] text-noir-400 uppercase">
+                {product.brand}
+              </div>
+            )}
+            <h1 className="font-display text-[30px] leading-tight font-normal sm:text-[38px]">{product.name}</h1>
+          </div>
           <div className="mt-3 text-xl font-extrabold sm:text-[22px]">{ngn(product.price)}</div>
           {product.description && (
             <p className="mt-4.5 max-w-[56ch] text-[14.5px] leading-relaxed text-noir-500">

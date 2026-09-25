@@ -33,13 +33,19 @@ export function CatalogCards({ services }: { services: Tables<"services">[] }) {
           const status = STATUS_BADGE[s.status];
           return (
             <div key={s.id} className="flex flex-col gap-2.5 rounded-2xl border border-noir-100 p-[22px] hover:border-violet-200">
+              {s.image_url && (
+                // eslint-disable-next-line @next/next/no-img-element -- Supabase Storage URL, no next/image loader configured
+                <img src={s.image_url} alt="" className="h-[120px] w-full rounded-xl object-cover" />
+              )}
               <div className="flex items-start justify-between gap-3">
                 <span className="font-display text-[21px]">{s.name}</span>
                 <Badge label={status.label} bg={status.bg} fg={status.fg} />
               </div>
               <div className="text-[13px] leading-relaxed text-noir-500">{s.description}</div>
               <div className="mt-1 flex items-center justify-between">
-                <span className="font-mono text-[11.5px] text-noir-400">{s.duration_label}</span>
+                <span className="font-mono text-[11.5px] text-noir-400">
+                  {s.category} · {s.duration_label}
+                </span>
                 <span className="text-[15px] font-extrabold">{ngn(s.price)}</span>
               </div>
               <div className="mt-2 flex gap-3.5 border-t border-[#F0EEF3] pt-3.5">

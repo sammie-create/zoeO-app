@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Badge } from "../badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { TeamPhoto } from "@/components/team-photo";
 import { STATUS_BADGE } from "@/lib/catalog";
 import { deleteTeamMember } from "./actions";
 import { TeamModal } from "./team-modal";
@@ -42,10 +43,15 @@ export function TeamGrid({ members }: { members: Tables<"team_members">[] }) {
           const status = STATUS_BADGE[m.status];
           return (
             <div key={m.id} className="overflow-hidden rounded-[18px] border border-noir-100">
-              <div className="relative flex aspect-[3/4] items-center justify-center" style={{ background: m.accent_color }}>
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/[0.18] text-base font-extrabold text-white">
-                  {m.initials}
-                </span>
+              <div className="relative aspect-[3/4] overflow-hidden">
+                <TeamPhoto
+                  photoUrl={m.photo_url}
+                  accentColor={m.accent_color}
+                  initials={m.initials}
+                  name={m.name}
+                  className="flex h-full w-full items-center justify-center"
+                  initialsClassName="flex h-14 w-14 items-center justify-center rounded-full bg-white/[0.18] text-base font-extrabold text-white"
+                />
                 <span className="absolute top-2.5 right-2.5">
                   <Badge label={status.label} bg={status.bg} fg={status.fg} />
                 </span>

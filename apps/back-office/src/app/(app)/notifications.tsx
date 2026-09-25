@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Suspense, use } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,22 +11,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDate, formatDateTime } from "@/lib/format";
-
-type PendingOrder = { id: string; ref: string; order_date: string; phone: string };
-type PendingBooking = { id: string; ref: string; scheduled_at: string; phone: string };
+import type { PendingPreview } from "./topbar";
 
 export function Notifications({
-  pendingOrders,
   pendingOrdersCount,
-  pendingBookings,
   pendingBookingsCount,
+  pendingPreviewPromise,
 }: {
-  pendingOrders: PendingOrder[];
   pendingOrdersCount: number;
-  pendingBookings: PendingBooking[];
   pendingBookingsCount: number;
+  pendingPreviewPromise: Promise<PendingPreview>;
 }) {
-  const router = useRouter();
   const hasNotifications = pendingOrdersCount + pendingBookingsCount > 0;
 
   return (
@@ -49,67 +45,90 @@ export function Notifications({
         {!hasNotifications ? (
           <div className="px-3 py-6 text-center text-[12.5px] text-noir-400">You&apos;re all caught up.</div>
         ) : (
-          <>
-            {pendingOrders.length > 0 && (
-              <>
-                <DropdownMenuLabel className="px-2.5 pt-1.5 text-[10.5px] font-bold tracking-[0.1em] text-noir-400 uppercase">
-                  Pending orders
-                </DropdownMenuLabel>
-                {pendingOrders.map((o) => (
-                  <DropdownMenuItem
-                    key={o.id}
-                    onSelect={() => router.push(`/orders/${o.id}`)}
-                    className="flex flex-col items-start gap-0.5 rounded-lg px-2.5 py-2"
-                  >
-                    <span className="text-[13px] font-bold text-noir-800">Order #{o.ref}</span>
-                    <span className="text-[11.5px] text-noir-400">
-                      {o.phone} · {formatDate(o.order_date)}
-                    </span>
-                  </DropdownMenuItem>
-                ))}
-                {pendingOrdersCount > pendingOrders.length && (
-                  <DropdownMenuItem
-                    onSelect={() => router.push("/orders?status=pending")}
-                    className="rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-violet-500"
-                  >
-                    View all {pendingOrdersCount} pending orders →
-                  </DropdownMenuItem>
-                )}
-              </>
-            )}
-
-            {pendingOrders.length > 0 && pendingBookings.length > 0 && <DropdownMenuSeparator />}
-
-            {pendingBookings.length > 0 && (
-              <>
-                <DropdownMenuLabel className="px-2.5 pt-1.5 text-[10.5px] font-bold tracking-[0.1em] text-noir-400 uppercase">
-                  Pending bookings
-                </DropdownMenuLabel>
-                {pendingBookings.map((b) => (
-                  <DropdownMenuItem
-                    key={b.id}
-                    onSelect={() => router.push("/bookings?status=requested")}
-                    className="flex flex-col items-start gap-0.5 rounded-lg px-2.5 py-2"
-                  >
-                    <span className="text-[13px] font-bold text-noir-800">Booking #{b.ref}</span>
-                    <span className="text-[11.5px] text-noir-400">
-                      {b.phone} · {formatDateTime(b.scheduled_at)}
-                    </span>
-                  </DropdownMenuItem>
-                ))}
-                {pendingBookingsCount > pendingBookings.length && (
-                  <DropdownMenuItem
-                    onSelect={() => router.push("/bookings?status=requested")}
-                    className="rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-violet-500"
-                  >
-                    View all {pendingBookingsCount} pending bookings →
-                  </DropdownMenuItem>
-                )}
-              </>
-            )}
-          </>
+          <Suspense fallback={<div className="px-3 py-6 text-center text-[12.5px] text-noir-400">Loading…</div>}>
+            <NotificationsList
+              pendingOrdersCount={pendingOrdersCount}
+              pendingBookingsCount={pendingBookingsCount}
+              pendingPreviewPromise={pendingPreviewPromise}
+            />
+          </Suspense>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function NotificationsList({
+  pendingOrdersCount,
+  pendingBookingsCount,
+  pendingPreviewPromise,
+}: {
+  pendingOrdersCount: number;
+  pendingBookingsCount: number;
+  pendingPreviewPromise: Promise<PendingPreview>;
+}) {
+  const router = useRouter();
+  const { pendingOrdersPreview, pendingBookingsPreview } = use(pendingPreviewPromise);
+
+  return (
+    <>
+      {pendingOrdersPreview.length > 0 && (
+        <>
+          <DropdownMenuLabel className="px-2.5 pt-1.5 text-[10.5px] font-bold tracking-[0.1em] text-noir-400 uppercase">
+            Pending orders
+          </DropdownMenuLabel>
+          {pendingOrdersPreview.map((o) => (
+            <DropdownMenuItem
+              key={o.id}
+              onSelect={() => router.push(`/orders/${o.id}`)}
+              className="flex flex-col items-start gap-0.5 rounded-lg px-2.5 py-2"
+            >
+              <span className="text-[13px] font-bold text-noir-800">Order #{o.ref}</span>
+              <span className="text-[11.5px] text-noir-400">
+                {o.phone} · {formatDate(o.order_date)}
+              </span>
+            </DropdownMenuItem>
+          ))}
+          {pendingOrdersCount > pendingOrdersPreview.length && (
+            <DropdownMenuItem
+              onSelect={() => router.push("/orders?status=pending")}
+              className="rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-violet-500"
+            >
+              View all {pendingOrdersCount} pending orders →
+            </DropdownMenuItem>
+          )}
+        </>
+      )}
+
+      {pendingOrdersPreview.length > 0 && pendingBookingsPreview.length > 0 && <DropdownMenuSeparator />}
+
+      {pendingBookingsPreview.length > 0 && (
+        <>
+          <DropdownMenuLabel className="px-2.5 pt-1.5 text-[10.5px] font-bold tracking-[0.1em] text-noir-400 uppercase">
+            Pending bookings
+          </DropdownMenuLabel>
+          {pendingBookingsPreview.map((b) => (
+            <DropdownMenuItem
+              key={b.id}
+              onSelect={() => router.push("/bookings?status=requested")}
+              className="flex flex-col items-start gap-0.5 rounded-lg px-2.5 py-2"
+            >
+              <span className="text-[13px] font-bold text-noir-800">Booking #{b.ref}</span>
+              <span className="text-[11.5px] text-noir-400">
+                {b.phone} · {formatDateTime(b.scheduled_at)}
+              </span>
+            </DropdownMenuItem>
+          ))}
+          {pendingBookingsCount > pendingBookingsPreview.length && (
+            <DropdownMenuItem
+              onSelect={() => router.push("/bookings?status=requested")}
+              className="rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-violet-500"
+            >
+              View all {pendingBookingsCount} pending bookings →
+            </DropdownMenuItem>
+          )}
+        </>
+      )}
+    </>
   );
 }

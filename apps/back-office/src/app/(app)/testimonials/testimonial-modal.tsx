@@ -1,13 +1,15 @@
 "use client";
 
+import { createClient as createBrowserClient } from "@zoeallure/supabase/client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/spinner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { deleteImage, uploadImage, validateUploadImage } from "@/lib/image-upload";
 import { createTestimonial, updateTestimonial } from "./actions";
 import type { Tables } from "@zoeallure/supabase";
 
@@ -22,28 +24,68 @@ export function TestimonialModal({
 }) {
   const router = useRouter();
   const isEdit = !!testimonial;
+  const [supabase] = useState(() => createBrowserClient());
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState("");
   const [quote, setQuote] = useState("");
   const [service, setService] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
+
   useEffect(() => {
     if (open) {
       setName(testimonial?.customer_name ?? "");
       setQuote(testimonial?.quote ?? "");
       setService(testimonial?.service_label ?? "");
+      setImageFile(null);
+      setImagePreview(testimonial?.photo_url ?? null);
+      setRemoveImage(false);
     }
   }, [open, testimonial]);
+
+  function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const validationError = validateUploadImage(file);
+    if (validationError) {
+      toast.error(validationError);
+      e.target.value = "";
+      return;
+    }
+    setImageFile(file);
+    setRemoveImage(false);
+    setImagePreview(URL.createObjectURL(file));
+  }
+
+  function handleRemoveImage() {
+    setImageFile(null);
+    setImagePreview(null);
+    setRemoveImage(true);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
 
   async function submit(status: "draft" | "published") {
     setSaving(true);
     try {
+      let photoUrl = testimonial?.photo_url ?? null;
+      if (imageFile) {
+        photoUrl = await uploadImage(supabase, "testimonial-photos", imageFile);
+        if (testimonial?.photo_url) await deleteImage(supabase, "testimonial-photos", testimonial.photo_url);
+      } else if (removeImage) {
+        if (testimonial?.photo_url) await deleteImage(supabase, "testimonial-photos", testimonial.photo_url);
+        photoUrl = null;
+      }
+
+      const input = { customer_name: name, quote, service_label: service || null, photo_url: photoUrl, status };
       if (isEdit) {
-        await updateTestimonial(testimonial.id, { customer_name: name, quote, service_label: service || null, status });
+        await updateTestimonial(testimonial.id, input);
         toast.success("Testimonial updated");
       } else {
-        await createTestimonial({ customer_name: name, quote, service_label: service || null, status });
+        await createTestimonial(input);
         toast.success(status === "published" ? "Testimonial published" : "Saved as draft");
       }
       router.refresh();
@@ -64,6 +106,44 @@ export function TestimonialModal({
           </DialogTitle>
         </DialogHeader>
         <div className="grid gap-3.5">
+          <div>
+            <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">
+              Customer photo <span className="font-medium text-noir-300 normal-case">(optional)</span>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <div className="flex items-center gap-3">
+              <div className="relative size-16 flex-none overflow-hidden rounded-full border-[1.5px] border-dashed border-noir-200 bg-noir-50">
+                {imagePreview && (
+                  // eslint-disable-next-line @next/next/no-img-element -- local object URL / Supabase Storage URL, no next/image loader configured
+                  <img src={imagePreview} alt={name || "Customer photo"} className="size-full object-cover" />
+                )}
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                className="h-auto rounded-full border-noir-200 px-3.5 py-1.5 text-[11.5px] font-bold"
+              >
+                {imagePreview ? "Change" : "Upload"}
+              </Button>
+              {imagePreview && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleRemoveImage}
+                  className="h-auto rounded-full border-noir-200 px-3.5 py-1.5 text-[11.5px] font-bold"
+                >
+                  Remove
+                </Button>
+              )}
+            </div>
+          </div>
           <div>
             <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">
               Customer name

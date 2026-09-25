@@ -3,7 +3,8 @@ import Link from "next/link";
 import { Badge, SectionEyebrow } from "./badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { LINE_META, STATUS_BADGE, STOCK_BADGE, TICKET_TIER, stockLevel } from "@/lib/catalog";
+import { ProductThumb } from "@/components/product-thumb";
+import { STATUS_BADGE, STOCK_BADGE, TICKET_TIER, stockLevel } from "@/lib/catalog";
 import { formatDateTime, ngn } from "@/lib/format";
 import { getLowStockThreshold } from "@/lib/settings";
 
@@ -50,7 +51,7 @@ export default async function OverviewPage() {
       .limit(5),
     supabase
       .from("products")
-      .select("id, slug, name, category, stock_units")
+      .select("id, slug, name, category, stock_units, image_url")
       .lte("stock_units", lowStockThreshold)
       .order("stock_units", { ascending: true })
       .limit(5),
@@ -268,18 +269,18 @@ export default async function OverviewPage() {
               </TableRow>
             )}
             {(attentionProducts ?? []).map((p) => {
-              const meta = LINE_META[p.category];
               const level = STOCK_BADGE[stockLevel(p.stock_units, lowStockThreshold)];
               return (
                 <TableRow key={p.id}>
                   <TableCell className="px-5 py-3.5 sm:px-6">
                     <Link href={`/products/${p.id}`} className="flex min-w-0 items-center gap-3">
-                      <span
+                      <ProductThumb
+                        imageUrl={p.image_url}
+                        category={p.category}
+                        name={p.name}
                         className="flex h-8 w-8 flex-none items-center justify-center rounded-[9px] text-[10px] font-extrabold text-white"
-                        style={{ background: meta.swatch }}
-                      >
-                        {meta.initials}
-                      </span>
+                        initialsClassName="text-[10px] font-extrabold text-white"
+                      />
                       <span className="truncate text-[13px] font-bold text-noir-800">{p.name}</span>
                     </Link>
                   </TableCell>
