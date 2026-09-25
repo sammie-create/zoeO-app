@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { Chapters } from "@/components/about/chapters";
+import { StepsProgress } from "@/components/about/steps-progress";
+import { ValuesFocus } from "@/components/about/values-focus";
 import { CountUp } from "@/components/shared/count-up";
 import { Icon } from "@/components/shared/icon";
-import { Reveal } from "@/components/shared/reveal";
-import { getAboutStats } from "@/lib/queries";
+import { ImgReveal, Reveal } from "@/components/shared/reveal";
+import { getAboutStats, getProductBrands } from "@/lib/queries";
 
 export const metadata = { title: "About Us — ZoeO Allure" };
 
@@ -14,35 +17,43 @@ const journeySteps = [
 ];
 
 const values = [
-  { title: "Quality", text: "Products and services held to one standard — the one we would accept ourselves.", img: "after-portrait" },
+  {
+    title: "Quality",
+    text: "Products and services held to one standard - the one we would accept ourselves.",
+    img: "after-portrait",
+    imgPosition: "50% 20%",
+  },
   { title: "Community", text: "Empowering the artists, stylists and technicians who make this industry work.", img: "svc-wig-sq" },
-  { title: "Convenience", text: "Everything within reach — shop, book and collect without the running around.", img: "p-wig-revamp-kit" },
+  { title: "Convenience", text: "Everything within reach - shop, book and collect without the running around.", img: "p-wig-revamp-kit" },
 ];
 
 const chapters = [
-  { yr: "2021", title: "Where it started", text: "Zoe Onirun begins with wigs and wig revamp — turning weaves women already owned into beautiful, wearable units." },
-  { yr: "2023", title: "Registered as a company", text: "Zoe Onirun becomes a limited liability company. Clients buy wigs from us or bring their own for transformation." },
-  { yr: "2024", title: "ZoeO Bridals & Artistry", text: "Our brides asked for more. Bridal hair, makeup and gele come together under one trusted team." },
-  { yr: "2025", title: "ZoeO Allure is born", text: "Registered on May 5, 2025 — the umbrella brand. Lash extensions, nails and brow lamination join the family." },
-  { yr: "2026", title: "Products & experiences", text: "Four product lines launch at the Beauty Lounge Exhibition in November. The story continues.", now: true },
+  { yr: "2021", title: "Where it started", text: "Zoe Onirun begins with wigs and wig revamp — turning weaves women already owned into beautiful, wearable units.", img: "line-zoe-onirun" },
+  { yr: "2023", title: "Registered as a company", text: "Zoe Onirun becomes a limited liability company. Clients buy wigs from us or bring their own for transformation.", img: "p-body-wave-wig", imgPosition: "50% 25%" },
+  { yr: "2024", title: "ZoeO Bridals & Artistry", text: "Our brides asked for more. Bridal hair, makeup and gele come together under one trusted team.", img: "line-bridals", imgPosition: "50% 30%" },
+  { yr: "2025", title: "ZoeO Allure is born", text: "Registered on May 5, 2025 — the umbrella brand. Lash extensions, nails and brow lamination join the family.", img: "expert-helen", imgPosition: "50% 20%" },
+  { yr: "2026", title: "Products & experiences", text: "Four product lines launch at the Beauty Lounge Exhibition in November. The story continues.", img: "gallery-3", now: true },
 ];
 
+const marqueeWords = ["Listen", "Solve", "Improve", "Repeat"];
+
 export default async function AboutPage() {
-  const stats = await getAboutStats();
+  const [stats, brands] = await Promise.all([getAboutStats(), getProductBrands()]);
 
   return (
     <>
-      <section className="relative flex min-h-[460px] items-end overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-        <img src="/img/hero-about.webp" alt="Woman with long braids and glossy makeup" className="absolute inset-0 size-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-        <div className="relative flex w-full flex-col gap-4 p-8 sm:p-14">
+      <section className="about-hero">
+        <div className="about-hero__frame">
+          {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
+          <img src="/img/hero-about.webp" alt="Woman with long braids and glossy makeup" />
           <Reveal as="span" className="block text-sm font-bold text-violet-300 uppercase">
             + About us
           </Reveal>
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <Reveal as="h1" className="font-display block max-w-2xl text-3xl font-bold sm:text-4xl lg:text-[52px]">We are not just one thing — and that&apos;s the point</Reveal>
-            <Reveal as="p" delay={400} className="max-w-sm text-white/85">
+          <div className="about-hero__row">
+            <Reveal as="h1" className="font-display block text-[clamp(36px,4.2vw,62px)] leading-[1.12] font-bold">
+              We are not just one thing — and <em className="text-violet-300 not-italic">that&apos;s the point</em>
+            </Reveal>
+            <Reveal as="p" delay={400}>
               Delivering high-end products and exceptional aesthetic experiences harmoniously. Beauty should never
               require compromise or unnecessary stress.
             </Reveal>
@@ -50,187 +61,334 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1280px] px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[.9fr_1.1fr]">
+      <section className="py-[clamp(64px,9vw,120px)]">
+        <div className="eco mx-auto max-w-[calc(1280px_+_clamp(16px,5vw,80px)*2)] px-[clamp(16px,5vw,80px)]">
           <div>
             <Reveal as="span" className="block text-sm font-bold text-violet-400 uppercase">
               The vision &amp; concept
             </Reveal>
-            <Reveal as="h2" className="font-display mt-3 block text-3xl font-bold sm:text-4xl">An Umbrella Ecosystem of Beauty</Reveal>
-            <Reveal as="p" className="mt-4 text-noir-300">
+            <Reveal as="h2" className="font-display mt-[18px] mb-7 block text-[clamp(32px,3.4vw,48px)] leading-[1.08] font-bold">
+              An Umbrella Ecosystem of Beauty
+            </Reveal>
+            <Reveal as="p">
               ZoeO Allure is an umbrella brand and a growing beauty ecosystem: artistry, hair, products, experiences
               and the innovations still to come. Not a makeup brand, not a bridal brand — a one-stop beauty
               destination where several expressions of beauty coexist.
             </Reveal>
-            <Reveal className="mt-6">
-              <Link href="/services" className="inline-flex h-12 items-center rounded-full border border-white/20 px-6 text-sm font-bold uppercase hover:bg-white/6">
-                Explore our services
+            <Reveal>
+              <Link
+                href="#lines"
+                className="mt-2 inline-flex h-12 items-center gap-2 rounded-full border border-white/20 px-6 text-sm font-bold uppercase hover:bg-white/6"
+              >
+                Explore the lines <Icon name="arrow" className="size-4" />
               </Link>
             </Reveal>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {stats.length === 0
-              ? null
-              : stats.map((s, i) => (
-                  <Reveal key={s.id} delay={i * 90} className="rounded-2xl border border-white/10 p-6">
-                    <div className="font-display text-4xl font-bold text-violet-300">
-                      <CountUp value={s.figure} />
-                    </div>
-                    <h4 className="mt-2 font-bold">{s.title}</h4>
-                    <p className="mt-1 text-[13px] text-noir-300">{s.description}</p>
-                  </Reveal>
-                ))}
+          <div className="stat-grid">
+            {stats.map((s, i) => (
+              <Reveal key={s.id} delay={i * 100} className="stat">
+                {s.chip && <span className="chip chip--violet">{s.chip}</span>}
+                <div className="stat__num">
+                  <CountUp value={s.figure} from={s.count_from ?? 0} />
+                </div>
+                <h4>{s.title}</h4>
+                <p>{s.description}</p>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-noir-800/60 px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+      <section className="philo bg-noir-800/60 px-4 py-[clamp(64px,9vw,120px)] sm:px-6 lg:px-8">
         <Reveal as="span" className="block text-sm font-bold text-violet-400 uppercase">
           Our philosophy
         </Reveal>
-        <Reveal as="h2" className="font-display mx-auto mt-3 block max-w-3xl text-3xl font-bold sm:text-4xl">The Harmony Between Expert Beauty Care & Exceptionally Simple Luxury.</Reveal>
-        <Reveal as="p" className="mx-auto mt-5 max-w-[560px] text-noir-300">
+        <Reveal as="h2" className="h1 font-display block">
+          The Harmony Between Expert Beauty Care{" "}
+          {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
+          <img src="/img/elixir.webp" alt="" />
+          <br />
+          &amp; Exceptionally Simple Luxury.
+        </Reveal>
+        <Reveal as="p">
           Our expert stylists are highly trained in a variety of techniques, ensuring your beauty experience is
           perfectly customized to your style, preference, and occasion.
         </Reveal>
       </section>
 
-      <section className="grid grid-cols-1 lg:grid-cols-2">
-        <div className="relative min-h-[360px]">
+      <section className="journey">
+        <ImgReveal className="journey__img">
           {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-          <img src="/img/salon-journey.webp" alt="Warmly lit spa suite with twin basins" className="absolute inset-0 size-full object-cover" />
-        </div>
-        <div className="flex flex-col justify-center gap-8 bg-noir-800 p-8 sm:p-14">
+          <img src="/img/salon-journey.webp" alt="Warmly lit spa suite with twin basins" />
+        </ImgReveal>
+        <div className="journey__body">
           <div>
             <Reveal as="span" className="block text-sm font-bold text-violet-400 uppercase">
               How it works
             </Reveal>
-            <Reveal as="h2" className="font-display mt-3 block text-3xl font-bold">The Salon Journey</Reveal>
+            <Reveal as="h2" className="h1 font-display block">
+              The Salon Journey
+            </Reveal>
           </div>
-          <ol className="flex flex-col gap-6 border-l border-white/10 pl-6">
+          <StepsProgress>
             {journeySteps.map((s, i) => (
-              <Reveal key={s.title} as="li" delay={i * 150} className="relative">
-                <span className="absolute top-0.5 -left-[31px] grid size-6 place-items-center rounded-full bg-violet-500 text-[11px] font-bold">
-                  {i + 1}
-                </span>
-                <strong className="block">{s.title}</strong>
-                <span className="text-[13px] text-noir-300">{s.text}</span>
+              <Reveal key={s.title} delay={i * 150} className="step">
+                <span className="step__n">{i + 1}</span>
+                <div>
+                  <h4>{s.title}</h4>
+                  <p>{s.text}</p>
+                </div>
               </Reveal>
             ))}
-          </ol>
-          <Reveal>
-            <Link href="/services#book" className="inline-flex h-12 w-fit items-center rounded-full bg-violet-500 px-6 text-sm font-bold text-white uppercase">
+          </StepsProgress>
+          <Reveal className="mt-11">
+            <Link
+              href="/services#book"
+              className="inline-flex h-12 w-fit items-center rounded-full bg-violet-500 px-6 text-sm font-bold text-white uppercase hover:bg-violet-600"
+            >
               Book your session
             </Link>
           </Reveal>
         </div>
       </section>
 
-      <section className="bg-noir-800/60 px-4 py-20 text-center sm:px-6 lg:px-8">
-        <Reveal className="mx-auto max-w-[720px]">
-          <span aria-hidden className="font-display text-6xl text-violet-500/40">
+      <section className="founder-q bg-noir-800/60 px-4 py-[clamp(64px,9vw,120px)] sm:px-6 lg:px-8">
+        <Reveal>
+          <span aria-hidden className="qmark">
             &ldquo;
           </span>
-          <blockquote className="font-display text-2xl leading-[1.4] sm:text-3xl">
-            Step away from the ordinary &amp; into a dedicated moment designed solely for you.
-          </blockquote>
-          <cite className="mt-4 block text-sm text-noir-400 not-italic">Helen O. Adetunbi (Founder)</cite>
+          <blockquote>Step away from the ordinary &amp; into a dedicated moment designed solely for you.</blockquote>
+          <cite>Helen O. Adetunbi (Founder)</cite>
+          {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
+          <img src="/img/founder-round.webp" alt="Helen O. Adetunbi" />
         </Reveal>
       </section>
 
-      <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-        <Reveal as="h2" className="font-display mb-10 block text-center text-3xl font-bold sm:text-4xl">What We Value</Reveal>
-        <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-6 sm:grid-cols-3">
-          {values.map((v, i) => (
-            <Reveal key={v.title} delay={i * 120} className="overflow-hidden rounded-2xl bg-white/5">
-              <div className="relative aspect-[4/3]">
-                {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-                <img src={`/img/${v.img}.webp`} alt="" className="absolute inset-0 size-full object-cover" />
-              </div>
-              <div className="p-6">
-                <h4 className="font-display text-xl font-bold">{v.title}</h4>
-                <p className="mt-1.5 text-[14px] text-noir-300">{v.text}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      <section id="story" className="bg-noir-800/60 px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+      <section className="px-4 py-[clamp(64px,9vw,120px)] sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1280px]">
-          <div className="mb-14 grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.2fr]">
-            <div>
-              <Reveal as="span" className="block text-sm font-bold text-violet-400 uppercase">
-                Our story
-              </Reveal>
-              <Reveal as="h2" className="font-display mt-3 block text-3xl font-bold">How we got here — one chapter at a time.</Reveal>
-            </div>
-            <Reveal as="p" className="text-noir-300">
-              Every chapter of ZoeO Allure has been shaped by a simple principle:{" "}
-              <strong className="text-white">listen to the needs of the women we serve, solve real beauty
-              problems, and keep improving the experience.</strong> What began with wigs and wig revamp has grown
-              into a beauty brand of products, services and experiences.
-            </Reveal>
-          </div>
-
-          <div className="relative grid grid-cols-1 gap-8 border-t border-white/10 pt-10 sm:grid-cols-5">
-            {chapters.map((c, i) => (
-              <Reveal key={c.yr} delay={i * 100} className="relative">
-                <span className="absolute -top-[46px] left-0 size-2.5 rounded-full bg-violet-400" />
-                <div className="font-display text-2xl font-bold text-violet-300">{c.yr}</div>
-                <h3 className="mt-2 font-bold">{c.title}</h3>
-                <p className="mt-1.5 text-[13px] text-noir-300">{c.text}</p>
-                {c.now && (
-                  <span className="mt-2 inline-block rounded-full bg-violet-500/15 px-2.5 py-0.5 text-[11px] font-bold text-violet-300">
-                    Now
-                  </span>
-                )}
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal className="mt-14 border-t border-white/10 pt-10 text-center">
-            <blockquote className="font-display mx-auto max-w-2xl text-xl leading-[1.5] sm:text-2xl">
-              &ldquo;Our journey has never simply been about adding more services. It&apos;s about understanding your
-              beauty journey — and finding better ways to serve it.&rdquo;
-            </blockquote>
-            <Link href="/blog/our-journey" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-violet-300">
-              Read the full story <Icon name="arrow" className="size-4" />
-            </Link>
-          </Reveal>
+          <ValuesFocus values={values} />
         </div>
       </section>
 
-      <section id="founder" className="grid grid-cols-1 lg:grid-cols-2">
-        <div className="relative min-h-[420px]">
-          {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-          <img src="/img/expert-helen.webp" alt="Helen O. Adetunbi, Creative Director and Founder" className="absolute inset-0 size-full object-cover" style={{ objectPosition: "50% 18%" }} />
+      <section id="story" className="ed-light story2">
+        <div className="story2__head mx-auto max-w-[1280px] px-[clamp(16px,5vw,80px)]">
+          <div>
+            <Reveal as="span" className="overline block text-[13px] font-bold tracking-[.02em] uppercase">
+              Our story
+            </Reveal>
+            <Reveal as="h2" className="ed-serif block">
+              How we got here — <em className="it not-italic">one chapter at a time.</em>
+            </Reveal>
+          </div>
+          <Reveal as="p">
+            Every chapter of ZoeO Allure has been shaped by a simple principle:{" "}
+            <strong>listen to the needs of the women we serve, solve real beauty problems, and keep improving the
+            experience.</strong> What began with wigs and wig revamp has grown into a beauty brand of products,
+            services and experiences.
+          </Reveal>
         </div>
-        <div className="flex flex-col justify-center gap-4 bg-champagne-100/5 p-8 sm:p-14">
-          <Reveal as="span" className="block text-sm font-bold text-champagne-300 uppercase">
-            The artist behind it all
+        <div className="ed-marquee ed-marquee--sm" aria-hidden>
+          <div className="ed-marquee__track">
+            {Array.from({ length: 6 }).flatMap((_, i) =>
+              marqueeWords.map((w) => <span key={`${i}-${w}`}>{w}</span>),
+            )}
+          </div>
+        </div>
+        <div className="mx-auto max-w-[1280px]">
+          <Chapters chapters={chapters} />
+        </div>
+        <div className="story2__foot">
+          <blockquote>
+            &ldquo;Our journey has never simply been about adding more services. It&apos;s about understanding your
+            beauty journey — and finding better ways to serve it.&rdquo;
+          </blockquote>
+          <Link href="/blog/our-journey" className="ed-link">
+            Read the full story <Icon name="arrow" className="size-4" />
+          </Link>
+        </div>
+      </section>
+
+      <section id="lines" className="ed-light dual">
+        <div className="mx-auto max-w-[1280px] px-[clamp(16px,5vw,80px)]">
+          <div className="dual__head">
+            <div>
+              <Reveal as="span" className="overline block text-[13px] font-bold tracking-[.02em] uppercase">
+                Our dual passion
+              </Reveal>
+              <Reveal as="h2" className="caps-display block">
+                Two lines. <em className="it">One</em> standard <br />
+                of <em className="it">care.</em>
+              </Reveal>
+              <Reveal as="p">
+                Before there was an umbrella, there were two crafts: making good hair days possible, and making
+                brides feel unforgettable. Everything ZoeO Allure offers today grew out of these two lines.
+              </Reveal>
+              <Reveal as="span" className="dual__sig">
+                — two ways we make beauty easier
+              </Reveal>
+            </div>
+            <Reveal variant="zoom" className="vinyl" aria-hidden />
+          </div>
+
+          <div className="dual__lines">
+            <article className="dline">
+              <Reveal className="dline__photo">
+                <figure className="polaroid">
+                  <span className="tape" />
+                  {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
+                  <img src="/img/line-zoe-onirun.webp" alt="Silky straight wig on a glass mannequin" />
+                  <figcaption>Zoe Onirun — est. 2021</figcaption>
+                </figure>
+              </Reveal>
+              <Reveal as="div" className="dline__meta">
+                01 · Wigs &amp; hair
+              </Reveal>
+              <h3 className="caps-display">
+                Zoe <em className="it">Onirun</em>
+              </h3>
+              <Reveal as="div" className="dline__tag">
+                Good hair days live here.
+              </Reveal>
+              <Reveal as="p">
+                Rooted in outstanding wig design, hair care restoration and flawless custom lace installation. Buy a
+                unit from us or bring your own — we build with structural longevity and unparalleled craftsmanship.
+              </Reveal>
+              <Reveal as="div" className="dline__offers">
+                <span>Wig sales</span>
+                <span>Wig revamp</span>
+                <span>Lace installation</span>
+                <span>Styling</span>
+              </Reveal>
+              <Reveal as="div" className="dline__ctas">
+                <Link href="/shop?cat=wigs" className="inline-flex h-[46px] items-center rounded-full bg-violet-500 px-6 text-sm font-bold text-white hover:bg-violet-600">
+                  Shop wigs
+                </Link>
+                <Link href="/services?service=wig-revamp#book" className="ed-link">
+                  Book a revamp <Icon name="arrow" className="size-4" />
+                </Link>
+              </Reveal>
+            </article>
+
+            <article className="dline">
+              <Reveal delay={120} className="dline__photo">
+                <figure className="polaroid">
+                  <span className="tape" style={{ rotate: "5deg" }} />
+                  {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
+                  <img
+                    src="/img/line-bridals.webp"
+                    alt="Bride in a lace veil with soft glam makeup"
+                    style={{ objectPosition: "50% 30%" }}
+                  />
+                  <figcaption>Bridals &amp; Artistry — est. 2024</figcaption>
+                </figure>
+              </Reveal>
+              <Reveal as="div" className="dline__meta">
+                02 · Bridal beauty
+              </Reveal>
+              <h3 className="caps-display">
+                ZoeO <em className="it">Bridals &amp; Artistry</em>
+              </h3>
+              <Reveal as="div" className="dline__tag">
+                Look like yourself, unforgettable.
+              </Reveal>
+              <Reveal as="p">
+                Bridal hair, makeup and gele from one trusted team — so the most important morning of your life has
+                one less thing to coordinate. Bespoke, high-end and built around your grace.
+              </Reveal>
+              <Reveal as="div" className="dline__offers">
+                <span>Bridal hair</span>
+                <span>Makeup</span>
+                <span>Gele</span>
+                <span>Trials</span>
+              </Reveal>
+              <Reveal as="div" className="dline__ctas">
+                <Link href="/services?service=bridal#book" className="inline-flex h-[46px] items-center rounded-full bg-violet-500 px-6 text-sm font-bold text-white hover:bg-violet-600">
+                  Book bridal
+                </Link>
+                <Link href="/blog/bridal-checklist" className="ed-link">
+                  Bridal checklist <Icon name="arrow" className="size-4" />
+                </Link>
+              </Reveal>
+            </article>
+          </div>
+        </div>
+        {brands.length > 0 && (
+          <div className="brandband">
+            <Reveal
+              variant="fade"
+              as="div"
+              className="brandband__inner mx-auto max-w-[1280px] px-[clamp(16px,5vw,80px)]"
+            >
+              <small>Under the ZoeO umbrella</small>
+              {brands.map((brand, i) => (
+                <Link key={brand} href={`/shop?brand=${encodeURIComponent(brand)}`} className={`wm wm--${(i % 5) + 1}`}>
+                  {brand}
+                </Link>
+              ))}
+            </Reveal>
+          </div>
+        )}
+      </section>
+
+      <section id="founder" className="founder2">
+        <div className="founder2__inner mx-auto max-w-[1280px] px-[clamp(16px,5vw,80px)]">
+          <Reveal variant="fade" className="founder2__art">
+            <figure className="polaroid">
+              <span className="tape" />
+              {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
+              <img
+                src="/img/expert-helen.webp"
+                alt="Helen O. Adetunbi, Creative Director and Founder"
+                style={{ objectPosition: "50% 18%" }}
+              />
+              <figcaption>Helen, Lagos</figcaption>
+            </figure>
+            <div className="film" aria-hidden>
+              <span>ZOEO · 2026</span>
+              {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
+              <img src="/img/founder.webp" alt="" style={{ objectPosition: "40% 20%" }} />
+              {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
+              <img src="/img/founder-round.webp" alt="" />
+              {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
+              <img src="/img/founder.webp" alt="" style={{ objectPosition: "40% 75%" }} />
+            </div>
           </Reveal>
-          <Reveal as="h2" className="font-display block text-3xl font-bold sm:text-4xl">Meet your founder</Reveal>
-          <Reveal className="mt-1">
-            <div className="font-semibold">Helen O. Adetunbi</div>
-            <div className="text-[13px] text-noir-400">Creative Director &amp; Founder</div>
-          </Reveal>
-          <Reveal as="p" className="text-noir-300">
-            Helen started Zoe Onirun with a simple observation: women had weaves that could become beautiful wigs,
-            but no one they trusted to make the transformation. She became that someone.
-          </Reveal>
-          <Reveal as="p" className="text-noir-300">
-            Every chapter since — bridal artistry, lashes, nails, products — came from listening to the women she
-            serves. <strong className="text-white">Beauty, made easier. All in one place.</strong>
-          </Reveal>
-          <Reveal className="mt-4 flex flex-wrap gap-4">
-            <Link href="/services#book" className="inline-flex h-12 items-center rounded-full bg-champagne-300 px-6 text-sm font-bold text-noir-900 uppercase">
-              Book an appointment
-            </Link>
-            <Link href="/blog/our-journey" className="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-300">
-              Read her story <Icon name="arrow" className="size-4" />
-            </Link>
-          </Reveal>
+          <div>
+            <Reveal as="span" className="overline block text-[13px] font-bold tracking-[.02em] text-champagne-300 uppercase">
+              The artist behind it all
+            </Reveal>
+            <Reveal as="h2" className="caps-display block">
+              Meet <em className="it">your</em> founder
+            </Reveal>
+            <Reveal as="div" className="founder2__name">
+              Helen O. Adetunbi
+            </Reveal>
+            <Reveal as="div" className="founder2__role">
+              Creative Director &amp; Founder
+            </Reveal>
+            <Reveal as="p">
+              Helen started Zoe Onirun with a simple observation: women had weaves that could become beautiful wigs,
+              but no one they trusted to make the transformation. She became that someone.
+            </Reveal>
+            <Reveal as="p">
+              Every chapter since — bridal artistry, lashes, nails, products — came from listening to the women she
+              serves. <strong>Beauty, made easier. All in one place.</strong>
+            </Reveal>
+            <Reveal as="span" className="founder2__sig">
+              Helen
+            </Reveal>
+            <Reveal as="div" className="founder2__ctas">
+              <Link
+                href="/services#book"
+                className="inline-flex h-12 items-center rounded-full bg-champagne-300 px-6 text-sm font-bold text-noir-900 uppercase hover:bg-champagne-100"
+              >
+                Book an appointment
+              </Link>
+              <Link href="/blog/our-journey" className="ed-link">
+                Read her story <Icon name="arrow" className="size-4" />
+              </Link>
+            </Reveal>
+          </div>
         </div>
       </section>
     </>

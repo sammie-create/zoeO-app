@@ -589,6 +589,8 @@ export interface Database {
           figure: string;
           title: string;
           description: string;
+          chip: string | null;
+          count_from: number | null;
           sort_order: number;
           created_at: string;
           updated_at: string;
@@ -598,6 +600,8 @@ export interface Database {
           figure: string;
           title: string;
           description: string;
+          chip?: string | null;
+          count_from?: number | null;
           sort_order?: number;
           created_at?: string;
           updated_at?: string;
@@ -607,6 +611,8 @@ export interface Database {
           figure?: string;
           title?: string;
           description?: string;
+          chip?: string | null;
+          count_from?: number | null;
           sort_order?: number;
           created_at?: string;
           updated_at?: string;

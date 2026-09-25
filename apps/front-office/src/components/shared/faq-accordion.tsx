@@ -7,21 +7,27 @@ export function FaqAccordion({ items }: { items: { question: string; answer: str
   const [open, setOpen] = useState(0);
 
   return (
-    <div className="flex flex-col divide-y divide-white/8 rounded-2xl border border-white/10">
+    <div className="faq">
       {items.map((item, i) => {
         const isOpen = open === i;
         return (
-          <div key={item.question}>
+          <div key={item.question} className={`faq__item ${isOpen ? "is-open" : ""}`}>
             <button
               type="button"
+              className="faq__q"
               onClick={() => setOpen(isOpen ? -1 : i)}
               aria-expanded={isOpen}
-              className="flex w-full items-center justify-between gap-4 p-5 text-left font-medium"
             >
               {item.question}
-              <Icon name={isOpen ? "minus" : "plus"} className="size-4 shrink-0 text-violet-300" />
+              <span className="pm">
+                <Icon name="plus" className="size-4" />
+              </span>
             </button>
-            {isOpen && <div className="px-5 pb-5 text-[14px] text-noir-300">{item.answer}</div>}
+            <div className="faq__a">
+              <div>
+                <p>{item.answer}</p>
+              </div>
+            </div>
           </div>
         );
       })}

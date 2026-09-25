@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { Icon, isIconName } from "@/components/shared/icon";
 import { MoneyLabel } from "@/components/shared/money-label";
 import { placeBooking } from "@/lib/actions";
@@ -19,7 +20,13 @@ function isoToday(offsetDays = 0) {
 }
 
 export function BookingForm({ services, preselectId }: { services: Service[]; preselectId?: string }) {
-  const [selected, setSelected] = useState<Service | undefined>(services.find((s) => s.id === preselectId) ?? services[0]);
+  const [selectedId, setSelectedId] = useState(preselectId ?? services[0]?.id);
+  const [prevPreselectId, setPrevPreselectId] = useState(preselectId);
+  if (preselectId !== prevPreselectId) {
+    setPrevPreselectId(preselectId);
+    if (preselectId && services.some((s) => s.id === preselectId)) setSelectedId(preselectId);
+  }
+  const selected = services.find((s) => s.id === selectedId) ?? services[0];
   const [where, setWhere] = useState<"studio" | "home_service">("studio");
   const [date, setDate] = useState(isoToday(1));
   const [slot, setSlot] = useState<string | null>(null);
@@ -27,14 +34,10 @@ export function BookingForm({ services, preselectId }: { services: Service[]; pr
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [slotInvalid, setSlotInvalid] = useState(false);
   const [confirmed, setConfirmed] = useState<{ ref: string; dateStr: string; timeStr: string } | null>(null);
 
   const disabledSlots = useMemoDisabled(date);
-
-  function handlePick(id: string) {
-    const s = services.find((x) => x.id === id);
-    if (s) setSelected(s);
-  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -43,7 +46,11 @@ export function BookingForm({ services, preselectId }: { services: Service[]; pr
     if (!date || date < isoToday()) return setError("Pick a date from today onwards.");
     if (name.trim().length < 2) return setError("Please enter your name.");
     if (phone.replace(/\D/g, "").length < 7) return setError("Enter a valid phone number.");
-    if (!slot) return setError("Choose a time slot.");
+    if (!slot) {
+      setSlotInvalid(true);
+      return setError("Choose a time slot.");
+    }
+    setSlotInvalid(false);
 
     setSubmitting(true);
     try {
@@ -72,87 +79,116 @@ export function BookingForm({ services, preselectId }: { services: Service[]; pr
   }
 
   if (confirmed) {
+    const initials = name
+      .trim()
+      .split(/\s+/)
+      .map((s) => s[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+
     return (
-      <div className="rounded-2xl border border-white/10 p-8 text-center">
-        <div className="mx-auto mb-4 grid size-14 place-items-center rounded-full bg-status-booked/15 text-status-booked">
-          <Icon name="check" className="size-6" />
-        </div>
+      <div className="confirm">
+        <span className="ic">
+          <Icon name="check" className="size-7" />
+        </span>
         <h3 className="font-display text-2xl">You&apos;re booked in</h3>
         <p className="mt-2 text-noir-300">We&apos;ll confirm on {phone} shortly.</p>
-        <div className="mt-6 rounded-xl border border-white/10 p-5 text-left">
-          <strong>{name.trim()}</strong>
-          <div className="mt-1 text-sm text-noir-300">
-            {selected?.name} · {selected && durationLabel(selected.duration_mins)} · {where === "studio" ? "Salon" : "Home service"}
-          </div>
-          <div className="mt-4 flex justify-between text-sm">
+        <div className="appt">
+          <div className="appt__who">
+            <span className="avatar">{initials}</span>
             <div>
-              <div className="text-noir-400">Date</div>
+              <strong>{name.trim()}</strong>
+              <div className="text-noir-300">
+                {selected?.name} · {selected && durationLabel(selected.duration_mins)} ·{" "}
+                {where === "studio" ? "Salon" : "Home service"}
+              </div>
+            </div>
+          </div>
+          <div className="appt__dt">
+            <div>
+              <small>Date</small>
               <strong>{confirmed.dateStr}</strong>
             </div>
             <div>
-              <div className="text-noir-400">Time</div>
+              <small>Time</small>
               <strong>{confirmed.timeStr}</strong>
             </div>
           </div>
-          <div className="mt-4 flex items-center justify-between border-t border-white/8 pt-3">
-            <span className="rounded-full bg-status-booked/15 px-3 py-1 text-[12px] font-bold text-status-booked">Confirmed</span>
-            <span className="font-mono text-[13px] text-noir-400">#{confirmed.ref}</span>
+          <div className="appt__foot">
+            <span className="chip chip--booked">Confirmed</span>
+            <span className="mono text-noir-400">#{confirmed.ref}</span>
           </div>
+        </div>
+        <div className="mt-7 flex flex-wrap justify-center gap-3">
+          <Link
+            href="/services#book"
+            className="inline-flex h-12 items-center rounded-full border border-white/20 px-6 text-sm font-bold uppercase hover:bg-white/6"
+          >
+            Book another
+          </Link>
+          <Link
+            href="/shop"
+            className="inline-flex h-12 items-center rounded-full bg-violet-500 px-6 text-sm font-bold text-white uppercase hover:bg-violet-600"
+          >
+            Shop products
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl border border-white/10 p-6 sm:p-8">
-      <label className="mb-4 block">
-        <span className="mb-2 block text-sm font-bold">Choose a service</span>
-        <div className="flex flex-col gap-2">
+    <form onSubmit={handleSubmit} className="book__form" noValidate>
+      <div className="field">
+        <label>Choose a service</label>
+        <div className="svc-pick" role="radiogroup">
           {services.map((s) => (
             <button
               key={s.id}
               type="button"
-              onClick={() => handlePick(s.id)}
+              onClick={() => setSelectedId(s.id)}
               role="radio"
               aria-checked={selected?.id === s.id}
-              className={`flex items-center gap-3 rounded-xl border p-3 text-left ${
-                selected?.id === s.id ? "border-violet-500 bg-violet-500/10" : "border-white/12"
-              }`}
+              className={`svc-opt ${selected?.id === s.id ? "is-active" : ""}`}
             >
-              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-white/8 text-violet-300">
+              <span className="ic">
                 <Icon name={isIconName(s.icon) ? s.icon : "sparkle"} className="size-4" />
               </span>
-              <span className="flex-1">
-                <strong className="block text-sm">{s.name}</strong>
-                <span className="text-[12px] text-noir-400">
+              <span>
+                <strong>{s.name}</strong>
+                <small>
                   {durationLabel(s.duration_mins)} · <MoneyLabel ngn={s.price} />
-                </span>
+                </small>
               </span>
+              <span className="radio" />
             </button>
           ))}
         </div>
-      </label>
+      </div>
 
-      <label className="mb-4 block">
-        <span className="mb-2 block text-sm font-bold">Where</span>
-        <div className="inline-flex rounded-full border border-white/16 p-1">
-          <button type="button" onClick={() => setWhere("studio")} className={`rounded-full px-4 py-2 text-sm ${where === "studio" ? "bg-violet-500 text-white" : "text-noir-300"}`}>
+      <div className="field">
+        <label>Where</label>
+        <div className="seg" role="radiogroup">
+          <button type="button" onClick={() => setWhere("studio")} className={where === "studio" ? "is-active" : ""}>
             Salon
           </button>
           <button
             type="button"
             onClick={() => setWhere("home_service")}
-            className={`rounded-full px-4 py-2 text-sm ${where === "home_service" ? "bg-violet-500 text-white" : "text-noir-300"}`}
+            className={where === "home_service" ? "is-active" : ""}
           >
             Home service
           </button>
         </div>
-      </label>
+      </div>
 
-      <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="text-sm">
-          Date
+      <div className="row2">
+        <div className="field">
+          <label htmlFor="b-date">Date</label>
           <input
+            id="b-date"
+            className="input"
             type="date"
             required
             min={isoToday()}
@@ -161,70 +197,81 @@ export function BookingForm({ services, preselectId }: { services: Service[]; pr
               setDate(e.target.value);
               setSlot(null);
             }}
-            className="mt-1.5 h-12 w-full rounded-lg border border-white/16 bg-transparent px-3.5"
           />
-        </label>
-        <label className="text-sm">
-          Artist
-          <select className="mt-1.5 h-12 w-full rounded-lg border border-white/16 bg-transparent px-3.5">
+        </div>
+        <div className="field">
+          <label htmlFor="b-artist">Artist</label>
+          <select id="b-artist" className="select">
             <option>Any available artist</option>
             <option>Helen O. Adetunbi</option>
           </select>
-        </label>
+        </div>
       </div>
 
-      <div className="mb-4">
-        <span className="mb-2 block text-sm font-bold">Time</span>
-        <div className="grid grid-cols-4 gap-2">
+      <div className={`field ${slotInvalid ? "is-invalid" : ""}`}>
+        <label>Time</label>
+        <div className="slots">
           {TIMES.map((t) => (
             <button
               key={t}
               type="button"
               disabled={disabledSlots.has(t)}
-              onClick={() => setSlot(t)}
-              className={`h-10 rounded-lg border text-sm disabled:opacity-30 ${
-                slot === t ? "border-violet-500 bg-violet-500 text-white" : "border-white/16"
-              }`}
+              onClick={() => {
+                setSlot(t);
+                setSlotInvalid(false);
+              }}
+              className={slot === t ? "is-active" : ""}
             >
               {t}
             </button>
           ))}
         </div>
+        <span className="err">Choose a time slot.</span>
       </div>
 
-      <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="text-sm">
-          Full name
+      <div className="row2">
+        <div className="field">
+          <label htmlFor="b-name">Full name</label>
           <input
+            id="b-name"
+            className="input"
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Adaeze O."
             autoComplete="name"
-            className="mt-1.5 h-12 w-full rounded-lg border border-white/16 bg-transparent px-3.5"
           />
-        </label>
-        <label className="text-sm">
-          Phone / WhatsApp
+        </div>
+        <div className="field">
+          <label htmlFor="b-phone">Phone / WhatsApp</label>
           <input
+            id="b-phone"
+            className="input"
             required
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+234 000 000 0000"
             autoComplete="tel"
-            className="mt-1.5 h-12 w-full rounded-lg border border-white/16 bg-transparent px-3.5"
           />
-        </label>
+        </div>
       </div>
 
-      {error && <p className="mb-4 text-sm font-medium text-status-cancelled">{error}</p>}
+      {error && <p className="text-sm font-medium text-status-cancelled">{error}</p>}
 
       <button
         type="submit"
         disabled={submitting || !selected}
-        className="flex h-14 w-full items-center justify-center rounded-full bg-violet-500 text-sm font-bold text-white uppercase disabled:opacity-50"
+        className="h-14 w-full rounded-full bg-violet-500 text-[15px] font-bold text-white uppercase transition-colors hover:bg-violet-600 disabled:opacity-50"
       >
-        {submitting ? "Booking…" : selected ? <>Continue · <MoneyLabel ngn={selected.price} /></> : "Continue"}
+        {submitting ? (
+          "Booking…"
+        ) : selected ? (
+          <>
+            Continue · <MoneyLabel ngn={selected.price} />
+          </>
+        ) : (
+          "Continue"
+        )}
       </button>
     </form>
   );

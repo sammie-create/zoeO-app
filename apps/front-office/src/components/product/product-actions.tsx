@@ -17,22 +17,34 @@ export function ProductActions({ productId, productName, maxQty }: { productId: 
   }
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row">
-      <div className="flex h-14 items-center rounded-full border border-white/16">
-        <button type="button" onClick={() => setQty((q) => clamp(q - 1))} className="w-12 text-lg" aria-label="Decrease">
-          −
-        </button>
-        <input
-          type="number"
-          min={1}
-          max={99}
-          value={qty}
-          onChange={(e) => setQty(clamp(Number(e.target.value) || 1))}
-          aria-label="Quantity"
-          className="w-12 bg-transparent text-center outline-none"
-        />
-        <button type="button" onClick={() => setQty((q) => clamp(q + 1))} className="w-12 text-lg" aria-label="Increase">
-          +
+    <>
+      <div className="buy-row">
+        <div className="qty qty--pill">
+          <button type="button" onClick={() => setQty((q) => clamp(q - 1))} aria-label="Decrease">
+            -
+          </button>
+          <input
+            type="number"
+            min={1}
+            max={99}
+            value={qty}
+            onChange={(e) => setQty(clamp(Number(e.target.value) || 1))}
+            aria-label="Quantity"
+          />
+          <button type="button" onClick={() => setQty((q) => clamp(q + 1))} aria-label="Increase">
+            +
+          </button>
+        </div>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => {
+            add(productId, qty);
+            toast.success("Added to cart", { description: `${productName} × ${qty}` });
+          }}
+          className="h-[52px] flex-1 rounded-full bg-violet-500 text-[16px] font-bold text-white uppercase transition-colors hover:bg-violet-600 disabled:opacity-40"
+        >
+          Add to cart
         </button>
       </div>
       <button
@@ -40,24 +52,13 @@ export function ProductActions({ productId, productName, maxQty }: { productId: 
         disabled={disabled}
         onClick={() => {
           add(productId, qty);
-          toast.success("Added to cart", { description: `${productName} × ${qty}` });
-        }}
-        className="h-14 flex-1 rounded-full bg-violet-500 text-sm font-bold text-white uppercase transition-colors hover:bg-violet-600 disabled:opacity-40"
-      >
-        Add to cart
-      </button>
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() => {
-          add(productId, qty);
           router.push("/checkout");
         }}
-        className="h-14 rounded-full border border-white/24 px-6 text-sm font-bold uppercase hover:bg-white/6 disabled:opacity-40"
+        className="btn-buynow w-full disabled:opacity-40"
       >
         Buy it now
       </button>
-    </div>
+    </>
   );
 }
 
@@ -82,7 +83,6 @@ export function ShareButton({ productName }: { productName: string }) {
           toast.message("Copy this link", { description: window.location.href });
         }
       }}
-      className="inline-flex items-center gap-1.5 text-[13px] text-noir-300 hover:text-white"
     >
       <Icon name="share" className="size-4" /> Share product
     </button>

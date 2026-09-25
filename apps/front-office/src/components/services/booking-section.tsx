@@ -16,31 +16,33 @@ export function BookingSection({ services }: { services: Service[] }) {
   const preselect = searchParams.get("service") ?? undefined;
 
   return (
-    <section id="book" className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-      <div className="mx-auto grid max-w-[1280px] grid-cols-1 gap-12 lg:grid-cols-[.9fr_1.1fr]">
-        <div>
-          <Reveal as="span" className="block text-sm font-bold text-violet-400 uppercase">
+    <section id="book" className="px-4 py-[clamp(64px,9vw,120px)] sm:px-6 lg:px-8">
+      <div className="ed-book mx-auto max-w-[1280px]">
+        <div className="ed-book__aside">
+          <Reveal as="span" className="overline block text-[13px] font-bold tracking-[.02em] uppercase">
             Book an appointment
           </Reveal>
-          <Reveal as="h2" className="font-display mt-3 block text-3xl font-bold sm:text-4xl">Book your appointment in under a minute</Reveal>
-          <Reveal as="p" className="mt-4 text-noir-300">
+          <Reveal as="h2" className="ed-serif block">
+            Book your appointment in <em className="it not-italic">under a minute</em>
+          </Reveal>
+          <Reveal as="p">
             Deposit required for wig revamp and bridal makeup bookings. We&apos;ll confirm by phone or WhatsApp within
             the hour.
           </Reveal>
-          <ol className="mt-8 flex flex-col gap-5">
+          <ol className="ed-steps">
             {steps.map((s, i) => (
-              <Reveal key={s.n} delay={i * 80} as="li" className="flex gap-4">
-                <b className="font-display text-2xl text-violet-400">{s.n}</b>
+              <Reveal key={s.n} delay={i * 80} as="li">
+                <b>{s.n}</b>
                 <div>
-                  <strong className="block">{s.title}</strong>
-                  <span className="text-[13px] text-noir-400">{s.text}</span>
+                  <strong>{s.title}</strong>
+                  <span>{s.text}</span>
                 </div>
               </Reveal>
             ))}
           </ol>
         </div>
 
-        <Reveal delay={120}>
+        <Reveal delay={120} className="panel">
           <BookingForm services={services} preselectId={preselect} />
         </Reveal>
       </div>

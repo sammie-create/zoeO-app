@@ -6,6 +6,14 @@ import { ProductCard } from "@/components/shop/product-card";
 import { ProductActions, ShareButton } from "@/components/product/product-actions";
 import { careCopy, categoryLabels } from "@/lib/data";
 import { getProduct, getProducts } from "@/lib/queries";
+import type { ProductCategory } from "@zoeallure/supabase";
+
+const pdCategoryLabels: Record<ProductCategory, string> = {
+  hair: "Luxury Hair Care",
+  personal: "Personal Care",
+  nails: "Nail Artistry",
+  wigs: "Extensions & Wigs",
+};
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -17,83 +25,73 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const care = careCopy[product.category];
 
   return (
-    <main className="mx-auto max-w-[1280px] px-4 py-10 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_.93fr]">
-        <div className="overflow-hidden rounded-2xl bg-noir-800">
+    <main className="mx-auto max-w-[calc(1280px_+_clamp(16px,5vw,80px)*2)] px-[clamp(16px,5vw,80px)] pt-14 pb-20">
+      <div className="pd grid grid-cols-1 gap-[clamp(32px,4vw,64px)] lg:grid-cols-[1fr_.93fr]">
+        <div className="aspect-[711/568] overflow-hidden rounded-[18px] bg-noir-800">
           {product.image_url ? (
             // eslint-disable-next-line @next/next/no-img-element -- Supabase Storage URL, no next/image loader configured
-            <img src={product.image_url} alt={product.name} className="aspect-square w-full object-cover" />
+            <img src={product.image_url} alt={product.name} className="size-full object-cover" />
           ) : (
-            <div className="aspect-square w-full bg-noir-700" />
+            <div className="size-full bg-noir-700" />
           )}
         </div>
 
-        <div>
-          <nav aria-label="Breadcrumb" className="mb-2 text-[13px] text-noir-400">
-            <Link href="/shop" className="hover:text-white">
-              Shop
-            </Link>{" "}
-            ›{" "}
-            <Link href={`/shop?cat=${product.category}`} className="hover:text-white">
-              {categoryLabels[product.category]}
-            </Link>
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <nav aria-label="Breadcrumb" className="crumbs">
+            <Link href="/shop">Shop</Link> ›{" "}
+            <Link href={`/shop?cat=${product.category}`}>{categoryLabels[product.category]}</Link>
           </nav>
-          <span className="text-sm font-semibold text-violet-400 uppercase">{categoryLabels[product.category]}</span>
-          {product.brand && (
-            <div className="mt-1.5 text-[13px] font-semibold text-champagne-100 uppercase">{product.brand}</div>
-          )}
-          <h1 className="font-display mt-2 text-3xl font-bold sm:text-4xl">{product.name}</h1>
-          <div className="mt-3 text-2xl font-bold text-champagne-100">
+          <span className="text-[13px] font-bold tracking-[.02em] text-violet-400 uppercase">
+            {product.brand ? `${product.brand} ` : ""}
+            {pdCategoryLabels[product.category]}
+          </span>
+          <h1 className="pd__title">{product.name}</h1>
+          <div className="pd__price">
             <MoneyLabel ngn={product.price} decimals />
           </div>
-          {product.description && <p className="mt-4 leading-[1.7] text-noir-200">{product.description}</p>}
+          {product.description && <p className="pd__desc">{product.description}</p>}
 
-          <div className="mt-6 rounded-2xl border border-white/10 p-5">
-            <h4 className="mb-3 font-bold">Recommended care &amp; routine</h4>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="care">
+            <h4>Recommended care &amp; routine</h4>
+            <div className="care__cols">
               {care.map(([h, t]) => (
                 <div key={h}>
-                  <h6 className="mb-1 text-sm font-bold text-violet-300">{h}</h6>
-                  <p className="text-[13px] text-noir-300">{t}</p>
+                  <h6>{h}</h6>
+                  <p>{t}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="mt-6">
-            <ProductActions productId={product.id} productName={product.name} maxQty={product.stock_units} />
-          </div>
+          <ProductActions productId={product.id} productName={product.name} maxQty={product.stock_units} />
 
-          <div className="mt-5 flex flex-col gap-2 text-sm text-noir-300">
-            <div className="flex items-center gap-2">
-              <span className="size-2 animate-pulse rounded-full bg-status-booked" />
+          <div className="stock">
+            <div>
+              <span className="pulse-dot size-2 animate-pulse rounded-full" />
               {product.stock_units > 0 ? `${product.stock_units} in stock — ships out tomorrow` : "Currently out of stock"}
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="muted">
               <Icon name="store" className="size-4" /> Store pickup available at ZoeO Allure Boutique, Lagos
             </div>
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-4 border-t border-white/8 pt-5 text-[13px] text-noir-300">
-            <span className="inline-flex items-center gap-1.5">
+          <div className="badges">
+            <span>
               <Icon name="truck" className="size-4" /> Fast Delivery
             </span>
-            <span className="inline-flex items-center gap-1.5">
+            <span>
               <Icon name="shield" className="size-4" /> 30 Days Return
             </span>
-            <span className="inline-flex items-center gap-1.5">
+            <span>
               <Icon name="checkCircle" className="size-4" /> 2 Year Warranty
             </span>
-            <span className="inline-flex items-center gap-1.5">
+            <span>
               <Icon name="leaf" className="size-4" /> 100% Organic
             </span>
           </div>
 
-          <div className="mt-5 flex items-center gap-5 border-t border-white/8 pt-5">
-            <Link
-              href={`/contact?topic=product&product=${encodeURIComponent(product.name)}`}
-              className="inline-flex items-center gap-1.5 text-[13px] text-noir-300 hover:text-white"
-            >
+          <div className="pd-links">
+            <Link href={`/contact?topic=product&product=${encodeURIComponent(product.name)}`}>
               <Icon name="help" className="size-4" /> Ask a question
             </Link>
             <ShareButton productName={product.name} />

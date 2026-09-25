@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export function CountUp({ value }: { value: string }) {
+export function CountUp({ value, from = 0 }: { value: string; from?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   const numeric = parseInt(value.replace(/\D/g, ""), 10);
-  const [display, setDisplay] = useState(Number.isNaN(numeric) ? value : "0");
+  const pad = value.replace(/\D/g, "").length;
+  const [display, setDisplay] = useState(Number.isNaN(numeric) ? value : String(from).padStart(pad, "0"));
 
   useEffect(() => {
     const el = ref.current;
@@ -24,7 +25,7 @@ export function CountUp({ value }: { value: string }) {
         function step(t: number) {
           const k = Math.min(1, (t - start) / duration);
           const eased = 1 - Math.pow(1 - k, 3);
-          setDisplay(String(Math.round(numeric * eased)));
+          setDisplay(String(Math.round(from + (numeric - from) * eased)).padStart(pad, "0"));
           if (k < 1) requestAnimationFrame(step);
           else setDisplay(value);
         }
@@ -34,7 +35,7 @@ export function CountUp({ value }: { value: string }) {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [numeric, value]);
+  }, [numeric, value, from, pad]);
 
   return <span ref={ref}>{display}</span>;
 }

@@ -15,6 +15,13 @@ export async function getProducts() {
   return data ?? [];
 }
 
+export async function getProductBrands() {
+  const supabase = await createClient();
+  const { data } = await supabase.from("products").select("brand").not("brand", "is", null);
+  const brands = Array.from(new Set((data ?? []).map((p) => p.brand).filter((b): b is string => !!b)));
+  return brands.sort();
+}
+
 export async function getProduct(id: string) {
   const supabase = await createClient();
   const { data } = await supabase.from("products").select("*").eq("id", id).single();

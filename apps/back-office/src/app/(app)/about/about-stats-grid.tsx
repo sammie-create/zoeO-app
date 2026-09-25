@@ -17,6 +17,8 @@ export function AboutStatsGrid({ stats }: { stats: Tables<"about_stats">[] }) {
   const [figure, setFigure] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [chip, setChip] = useState("");
+  const [countFrom, setCountFrom] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -24,6 +26,8 @@ export function AboutStatsGrid({ stats }: { stats: Tables<"about_stats">[] }) {
       setFigure(editing.figure);
       setTitle(editing.title);
       setDescription(editing.description);
+      setChip(editing.chip ?? "");
+      setCountFrom(editing.count_from != null ? String(editing.count_from) : "");
     }
   }, [editing]);
 
@@ -31,7 +35,13 @@ export function AboutStatsGrid({ stats }: { stats: Tables<"about_stats">[] }) {
     if (!editing) return;
     setSaving(true);
     try {
-      await updateAboutStat(editing.id, { figure, title, description });
+      await updateAboutStat(editing.id, {
+        figure,
+        title,
+        description,
+        chip: chip || null,
+        count_from: countFrom ? Number(countFrom) : null,
+      });
       toast.success("Stat updated");
       router.refresh();
       setEditing(null);
@@ -95,6 +105,31 @@ export function AboutStatsGrid({ stats }: { stats: Tables<"about_stats">[] }) {
                 rows={3}
                 className="w-full rounded-control border-noir-200 bg-noir-50 px-3.5 py-3 text-[13px] leading-relaxed focus-visible:border-violet-500 focus-visible:ring-violet-100"
               />
+            </div>
+            <div className="grid grid-cols-2 gap-3.5">
+              <div>
+                <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">
+                  Chip label <span className="font-medium text-noir-300 normal-case">(optional)</span>
+                </div>
+                <Input
+                  value={chip}
+                  onChange={(e) => setChip(e.target.value)}
+                  placeholder="e.g. HELicia"
+                  className="h-auto w-full rounded-control border-noir-200 bg-noir-50 px-3.5 py-3 text-sm font-semibold focus-visible:border-violet-500 focus-visible:ring-violet-100"
+                />
+              </div>
+              <div>
+                <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">
+                  Count from <span className="font-medium text-noir-300 normal-case">(optional)</span>
+                </div>
+                <Input
+                  type="number"
+                  value={countFrom}
+                  onChange={(e) => setCountFrom(e.target.value)}
+                  placeholder="e.g. 2000"
+                  className="h-auto w-full rounded-control border-noir-200 bg-noir-50 px-3.5 py-3 text-sm font-semibold focus-visible:border-violet-500 focus-visible:ring-violet-100"
+                />
+              </div>
             </div>
             <Button
               type="button"

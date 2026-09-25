@@ -14,6 +14,7 @@ const FREE_SHIP = 50000;
 const WRAP = 1500;
 const PROTECT = 600;
 const CODES: Record<string, number> = { ALLURE10: 0.1, CIRCLE15: 0.15 };
+const payLogos = ["Visa", "Mastercard", "Amex", "Paystack", "Apple Pay", "Google Pay"];
 
 export function CartClient({ products }: { products: Product[] }) {
   const { items, setQty, remove } = useCart();
@@ -24,6 +25,7 @@ export function CartClient({ products }: { products: Product[] }) {
   const [code, setCode] = useState("");
   const [appliedCode, setAppliedCode] = useState("");
   const [shipping, setShipping] = useState<number | null>(null);
+  const [deliveryDays, setDeliveryDays] = useState("");
   const [country, setCountry] = useState("Nigeria");
   const [province, setProvince] = useState("Lagos");
 
@@ -62,16 +64,21 @@ export function CartClient({ products }: { products: Product[] }) {
     let base = country !== "Nigeria" ? 25000 : province === "Lagos" ? 2500 : 4500;
     if (country === "Nigeria" && subtotal >= FREE_SHIP) base = 0;
     setShipping(base);
+    setDeliveryDays(
+      country !== "Nigeria" ? "5–9 business days" : province === "Lagos" ? "1–2 business days" : "2–4 business days",
+    );
   }
 
   return (
     <>
-      <main className="mx-auto max-w-[1280px] px-4 py-10 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-[calc(1280px_+_clamp(16px,5vw,80px)*2)] px-[clamp(16px,5vw,80px)] py-[clamp(64px,7vw,100px)]">
         <h1 className="font-display mb-8 text-3xl font-bold sm:text-4xl">Your Cart</h1>
 
         {rows.length === 0 ? (
-          <div className="flex flex-col items-center gap-4 rounded-2xl border border-white/10 py-20 text-center">
-            <Icon name="bag" className="size-10 text-noir-400" />
+          <div className="cart-empty flex flex-col items-center gap-4 py-20 text-center">
+            <span className="ic">
+              <Icon name="bag" className="size-10" />
+            </span>
             <h2 className="font-display text-2xl">Your cart is empty</h2>
             <p className="max-w-sm text-noir-400">Beauty, made easier — start with our bestsellers or book a service.</p>
             <div className="flex gap-3">
@@ -84,81 +91,66 @@ export function CartClient({ products }: { products: Product[] }) {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.6fr_1fr]">
-            <div className="flex flex-col gap-6">
-              <div className="rounded-2xl border border-white/10 p-5">
-                <div className="mb-4 hidden grid-cols-[1fr_160px_140px] text-sm text-noir-400 sm:grid">
+          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[1.6fr_1fr]">
+            <div className="flex flex-col gap-8">
+              <div className="panel">
+                <div className="cart-table__head">
                   <span>Product</span>
                   <span>Quantity</span>
                   <span>Total</span>
                 </div>
-                <div className="flex flex-col divide-y divide-white/8">
-                  {rows.map(({ item, product }) => (
-                    <div key={item.id} className="grid grid-cols-1 items-center gap-4 py-4 sm:grid-cols-[1fr_160px_140px]">
-                      <div className="flex items-center gap-4">
-                        <Link href={`/product/${product.id}`} className="size-16 shrink-0 overflow-hidden rounded-lg bg-noir-800">
-                          {product.image_url && (
-                            // eslint-disable-next-line @next/next/no-img-element -- Supabase Storage URL, no next/image loader configured
-                            <img src={product.image_url} alt="" className="size-full object-cover" />
-                          )}
+                {rows.map(({ item, product }) => (
+                  <div key={item.id} className="cart-row">
+                    <div className="cart-item">
+                      <Link href={`/product/${product.id}`}>
+                        {product.image_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element -- Supabase Storage URL, no next/image loader configured
+                          <img src={product.image_url} alt="" />
+                        ) : (
+                          <div className="size-[88px] rounded-xl bg-noir-700" />
+                        )}
+                      </Link>
+                      <div>
+                        {product.brand && <div className="brand-s">{product.brand}</div>}
+                        <Link href={`/product/${product.id}`} className="name">
+                          {product.name}
                         </Link>
-                        <div>
-                          <Link href={`/product/${product.id}`} className="font-display font-semibold">
-                            {product.name}
-                          </Link>
-                          <div className="mt-1 text-[13px] text-noir-400">
-                            <MoneyLabel ngn={product.price} decimals />
-                          </div>
+                        <div className="unit">
+                          <MoneyLabel ngn={product.price} decimals />
                         </div>
                       </div>
-                      <div className="flex h-10 w-fit items-center rounded-full border border-white/16">
-                        <button
-                          type="button"
-                          onClick={() => setQty(item.id, item.qty - 1)}
-                          className="w-9"
-                          aria-label="Decrease"
-                        >
-                          <Icon name="minus" className="mx-auto size-3.5" />
-                        </button>
-                        <input
-                          type="number"
-                          min={1}
-                          max={99}
-                          value={item.qty}
-                          onChange={(e) => setQty(item.id, Number(e.target.value) || 1)}
-                          aria-label="Quantity"
-                          className="w-10 bg-transparent text-center outline-none"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setQty(item.id, item.qty + 1)}
-                          className="w-9"
-                          aria-label="Increase"
-                        >
-                          <Icon name="plus" className="mx-auto size-3.5" />
-                        </button>
-                      </div>
-                      <div className="flex items-center justify-between gap-3 sm:justify-end">
-                        <span className="font-semibold">
-                          <MoneyLabel ngn={product.price * item.qty} decimals />
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => remove(item.id)}
-                          aria-label={`Remove ${product.name}`}
-                          className="text-noir-400 hover:text-status-cancelled"
-                        >
-                          <Icon name="trash" className="size-4" />
-                        </button>
-                      </div>
                     </div>
-                  ))}
-                </div>
+                    <div className="qty qty--sm">
+                      <button type="button" onClick={() => setQty(item.id, item.qty - 1)} aria-label="Decrease">
+                        <Icon name="minus" className="mx-auto size-3.5" />
+                      </button>
+                      <input
+                        type="number"
+                        min={1}
+                        max={99}
+                        value={item.qty}
+                        onChange={(e) => setQty(item.id, Number(e.target.value) || 1)}
+                        aria-label="Quantity"
+                      />
+                      <button type="button" onClick={() => setQty(item.id, item.qty + 1)} aria-label="Increase">
+                        <Icon name="plus" className="mx-auto size-3.5" />
+                      </button>
+                    </div>
+                    <div className="cart-row__total">
+                      <span>
+                        <MoneyLabel ngn={product.price * item.qty} decimals />
+                      </span>
+                      <button type="button" onClick={() => remove(item.id)} aria-label={`Remove ${product.name}`} className="trash">
+                        <Icon name="trash" className="size-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              <div className="rounded-2xl border border-white/10 p-5">
-                <h3 className="mb-4 font-bold">Estimate shipping rates</h3>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="panel ship-est">
+                <h3>Estimate shipping rates</h3>
+                <div className="ship-est__grid">
                   <select value={country} onChange={(e) => setCountry(e.target.value)} className="h-11 rounded-lg border border-white/16 bg-transparent px-3">
                     <option>Nigeria</option>
                     <option>Ghana</option>
@@ -175,30 +167,30 @@ export function CartClient({ products }: { products: Product[] }) {
                   </select>
                   <input defaultValue="100001" className="h-11 rounded-lg border border-white/16 bg-transparent px-3" />
                 </div>
-                <button type="button" onClick={estimateShipping} className="mt-4 h-11 rounded-full bg-violet-500 px-5 text-sm font-bold text-white uppercase">
+                <button type="button" onClick={estimateShipping} className="h-11 rounded-full bg-violet-500 px-5 text-sm font-bold text-white uppercase">
                   Estimate
                 </button>
                 {shipping !== null && (
-                  <p className="mt-3 text-sm text-noir-300">
+                  <p className="ship-result">
                     <Icon name="truck" className="mr-1.5 inline size-4" />
                     Standard delivery to {province === "Other" ? country : `${province}, ${country}`}:{" "}
-                    <strong>{shipping === 0 ? "Free" : money(shipping, { decimals: true })}</strong>
+                    <strong>{shipping === 0 ? "Free" : money(shipping, { decimals: true })}</strong> · {deliveryDays}
                   </p>
                 )}
               </div>
             </div>
 
-            <aside className="h-fit rounded-2xl border border-white/10 p-5">
-              <div className="rounded-xl bg-violet-500/10 p-4">
-                <strong className="flex items-center gap-1.5 text-sm">
+            <aside className="panel summary">
+              <div className="promo-box">
+                <strong>
                   <Icon name="tag" className="size-4" /> Special Allure Promo
                 </strong>
-                <p className="mt-1 text-[13px] text-noir-300">
+                <p>
                   Use code <b>ALLURE10</b> for 10% off your first luxury care box.
                 </p>
               </div>
 
-              <p className="mt-4 text-sm">
+              <p className="text-sm">
                 {freeLeft > 0 ? (
                   <>
                     You are <strong>{money(freeLeft, { decimals: true })}</strong> away from free shipping!
@@ -207,14 +199,11 @@ export function CartClient({ products }: { products: Product[] }) {
                   <strong className="text-status-booked">You&apos;ve unlocked free shipping!</strong>
                 )}
               </p>
-              <div className="mt-2 h-1.5 rounded-full bg-white/10">
-                <div
-                  className="h-full rounded-full bg-violet-500 transition-all"
-                  style={{ width: `${Math.min(100, (subtotal / FREE_SHIP) * 100)}%` }}
-                />
+              <div className="progress">
+                <i style={{ width: `${Math.min(100, (subtotal / FREE_SHIP) * 100)}%` }} />
               </div>
 
-              <label className="mt-5 block text-sm">
+              <label className="block text-sm">
                 Add order note
                 <textarea
                   value={note}
@@ -225,90 +214,89 @@ export function CartClient({ products }: { products: Product[] }) {
                 />
               </label>
 
-              <label className="mt-4 flex items-center gap-2 text-sm text-noir-300">
+              <label className="mt-4.5 flex items-center gap-2 text-sm text-noir-300">
                 <input type="checkbox" checked={wrap} onChange={(e) => setWrap(e.target.checked)} />
                 For {money(WRAP, { decimals: true })}, please wrap the products in this order
               </label>
 
-              <div className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 p-3">
+              <div className="protect">
                 <Icon name="shield" className="size-6 text-violet-300" />
-                <div className="flex-1">
-                  <strong className="block text-sm">Shipping Protection</strong>
-                  <span className="text-[12px] text-noir-400">Guarantees order safety from theft or damage</span>
+                <div>
+                  <strong>Shipping Protection</strong>
+                  <small>Guarantees order safety from theft or damage</small>
                 </div>
-                <span className="text-sm font-semibold">{money(PROTECT, { decimals: true })}</span>
+                <span className="amt">{money(PROTECT, { decimals: true })}</span>
                 <button
                   type="button"
                   role="switch"
                   aria-checked={protect}
                   aria-label="Shipping protection"
                   onClick={() => setProtect((v) => !v)}
-                  className={`h-6 w-11 rounded-full transition-colors ${protect ? "bg-violet-500" : "bg-white/16"}`}
-                >
-                  <span className={`block size-5 rounded-full bg-white transition-transform ${protect ? "translate-x-5" : "translate-x-0.5"}`} />
-                </button>
+                  className={`toggle ${protect ? "is-on" : ""}`}
+                />
               </div>
 
-              <form onSubmit={applyCode} className="mt-4 flex gap-2">
-                <input
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="Discount code"
-                  className="h-11 flex-1 rounded-full border border-white/16 bg-transparent px-4 text-sm"
-                />
-                <button type="submit" className="h-11 rounded-full bg-violet-500 px-5 text-sm font-bold text-white">
-                  Apply
-                </button>
-              </form>
+              <label className="block text-sm">
+                Discount
+                <form onSubmit={applyCode} className="discount-form">
+                  <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="Discount code" />
+                  <button type="submit">Apply</button>
+                </form>
+              </label>
 
-              <div className="mt-5 flex flex-col gap-2 border-t border-white/8 pt-4 text-sm">
-                <div className="flex justify-between">
+              <div className="totals">
+                <div className="sum-row">
                   <span>Items</span>
                   <span>{money(subtotal, { decimals: true })}</span>
                 </div>
                 {discount > 0 && (
-                  <div className="flex justify-between text-status-booked">
+                  <div className="sum-row">
                     <span>Discount ({appliedCode})</span>
-                    <span>−{money(discount, { decimals: true })}</span>
+                    <span className="text-status-booked">−{money(discount, { decimals: true })}</span>
                   </div>
                 )}
                 {extras > 0 && (
-                  <div className="flex justify-between">
+                  <div className="sum-row">
                     <span>Gift wrap &amp; protection</span>
                     <span>{money(extras, { decimals: true })}</span>
                   </div>
                 )}
                 {shipping !== null && (
-                  <div className="flex justify-between">
+                  <div className="sum-row">
                     <span>Shipping (est.)</span>
                     <span>{shipping === 0 ? "Free" : money(shipping, { decimals: true })}</span>
                   </div>
                 )}
-                <div className="flex justify-between border-t border-white/8 pt-2 text-base font-bold">
+                <div className="sum-row grand">
                   <span>Subtotal</span>
-                  <span>{money(grandTotal, { decimals: true })}</span>
+                  <strong>{money(grandTotal, { decimals: true })}</strong>
                 </div>
               </div>
 
-              <p className="mt-3 text-[12px] text-noir-500">Taxes and shipping calculated at checkout</p>
-              <Link
-                href="/checkout"
-                className="mt-4 flex h-14 items-center justify-center rounded-full bg-violet-500 text-sm font-bold text-white uppercase"
-              >
+              <p className="fine">Taxes and shipping calculated at checkout</p>
+              <Link href="/checkout" className="btn-checkout flex items-center justify-center rounded-full bg-violet-500 font-bold text-white">
                 Check out
               </Link>
+              <div className="pay-logos">
+                {payLogos.map((p) => (
+                  <span key={p}>{p}</span>
+                ))}
+              </div>
             </aside>
           </div>
         )}
       </main>
 
       {suggestions.length > 0 && (
-        <section className="mx-auto max-w-[1280px] px-4 py-16 sm:px-6 lg:px-8">
-          <h2 className="font-display mb-6 text-2xl font-bold">You may also like</h2>
-          <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
-            {suggestions.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
+        <section className="ymal border-t border-white/8 px-[clamp(16px,5vw,80px)] py-20">
+          <div className="mx-auto max-w-[calc(1280px_+_clamp(16px,5vw,80px)*2)]">
+            <h2 className="font-display mb-3 text-2xl font-bold">You may also like</h2>
+            <div className="rule" />
+            <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+              {suggestions.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
           </div>
         </section>
       )}
