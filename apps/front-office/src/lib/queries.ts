@@ -76,9 +76,11 @@ export async function getPost(id: string) {
   return data;
 }
 
-export async function getFaqs() {
+export async function getFaqs(page?: "services" | "contact") {
   const supabase = await createClient();
-  const { data } = await supabase.from("faqs").select("*").order("sort_order", { ascending: true });
+  let query = supabase.from("faqs").select("*").order("sort_order", { ascending: true });
+  if (page) query = query.or(`page.eq.${page},page.is.null`);
+  const { data } = await query;
   return data ?? [];
 }
 

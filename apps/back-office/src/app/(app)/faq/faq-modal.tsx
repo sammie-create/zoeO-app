@@ -24,12 +24,14 @@ export function FaqModal({
 
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
+  const [page, setPage] = useState<"services" | "contact" | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (open) {
       setQuestion(faq?.question ?? "");
       setAnswer(faq?.answer ?? "");
+      setPage(faq?.page ?? null);
     }
   }, [open, faq]);
 
@@ -37,10 +39,10 @@ export function FaqModal({
     setSaving(true);
     try {
       if (isEdit) {
-        await updateFaq(faq.id, { question, answer, status });
+        await updateFaq(faq.id, { question, answer, page, status });
         toast.success("Question updated");
       } else {
-        await createFaq({ question, answer, status, sort_order: 0 });
+        await createFaq({ question, answer, page, status, sort_order: 0 });
         toast.success(status === "published" ? "Question published" : "Saved as draft");
       }
       router.refresh();
@@ -78,6 +80,33 @@ export function FaqModal({
               rows={4}
               className="w-full rounded-control border-noir-200 bg-noir-50 px-3.5 py-3 text-[13px] leading-relaxed focus-visible:border-violet-500 focus-visible:ring-violet-100"
             />
+          </div>
+          <div>
+            <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">
+              Shown on <span className="font-medium text-noir-300 normal-case">(all pages if unset)</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { value: null, label: "All pages" },
+                { value: "services" as const, label: "Services" },
+                { value: "contact" as const, label: "Contact" },
+              ].map((opt) => {
+                const active = page === opt.value;
+                return (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    key={opt.label}
+                    onClick={() => setPage(opt.value)}
+                    className={`h-auto rounded-full border px-4 py-2.5 text-[12.5px] font-bold ${
+                      active ? "border-transparent bg-violet-500 text-white" : "border-noir-200 text-noir-800"
+                    }`}
+                  >
+                    {opt.label}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
           <div className="mt-1 flex gap-2.5">
             <Button

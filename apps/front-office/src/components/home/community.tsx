@@ -28,7 +28,7 @@ export function Community() {
           as="h2"
           className="font-display mt-[26px] mb-[22px] block text-[clamp(38px,5.6vw,76px)] leading-[1.02] font-bold"
         >
-          Begin your <em className="text-violet-300 not-italic">beauty</em> in one place
+          Begin your <em className="text-violet-300 italic">beauty</em> in one place
         </Reveal>
         <Reveal as="p" className="mx-auto mb-13 max-w-[600px] text-[17px] text-white">
           Members save 15% on every visit. Get priority booking and early access to signature product drops.

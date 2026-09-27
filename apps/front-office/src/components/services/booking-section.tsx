@@ -19,11 +19,11 @@ export function BookingSection({ services }: { services: Service[] }) {
     <section id="book" className="px-4 py-[clamp(64px,9vw,120px)] sm:px-6 lg:px-8">
       <div className="ed-book mx-auto max-w-[1280px]">
         <div className="ed-book__aside">
-          <Reveal as="span" className="overline block text-[13px] font-bold tracking-[.02em] uppercase">
+          <Reveal as="span" className="block text-violet-400 text-[13px] font-bold tracking-[.02em] uppercase">
             Book an appointment
           </Reveal>
           <Reveal as="h2" className="ed-serif block">
-            Book your appointment in <em className="it not-italic">under a minute</em>
+            Book your appointment in <em className="it">under a minute</em>
           </Reveal>
           <Reveal as="p">
             Deposit required for wig revamp and bridal makeup bookings. We&apos;ll confirm by phone or WhatsApp within

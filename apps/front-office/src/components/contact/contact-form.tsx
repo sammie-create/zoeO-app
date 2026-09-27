@@ -26,15 +26,23 @@ export function ContactForm() {
   const [phone, setPhone] = useState("");
   const [topic, setTopic] = useState(topics.some((t) => t.value === initialTopic) ? initialTopic! : "general");
   const [message, setMessage] = useState(product ? `Hi, I have a question about ${product}: ` : "");
-  const [error, setError] = useState<string | null>(null);
+  const [newsletter, setNewsletter] = useState(false);
+  const [invalid, setInvalid] = useState<Set<string>>(new Set());
   const [sent, setSent] = useState<{ firstName: string; topicLabel: string; email: string } | null>(null);
+
+  const messagePlaceholder =
+    topic === "exhibition"
+      ? "Tell us your name, how many guests, and anything you would love to see at the Beauty Lounge Exhibition."
+      : "How can we help?";
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setError(null);
-    if (name.trim().length < 2) return setError("Please enter your name.");
-    if (!/\S+@\S+\.\S+/.test(email)) return setError("Enter a valid email address.");
-    if (message.trim().length < 10) return setError("Tell us a little more (10+ characters).");
+    const next = new Set<string>();
+    if (name.trim().length < 2) next.add("name");
+    if (!/\S+@\S+\.\S+/.test(email)) next.add("email");
+    if (message.trim().length < 10) next.add("message");
+    setInvalid(next);
+    if (next.size > 0) return;
 
     const topicLabel = topics.find((t) => t.value === topic)?.label ?? "General enquiry";
     setSent({ firstName: name.trim().split(" ")[0], topicLabel, email });
@@ -43,21 +51,27 @@ export function ContactForm() {
 
   if (sent) {
     return (
-      <div className="rounded-2xl border border-white/10 p-8 text-center">
-        <div className="mx-auto mb-4 grid size-14 place-items-center rounded-full bg-status-booked/15 text-status-booked">
-          <Icon name="check" className="size-6" />
-        </div>
+      <div className="confirm">
+        <span className="ic">
+          <Icon name="check" className="size-7" />
+        </span>
         <h2 className="font-display text-2xl">Message sent</h2>
-        <p className="mx-auto mt-2 max-w-sm text-noir-300">
+        <p className="mx-auto mt-2.5 max-w-sm text-noir-300">
           Thank you, {sent.firstName}. We&apos;ve received your note about{" "}
-          <strong className="text-white">{sent.topicLabel.toLowerCase()}</strong> and will reply to {sent.email} within
-          one business day.
+          <strong className="text-white">{sent.topicLabel.toLowerCase()}</strong> and will reply to {sent.email}{" "}
+          within one business day.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link href="/shop" className="h-11 rounded-full border border-white/20 px-5 text-sm font-bold uppercase leading-[2.75rem]">
+          <Link
+            href="/shop"
+            className="inline-flex h-11 items-center rounded-full border border-white/20 px-5 text-sm font-bold uppercase hover:bg-white/6"
+          >
             Continue shopping
           </Link>
-          <Link href="/services#book" className="h-11 rounded-full bg-violet-500 px-5 text-sm font-bold text-white uppercase leading-[2.75rem]">
+          <Link
+            href="/services#book"
+            className="inline-flex h-11 items-center rounded-full bg-violet-500 px-5 text-sm font-bold text-white uppercase hover:bg-violet-600"
+          >
             Book a service
           </Link>
         </div>
@@ -66,73 +80,82 @@ export function ContactForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-white/10 p-6 sm:p-8">
-      <h2 className="mb-1.5 font-bold">Send a message</h2>
-      <p className="mb-6 text-sm text-noir-400">We reply within one business day.</p>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <label className="text-sm">
-            Full name
+    <>
+      <h2 className="h2 mb-2">Send a message</h2>
+      <p className="mb-7 text-sm text-noir-400">We reply within one business day.</p>
+      <form onSubmit={handleSubmit} className="book__form" noValidate>
+        <div className="row2">
+          <div className={`field ${invalid.has("name") ? "is-invalid" : ""}`}>
+            <label htmlFor="c-name">Full name</label>
             <input
+              id="c-name"
+              className="input"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Adaeze O."
               autoComplete="name"
-              className="mt-1.5 h-12 w-full rounded-lg border border-white/16 bg-transparent px-3.5"
             />
-          </label>
-          <label className="text-sm">
-            Email
+            <span className="err">Please enter your name.</span>
+          </div>
+          <div className={`field ${invalid.has("email") ? "is-invalid" : ""}`}>
+            <label htmlFor="c-email">Email</label>
             <input
+              id="c-email"
+              className="input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               autoComplete="email"
-              className="mt-1.5 h-12 w-full rounded-lg border border-white/16 bg-transparent px-3.5"
             />
-          </label>
+            <span className="err">Enter a valid email address.</span>
+          </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <label className="text-sm">
-            Phone (optional)
+        <div className="row2">
+          <div className="field">
+            <label htmlFor="c-phone">Phone (optional)</label>
             <input
+              id="c-phone"
+              className="input"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+234 000 000 0000"
               autoComplete="tel"
-              className="mt-1.5 h-12 w-full rounded-lg border border-white/16 bg-transparent px-3.5"
             />
-          </label>
-          <label className="text-sm">
-            Topic
-            <select value={topic} onChange={(e) => setTopic(e.target.value)} className="mt-1.5 h-12 w-full rounded-lg border border-white/16 bg-transparent px-3.5">
+          </div>
+          <div className="field">
+            <label htmlFor="c-topic">Topic</label>
+            <select id="c-topic" className="select" value={topic} onChange={(e) => setTopic(e.target.value)}>
               {topics.map((t) => (
                 <option key={t.value} value={t.value}>
                   {t.label}
                 </option>
               ))}
             </select>
-          </label>
+          </div>
         </div>
-        <label className="text-sm">
-          Message
+        <div className={`field ${invalid.has("message") ? "is-invalid" : ""}`}>
+          <label htmlFor="c-msg">Message</label>
           <textarea
+            id="c-msg"
+            className="textarea"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="How can we help?"
-            rows={4}
-            className="mt-1.5 w-full rounded-lg border border-white/16 bg-transparent p-3.5"
+            placeholder={messagePlaceholder}
           />
+          <span className="err">Tell us a little more (10+ characters).</span>
+        </div>
+        <label className="check">
+          <input type="checkbox" checked={newsletter} onChange={(e) => setNewsletter(e.target.checked)} /> Send me
+          exclusive offers and product previews
         </label>
-        <label className="flex items-center gap-2 text-sm text-noir-300">
-          <input type="checkbox" /> Send me exclusive offers and product previews
-        </label>
-        {error && <p className="text-sm font-medium text-status-cancelled">{error}</p>}
-        <button type="submit" className="h-14 rounded-full bg-violet-500 text-sm font-bold text-white uppercase">
+        <button
+          type="submit"
+          className="h-14 rounded-full bg-violet-500 text-[15px] font-bold text-white uppercase transition-colors hover:bg-violet-600"
+        >
           Send message
         </button>
       </form>
-    </div>
+    </>
   );
 }

@@ -51,7 +51,7 @@ export default async function AboutPage() {
           </Reveal>
           <div className="about-hero__row">
             <Reveal as="h1" className="font-display block text-[clamp(36px,4.2vw,62px)] leading-[1.12] font-bold">
-              We are not just one thing — and <em className="text-violet-300 not-italic">that&apos;s the point</em>
+              We are not just one thing — and <em className="text-violet-300 italic">that&apos;s the point</em>
             </Reveal>
             <Reveal as="p" delay={400}>
               Delivering high-end products and exceptional aesthetic experiences harmoniously. Beauty should never
@@ -171,13 +171,13 @@ export default async function AboutPage() {
       </section>
 
       <section id="story" className="ed-light story2">
-        <div className="story2__head mx-auto max-w-[1280px] px-[clamp(16px,5vw,80px)]">
+        <div className="story2__head mx-auto px-[clamp(16px,5vw,80px)]">
           <div>
-            <Reveal as="span" className="overline block text-[13px] font-bold tracking-[.02em] uppercase">
+            <Reveal as="span" className="block text-[13px] font-semibold tracking-[.18em] text-violet-400 uppercase">
               Our story
             </Reveal>
             <Reveal as="h2" className="ed-serif block">
-              How we got here — <em className="it not-italic">one chapter at a time.</em>
+              How we got here — <em className="it">one chapter at a time.</em>
             </Reveal>
           </div>
           <Reveal as="p">
@@ -212,7 +212,7 @@ export default async function AboutPage() {
         <div className="mx-auto max-w-[1280px] px-[clamp(16px,5vw,80px)]">
           <div className="dual__head">
             <div>
-              <Reveal as="span" className="overline block text-[13px] font-bold tracking-[.02em] uppercase">
+              <Reveal as="span" className="block text-[13px] font-semibold tracking-[.18em] text-violet-400 uppercase">
                 Our dual passion
               </Reveal>
               <Reveal as="h2" className="caps-display block">
@@ -354,7 +354,7 @@ export default async function AboutPage() {
             </div>
           </Reveal>
           <div>
-            <Reveal as="span" className="overline block text-[13px] font-bold tracking-[.02em] text-champagne-300 uppercase">
+            <Reveal as="span" className="block text-[13px] font-semibold tracking-[.18em] text-champagne-100 uppercase">
               The artist behind it all
             </Reveal>
             <Reveal as="h2" className="caps-display block">
