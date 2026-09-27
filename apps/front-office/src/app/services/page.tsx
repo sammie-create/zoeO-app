@@ -37,7 +37,7 @@ function Marquee({ words, reverse = false }: { words: string[]; reverse?: boolea
         {Array.from({ length: 4 }).flatMap((_, i) =>
           words.map((w, wi) => (
             <span key={`${i}-${wi}`}>
-              {wi === words.length - 1 ? <em className="it not-italic">{w}</em> : w}
+              {wi === words.length - 1 ? <em className="it">{w}</em> : w}
             </span>
           )),
         )}
@@ -57,7 +57,11 @@ function SmallMarquee() {
 }
 
 export default async function ServicesPage() {
-  const [services, testimonials, faqItems] = await Promise.all([getServices(), getTestimonials(), getFaqs()]);
+  const [services, testimonials, faqItems] = await Promise.all([
+    getServices(),
+    getTestimonials(),
+    getFaqs("services"),
+  ]);
 
   const bridalService = services.find((s) => s.category === "Bridal") ?? services[0];
   const cheapest = services.reduce<typeof services[number] | undefined>(
@@ -74,14 +78,14 @@ export default async function ServicesPage() {
           <Reveal
             variant="fade"
             as="span"
-            className="overline overline--wide inline-flex items-center gap-2 text-[13px] font-semibold tracking-[.18em] uppercase"
+            className="text-violet-400 inline-flex items-center gap-2 text-[13px] font-semibold tracking-[.18em] uppercase"
           >
             <span className="size-1.5 rounded-full bg-current" />
             Now booking · Lagos
           </Reveal>
           <Reveal as="h1" className="ed-serif block">
             Beauty, made easier. <br />
-            <em className="it not-italic">All in one place.</em>
+            <em className="it">All in one place.</em>
           </Reveal>
           <Reveal as="p" delay={300}>
             Wigs, bridal glam, gele, lashes and nails — handled by one trusted team, so you spend less time
@@ -162,7 +166,7 @@ export default async function ServicesPage() {
           </Reveal>
           <div className="ed-feature__row">
             <Reveal as="h2" className="ed-serif block">
-              The Allure <em className="it not-italic">Menu.</em>
+              The Allure <em className="it">Menu.</em>
             </Reveal>
             <Reveal as="p">
               Every service is performed by artists trained across techniques, so your look is customised to your
@@ -176,14 +180,14 @@ export default async function ServicesPage() {
       <SmallMarquee />
 
       <section id="menu" className="ed-dark">
-        <div className="mx-auto max-w-[1280px] px-[clamp(16px,5vw,80px)] pt-[clamp(40px,5vw,72px)] pb-[clamp(64px,8vw,110px)]">
+        <div className="mx-auto max-w-[1380px] px-[clamp(16px,5vw,80px)] pt-[clamp(40px,5vw,72px)] pb-[clamp(64px,8vw,110px)]">
           <div className="section-head">
             <div>
-              <Reveal as="span" className="overline block text-[13px] font-bold tracking-[.02em] uppercase">
+              <Reveal as="span" className=" block text-[13px] font-bold tracking-[.02em] uppercase">
                 Premium in-salon &amp; home service
               </Reveal>
               <Reveal as="h2" className="h1 ed-serif mt-3.5 block">
-                Choose your <em className="it not-italic">service</em>
+                Choose your <em className="it">service</em>
               </Reveal>
             </div>
             <Reveal as="span" className="avail">
@@ -199,7 +203,7 @@ export default async function ServicesPage() {
         <div className="ed-block ed-block--petal">
           <h3>
             ZoeO is perfect for you <br />
-            <em className="it not-italic">if you&apos;re:</em>
+            <em className="it">if you&apos;re:</em>
           </h3>
           <ul>
             {forYouPoints.map((p, i) => (
@@ -220,7 +224,7 @@ export default async function ServicesPage() {
         <div className="ed-block ed-block--champ">
           <h3>
             Planning a big day? <br />
-            <em className="it not-italic">We handle:</em>
+            <em className="it">We handle:</em>
           </h3>
           <ul>
             {bigDayPoints.map((p, i) => (
@@ -235,7 +239,7 @@ export default async function ServicesPage() {
 
       <section className="ed-light">
         <div className="ed-pk-head">
-          <Reveal as="span" className="overline overline--wide block text-[13px] font-bold tracking-[.02em] uppercase">
+          <Reveal as="span" className="text-violet-700 block text-[13px] font-bold tracking-[.2em] uppercase">
             Ways to book
           </Reveal>
           <h2 className="ed-serif mt-3">Choose your experience</h2>
@@ -310,7 +314,7 @@ export default async function ServicesPage() {
         <section className="ed-light py-[clamp(64px,9vw,120px)] px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-[1280px]">
             <div className="center mb-[clamp(40px,5vw,64px)]">
-              <Reveal as="span" className="overline overline--wide block text-[13px] font-bold tracking-[.02em] uppercase">
+              <Reveal as="span" className=" block text-violet-400 text-[13px] font-bold tracking-[.2em] uppercase">
                 FAQ
               </Reveal>
               <h2 className="h2 ed-serif mt-3">Find the answers you seek.</h2>

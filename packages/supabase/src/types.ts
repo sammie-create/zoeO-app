@@ -483,6 +483,7 @@ export interface Database {
           id: string;
           question: string;
           answer: string;
+          page: "services" | "contact" | null;
           status: "draft" | "published";
           sort_order: number;
           created_at: string;
@@ -492,6 +493,7 @@ export interface Database {
           id?: string;
           question: string;
           answer: string;
+          page?: "services" | "contact" | null;
           status?: "draft" | "published";
           sort_order?: number;
           created_at?: string;
@@ -501,6 +503,7 @@ export interface Database {
           id?: string;
           question?: string;
           answer?: string;
+          page?: "services" | "contact" | null;
           status?: "draft" | "published";
           sort_order?: number;
           created_at?: string;
@@ -514,6 +517,7 @@ export interface Database {
           category: "Hair care" | "Bridal" | "Nail care" | "Personal care";
           title: string;
           body: string;
+          image_url: string | null;
           published_at: string;
           status: "draft" | "published";
           created_at: string;
@@ -524,6 +528,7 @@ export interface Database {
           category: "Hair care" | "Bridal" | "Nail care" | "Personal care";
           title: string;
           body: string;
+          image_url?: string | null;
           published_at?: string;
           status?: "draft" | "published";
           created_at?: string;
@@ -534,6 +539,7 @@ export interface Database {
           category?: "Hair care" | "Bridal" | "Nail care" | "Personal care";
           title?: string;
           body?: string;
+          image_url?: string | null;
           published_at?: string;
           status?: "draft" | "published";
           created_at?: string;

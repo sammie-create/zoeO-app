@@ -28,9 +28,14 @@ export function JournalCards({ posts }: { posts: Tables<"journal_posts">[] }) {
           const swatch = JOURNAL_CATEGORY_SWATCH[p.category] ?? "#7F23E0";
           return (
             <div key={p.id} className="overflow-hidden rounded-[18px] border border-noir-100">
-              <div className="flex aspect-video items-center justify-center" style={{ background: swatch }}>
-                <span className="font-display text-[15px] text-white/85">{p.category}</span>
-              </div>
+              {p.image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element -- remote Supabase storage URL
+                <img src={p.image_url} alt="" className="aspect-video w-full object-cover" />
+              ) : (
+                <div className="flex aspect-video items-center justify-center" style={{ background: swatch }}>
+                  <span className="font-display text-[15px] text-white/85">{p.category}</span>
+                </div>
+              )}
               <div className="p-[18px]">
                 <div className="flex flex-wrap items-center gap-2.5">
                   <span className="rounded-full bg-[#F4ECFE] px-3 py-[5px] text-[11px] font-bold text-[#55129B]">

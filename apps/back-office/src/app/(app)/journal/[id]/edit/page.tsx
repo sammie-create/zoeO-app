@@ -12,7 +12,7 @@ export default async function EditJournalPostPage({ params }: { params: Promise<
   return (
     <div>
       <Link href="/journal" className="text-[13px] font-semibold text-noir-400 hover:text-noir-600">
-        ← Back to journal
+        ←  Back to journal
       </Link>
       <h1 className="mt-4 font-display text-[30px] font-normal tracking-[-0.01em] sm:text-[36px]">
         Edit post
