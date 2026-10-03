@@ -2,6 +2,12 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* `light:` variant — matches when [data-theme="light"] is set on <html> or an
+   ancestor. Purely CSS (no JS/React state needed): components that should
+   respond to the toggle add a `light:` companion class next to their default
+   dark styling, e.g. `bg-noir-900 light:bg-noir-50`. */
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+
 /* Mirrors packages/ui/tokens.ts — keep in sync if the brand palette changes. */
 @theme inline {
   --font-display: var(--font-playfair);
@@ -47,11 +53,16 @@
   --color-status-cancelled: #d3455b;
   --color-status-info: #4a7be0;
 
-  /* Semantic surfaces — dark theme only for now (see plan). */
-  --color-bg: var(--color-noir-900);
-  --color-bg-alt: #15121b;
-  --color-surface: var(--color-noir-800);
-  --color-surface-2: #211d29;
+  /* Semantic surfaces. Indirected through plain (non `color-`) custom
+     properties defined in :root below — Tailwind's `inline` theme mode
+     resolves same-namespace var() references (e.g. var(--color-noir-900))
+     to a literal at build time, which would make them immune to the
+     [data-theme="light"] override; pointing at a var OUTSIDE the theme
+     namespace keeps the indirection live at runtime instead. */
+  --color-bg: var(--bg);
+  --color-bg-alt: var(--bg-alt);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
 
   --radius-control: 10px;
   --radius-card: 16px;
@@ -94,6 +105,11 @@
   --r-card: 16px;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", monospace;
 
+  --bg: var(--color-noir-900);
+  --bg-alt: #15121b;
+  --surface: var(--color-noir-800);
+  --surface-2: #211d29;
+
   /* shadcn tokens, retinted to the brand palette — front-office is dark-only,
      so these live directly on :root rather than behind a `.dark` class. */
   --background: var(--color-noir-900);
@@ -117,9 +133,55 @@
   --radius: 0.625rem;
 }
 
+/* Light theme — opt-in via [data-theme="light"] on <html> (see ThemeToggle).
+   Sections that sit on photography/brand-colour backgrounds (hero, footer,
+   marquee, etc.) intentionally keep their hardcoded dark classes and are
+   unaffected by this — only surfaces already wired to these semantic tokens
+   respond to the toggle. */
+[data-theme="light"] {
+  --bg: var(--color-noir-50);
+  --bg-alt: #efecf3;
+  --surface: #ffffff;
+  --surface-2: #f1eef5;
+  --line: rgba(14, 12, 18, 0.09);
+  --line-strong: rgba(14, 12, 18, 0.18);
+
+  --background: var(--color-noir-50);
+  --foreground: var(--color-noir-900);
+  --card: #ffffff;
+  --card-foreground: var(--color-noir-900);
+  --popover: #ffffff;
+  --popover-foreground: var(--color-noir-900);
+  --secondary: var(--color-noir-100);
+  --secondary-foreground: var(--color-noir-900);
+  --muted: var(--color-noir-100);
+  --muted-foreground: var(--color-noir-500);
+  --accent: var(--color-noir-100);
+  --accent-foreground: var(--color-noir-900);
+  --border: rgba(14, 12, 18, 0.12);
+  --input: rgba(14, 12, 18, 0.08);
+  color-scheme: light;
+}
+
 body {
-  background: var(--color-noir-900);
-  color: #fff;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Smooth colour swap for browsers without the View Transitions API. */
+html.theme-anim *,
+html.theme-anim *::before,
+html.theme-anim *::after {
+  transition:
+    background-color 420ms var(--ease),
+    color 420ms var(--ease),
+    border-color 420ms var(--ease),
+    fill 420ms var(--ease) !important;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 /* ---------- Scroll-reveal primitives (see Reveal/SplitText components) ---------- */
@@ -216,7 +278,7 @@ body {
   left: var(--pos);
   width: 3px;
   margin-left: -1.5px;
-  background: #0e0c12;
+  background: var(--bg);
 }
 .ba__handle {
   position: absolute;
@@ -353,6 +415,10 @@ body {
 }
 .svc__hint {
   display: none;
+}
+/* Always sits over photography, so text stays white regardless of theme. */
+[data-theme="light"] .svc {
+  color: #fff;
 }
 @media (hover: hover) and (pointer: fine) {
   .svc {
@@ -1390,6 +1456,9 @@ body {
   border-radius: 22px;
   padding: clamp(20px, 2.4vw, 32px);
 }
+[data-theme="light"] .panel {
+  background: var(--surface);
+}
 .cart-table__head {
   display: grid;
   grid-template-columns: 1fr 160px 140px;
@@ -1475,6 +1544,14 @@ body {
 .trash:hover {
   color: #ff8a9b;
   background: rgba(211, 69, 91, 0.12);
+}
+.cart-empty {
+  background: #16131c;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+}
+[data-theme="light"] .cart-empty {
+  background: var(--surface);
 }
 .cart-empty .ic {
   width: 88px;
@@ -1679,6 +1756,53 @@ body {
   place-items: center;
   text-transform: uppercase;
 }
+
+/* Cart page — light-mode port. */
+[data-theme="light"] .cart-table__head {
+  color: var(--color-noir-500);
+}
+[data-theme="light"] .cart-item .unit {
+  color: var(--color-violet-600);
+}
+[data-theme="light"] .trash {
+  color: var(--color-noir-500);
+}
+/* Must ship as a set — the bold "code" text relies on the box background
+   actually flipping, or it disappears (white-on-white-adjacent). */
+[data-theme="light"] .promo-box {
+  background: var(--color-violet-50);
+}
+[data-theme="light"] .promo-box strong {
+  color: var(--color-violet-700);
+}
+[data-theme="light"] .promo-box p {
+  color: var(--color-noir-500);
+}
+[data-theme="light"] .promo-box b {
+  color: var(--color-noir-900);
+}
+[data-theme="light"] .progress {
+  background: var(--color-noir-100);
+}
+[data-theme="light"] .protect small {
+  color: var(--color-noir-500);
+}
+[data-theme="light"] .sum-row span:first-child {
+  color: var(--color-noir-500);
+}
+[data-theme="light"] .fine {
+  color: var(--color-noir-500);
+}
+[data-theme="light"] :is(.qty, .guarantees) {
+  background: var(--surface-2);
+}
+[data-theme="light"] :is(.qty--pill, .qty--sm) {
+  background: transparent;
+}
+[data-theme="light"] .qty button:hover {
+  background: rgba(14, 12, 18, 0.06);
+  color: var(--foreground);
+}
 .rule {
   width: 64px;
   height: 3px;
@@ -1789,7 +1913,7 @@ body {
   height: 42px;
   border-radius: 8px;
   font-weight: 600;
-  color: var(--color-noir-300);
+  color: var(--muted-foreground);
   transition:
     background var(--t-base) var(--ease),
     color var(--t-fast);
@@ -4076,6 +4200,10 @@ body {
   font-size: 18px;
   max-width: 620px;
 }
+/* Always sits over photography, so text stays white regardless of theme. */
+[data-theme="light"] .page-hero {
+  color: #fff;
+}
 
 .contact-grid {
   display: grid;
@@ -4098,7 +4226,7 @@ body {
   align-items: flex-start;
   padding: 22px;
   border-radius: var(--r-card);
-  background: var(--color-noir-800);
+  background: var(--surface);
   border: 1px solid var(--line);
   transition:
     border-color var(--t-base),
@@ -4125,7 +4253,7 @@ body {
 }
 .c-card p,
 .c-card a {
-  color: var(--color-noir-300);
+  color: var(--muted-foreground);
   font-size: 15px;
 }
 .c-card a:hover {
@@ -4143,6 +4271,9 @@ body {
   height: 100%;
   border: 0;
   filter: grayscale(1) invert(0.92) contrast(0.9) hue-rotate(200deg);
+}
+[data-theme="light"] .map iframe {
+  filter: grayscale(1) contrast(0.95);
 }
 .textarea {
   width: 100%;
@@ -4166,6 +4297,39 @@ body {
 .textarea:focus {
   border-color: var(--color-violet-400);
   box-shadow: 0 0 0 4px rgba(127, 35, 224, 0.18);
+}
+
+/* Contact + Checkout form fields — full light-mode port. .panel itself now
+   flips globally (see its base rule above); the rest here is scoped to
+   .contact-grid/.checkout so the shared .input/.select/.textarea/.field
+   classes reused elsewhere (services booking) are unaffected. border-color
+   on these already flips via --line/--line-strong; only the literal
+   backgrounds and text colors need an override here. */
+[data-theme="light"] :is(.contact-grid, .checkout) .field label {
+  color: var(--muted-foreground);
+}
+[data-theme="light"] :is(.contact-grid, .checkout) .field .err {
+  color: var(--color-status-cancelled);
+}
+[data-theme="light"] :is(.contact-grid, .checkout) :is(.input, .select, .textarea) {
+  background-color: #fff;
+  color: var(--foreground);
+}
+[data-theme="light"] :is(.contact-grid, .checkout) :is(.input, .textarea)::placeholder {
+  color: var(--color-noir-400);
+}
+[data-theme="light"] :is(.contact-grid, .checkout) .select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%230e0c12' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M3 5l4 4 4-4'/%3E%3C/svg%3E");
+}
+[data-theme="light"] :is(.contact-grid, .checkout) .select option {
+  background: #fff;
+  color: var(--color-noir-900);
+}
+[data-theme="light"] .checkout .seg {
+  background: var(--surface-2);
+}
+[data-theme="light"] .mini-line .thumb b {
+  color: #fff;
 }
 
 .blog-feature {

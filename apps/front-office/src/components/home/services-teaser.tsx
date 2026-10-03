@@ -36,13 +36,13 @@ export function ServicesTeaser() {
     <section className="bg-bg-alt py-[clamp(64px,9vw,120px)]">
       <div className="mx-auto max-w-[calc(1280px_+_clamp(16px,5vw,80px)*2)] px-[clamp(16px,5vw,80px)]">
         <div className="mx-auto mb-16 max-w-[640px] text-center">
-          <Reveal as="span" className="block text-sm font-bold text-violet-400 uppercase">
+          <Reveal as="span" className="block text-sm font-bold text-violet-400 uppercase light:text-violet-600">
             Premium in-salon experience
           </Reveal>
           <Reveal as="h2" className="font-display my-3.5 block text-[clamp(34px,4.6vw,60px)] leading-[1.08] font-bold">
             Beauty Services
           </Reveal>
-          <Reveal as="p" className="text-[17px] text-white">
+          <Reveal as="p" className="text-[17px] text-foreground">
             Beyond our exceptional products, sit back and let our master artists pamper you.
           </Reveal>
         </div>

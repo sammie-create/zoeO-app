@@ -27,7 +27,7 @@ export function Transformation() {
         <div className="mb-14 text-center">
           <Reveal
             variant="fade"
-            className="inline-flex items-center gap-2 text-[13px] font-semibold tracking-[.18em] text-violet-400 uppercase"
+            className="inline-flex items-center gap-2 text-[13px] font-semibold tracking-[.18em] text-violet-400 uppercase light:text-violet-600"
           >
             <span className="size-1.5 rounded-full bg-current" />
             The Allure Effect
@@ -35,7 +35,7 @@ export function Transformation() {
           <Reveal as="h2" className="font-display mt-5 mb-4 block text-[clamp(34px,4.6vw,60px)] leading-[1.08] font-normal">
             A Stunning <em className="font-semibold italic">Transformation</em>
           </Reveal>
-          <Reveal as="p" className="mx-auto max-w-[900px] text-[clamp(16px,1.3vw,18px)] leading-[1.7] text-noir-200">
+          <Reveal as="p" className="mx-auto max-w-[900px] text-[clamp(16px,1.3vw,18px)] leading-[1.7] text-muted-foreground">
             Rough hair, no makeup? We&apos;ve got you. From wig revamp to full glam — see the difference ZoeO Allure
             makes.
           </Reveal>

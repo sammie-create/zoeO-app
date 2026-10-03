@@ -51,7 +51,7 @@ export function Footer() {
       <div className="mx-auto max-w-[calc(1280px_+_clamp(16px,5vw,80px)*2)] px-[clamp(16px,5vw,80px)]">
         <div className="grid grid-cols-[1.35fr_.8fr_.8fr_1.3fr] gap-12 max-[1080px]:grid-cols-2 max-[760px]:gap-9">
           <Reveal className="max-[760px]:col-span-2">
-            <Brand />
+            <Brand forceDark />
             <p className="mt-5.5 mb-[26px] max-w-[340px] text-[15px] text-noir-300">
               Beauty, made easier. All in one place. Shop hair care, extensions, custom nails, and gorgeous lashes.
             </p>
@@ -115,7 +115,7 @@ export function Footer() {
           </Reveal>
 
           <Reveal delay={240} className="max-[760px]:col-span-2">
-            <h3 className="font-display mb-3.5 text-[26px] font-bold">Subscribe to our newsletter</h3>
+            <h3 className="font-display mb-3.5 text-[26px] font-bold text-white">Subscribe to our newsletter</h3>
             <p className="mb-6 text-[15px] text-noir-300">Stay in the loop with exclusive offers and product previews.</p>
             <form
               onSubmit={handleNewsletter}

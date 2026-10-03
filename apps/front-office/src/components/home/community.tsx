@@ -26,7 +26,7 @@ export function Community() {
         </Reveal>
         <Reveal
           as="h2"
-          className="font-display mt-[26px] mb-[22px] block text-[clamp(38px,5.6vw,76px)] leading-[1.02] font-bold"
+          className="font-display mt-[26px] mb-[22px] block text-[clamp(38px,5.6vw,76px)] leading-[1.02] font-bold text-white"
         >
           Begin your <em className="text-violet-300 italic">beauty</em> in one place
         </Reveal>

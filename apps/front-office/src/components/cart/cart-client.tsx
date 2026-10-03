@@ -72,20 +72,26 @@ export function CartClient({ products }: { products: Product[] }) {
   return (
     <>
       <main className="mx-auto max-w-[calc(1280px_+_clamp(16px,5vw,80px)*2)] px-[clamp(16px,5vw,80px)] py-[clamp(64px,7vw,100px)]">
-        <h1 className="font-display mb-8 text-3xl font-bold sm:text-4xl">Your Cart</h1>
+        <h1 className="font-display mb-8 !text-6xl font-bold sm:text-4xl">Your Cart</h1>
 
         {rows.length === 0 ? (
           <div className="cart-empty flex flex-col items-center gap-4 py-20 text-center">
             <span className="ic">
               <Icon name="bag" className="size-10" />
             </span>
-            <h2 className="font-display text-2xl">Your cart is empty</h2>
-            <p className="max-w-sm text-noir-400">Beauty, made easier — start with our bestsellers or book a service.</p>
+            <h2 className="font-display text-5xl font-bold">Your cart is empty</h2>
+            <p className="max-w-lg text-noir-400">Beauty, made easier — start with our bestsellers or book a service.</p>
             <div className="flex gap-3">
-              <Link href="/shop" className="h-12 rounded-full bg-violet-500 px-6 text-sm font-bold text-white uppercase leading-[3rem]">
+              <Link
+                href="/shop"
+                className="h-12 rounded-full bg-violet-500 px-6 text-sm font-bold text-white uppercase leading-[3rem] transition-colors hover:bg-violet-600"
+              >
                 Shop products
               </Link>
-              <Link href="/services" className="h-12 rounded-full border border-white/20 px-6 text-sm font-bold uppercase leading-[3rem]">
+              <Link
+                href="/services"
+                className="h-12 rounded-full border border-[var(--line-strong)] px-6 text-sm font-bold uppercase leading-[3rem] transition-colors hover:border-white hover:bg-white/6 light:hover:border-noir-900 light:hover:bg-noir-900/4"
+              >
                 Book a service
               </Link>
             </div>
@@ -151,13 +157,21 @@ export function CartClient({ products }: { products: Product[] }) {
               <div className="panel ship-est">
                 <h3>Estimate shipping rates</h3>
                 <div className="ship-est__grid">
-                  <select value={country} onChange={(e) => setCountry(e.target.value)} className="h-11 rounded-lg border border-white/16 bg-transparent px-3">
+                  <select
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    className="h-11 rounded-lg border border-[var(--line-strong)] bg-transparent px-3"
+                  >
                     <option>Nigeria</option>
                     <option>Ghana</option>
                     <option>United Kingdom</option>
                     <option>United States</option>
                   </select>
-                  <select value={province} onChange={(e) => setProvince(e.target.value)} className="h-11 rounded-lg border border-white/16 bg-transparent px-3">
+                  <select
+                    value={province}
+                    onChange={(e) => setProvince(e.target.value)}
+                    className="h-11 rounded-lg border border-[var(--line-strong)] bg-transparent px-3"
+                  >
                     <option>Lagos</option>
                     <option>Abuja (FCT)</option>
                     <option>Oyo</option>
@@ -165,7 +179,10 @@ export function CartClient({ products }: { products: Product[] }) {
                     <option>Enugu</option>
                     <option>Other</option>
                   </select>
-                  <input defaultValue="100001" className="h-11 rounded-lg border border-white/16 bg-transparent px-3" />
+                  <input
+                    defaultValue="100001"
+                    className="h-11 rounded-lg border border-[var(--line-strong)] bg-transparent px-3"
+                  />
                 </div>
                 <button type="button" onClick={estimateShipping} className="h-11 rounded-full bg-violet-500 px-5 text-sm font-bold text-white uppercase">
                   Estimate
@@ -209,7 +226,7 @@ export function CartClient({ products }: { products: Product[] }) {
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="Special instructions for delivery..."
-                  className="mt-1.5 w-full rounded-lg border border-white/16 bg-transparent p-3 text-sm"
+                  className="mt-1.5 w-full rounded-lg border border-[var(--line-strong)] bg-transparent p-3 text-sm"
                   rows={2}
                 />
               </label>
@@ -220,7 +237,7 @@ export function CartClient({ products }: { products: Product[] }) {
               </label>
 
               <div className="protect">
-                <Icon name="shield" className="size-6 text-violet-300" />
+                <Icon name="shield" className="size-6 text-violet-300 light:text-violet-600" />
                 <div>
                   <strong>Shipping Protection</strong>
                   <small>Guarantees order safety from theft or damage</small>

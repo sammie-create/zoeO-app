@@ -15,7 +15,7 @@ export default async function Home() {
   const [bestsellers, testimonials] = await Promise.all([getBestsellers(4), getTestimonials()]);
 
   return (
-    <div className="flex flex-col bg-noir-900">
+    <div className="flex flex-col bg-bg">
       <Hero />
       <Categories />
       <Pillars />
