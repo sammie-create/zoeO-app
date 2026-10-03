@@ -97,7 +97,7 @@ export function Header() {
           >
             Contact us
           </Link>
-          <ThemeToggle disableLight={dimmed} />
+          <ThemeToggle disableLight={dimmed} className="hidden lg:grid" />
           <button type="button" onClick={() => setSearchOpen(true)} aria-label="Search" className={iconBtnClass(dimmed)}>
             <Icon name="search" className="size-[22px]" />
           </button>
