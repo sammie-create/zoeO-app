@@ -29,12 +29,14 @@ export default async function ConfirmationPage({
         <span className="ic">
           <Icon name="check" className="size-7" />
         </span>
-        <span className="text-[13px] font-semibold tracking-[.18em] text-violet-400 uppercase">Order confirmed</span>
+        <span className="text-[13px] font-semibold tracking-[.18em] text-violet-400 uppercase light:text-violet-600">
+          Order confirmed
+        </span>
         <h1 className="font-display mt-3.5 mb-3 text-3xl font-bold sm:text-4xl">
-          Thank you — <span className="text-violet-300 italic">it&apos;s on its way.</span>
+          Thank you — <span className="text-violet-300 italic light:text-violet-600">it&apos;s on its way.</span>
         </h1>
-        <p className="mx-auto max-w-[520px] text-noir-300">
-          A confirmation for <strong className="text-white">{totalLabel}</strong> via {pay} is headed to {email}.{" "}
+        <p className="mx-auto max-w-[520px] text-muted-foreground">
+          A confirmation for <strong className="text-foreground">{totalLabel}</strong> via {pay} is headed to {email}.{" "}
           {mode === "pickup" ? "We'll message you when it's ready for pickup in Ikeja." : "Your order ships out tomorrow."}
         </p>
         <p className="mono my-7 text-violet-300">#{ref}</p>
@@ -42,7 +44,10 @@ export default async function ConfirmationPage({
           <Link href="/shop" className="h-12 rounded-full bg-violet-500 px-6 text-sm font-bold text-white uppercase leading-[3rem]">
             Continue shopping
           </Link>
-          <Link href="/services#book" className="h-12 rounded-full border border-white/20 px-6 text-sm font-bold uppercase leading-[3rem]">
+          <Link
+            href="/services#book"
+            className="h-12 rounded-full border border-white/20 px-6 text-sm font-bold uppercase leading-[3rem] transition-colors hover:border-white hover:bg-white/6 light:border-noir-900/20 light:hover:border-noir-900 light:hover:bg-noir-900/4"
+          >
             Book a service
           </Link>
         </div>

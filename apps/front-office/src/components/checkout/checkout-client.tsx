@@ -40,7 +40,7 @@ export function CheckoutClient({ products }: { products: Product[] }) {
             <Icon name="bag" className="size-10" />
           </span>
           <h1 className="font-display text-2xl">Nothing to check out yet</h1>
-          <p className="text-noir-400">Your cart is empty — let&apos;s find something you&apos;ll love.</p>
+          <p className="text-noir-400 light:text-noir-600">Your cart is empty — let&apos;s find something you&apos;ll love.</p>
           <Link href="/shop" className="h-12 rounded-full bg-violet-500 px-6 text-sm font-bold text-white uppercase leading-[3rem]">
             Shop products
           </Link>
@@ -209,7 +209,7 @@ export function CheckoutClient({ products }: { products: Product[] }) {
                   </label>
                 ))}
               </div>
-              <p className="mt-3 flex items-center gap-2 text-[13px] text-noir-400">
+              <p className="mt-3 flex items-center gap-2 text-[13px] text-noir-400 light:text-noir-600">
                 <Icon name="lock" className="size-4" /> Payments are SSL encrypted. You&apos;ll be redirected to complete
                 payment securely.
               </p>
@@ -260,7 +260,10 @@ export function CheckoutClient({ products }: { products: Product[] }) {
               <strong>{money(total, { decimals: true })}</strong>
             </div>
           </div>
-          <Link href="/cart" className="mt-4.5 inline-block text-sm text-violet-300 underline underline-offset-4 hover:text-white">
+          <Link
+            href="/cart"
+            className="mt-4.5 inline-block text-sm text-violet-300 underline underline-offset-4 hover:text-white light:text-violet-600 light:hover:text-foreground"
+          >
             Edit cart
           </Link>
         </Reveal>

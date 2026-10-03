@@ -16,7 +16,7 @@ export function Bestsellers({ products }: { products: Product[] }) {
             <Reveal as="span" className="mb-[18px] block text-[13px] font-bold text-white uppercase">
               Curated favorites
             </Reveal>
-            <Reveal as="h2" className="font-display block text-[clamp(34px,4.6vw,60px)] leading-[1.08] font-bold">
+            <Reveal as="h2" className="font-display block text-[clamp(34px,4.6vw,60px)] leading-[1.08] font-bold text-white">
               Best Selling Products
             </Reveal>
           </div>

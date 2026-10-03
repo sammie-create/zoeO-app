@@ -31,8 +31,18 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={cn("h-full", "antialiased", playfairDisplay.variable, manrope.variable, "font-sans")}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-body bg-noir-900 text-white">
+      <head>
+        <script
+          // Runs before hydration to set the theme attribute from storage,
+          // so there's no flash of the wrong theme on load.
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("za_theme");if(t==="light")document.documentElement.dataset.theme="light"}catch(e){}`,
+          }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col font-body">
         <AppProviders>
           <SiteChrome products={products} services={services}>
             {children}

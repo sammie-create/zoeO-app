@@ -21,7 +21,7 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
   return (
     <>
       <section className="bg-noir-900 pt-[clamp(64px,8vw,110px)] pb-[clamp(48px,5vw,72px)] text-center">
-        <Reveal as="h2" className="font-display block text-3xl font-bold sm:text-4xl">What Our Clients Say</Reveal>
+        <Reveal as="h2" className="font-display block text-3xl font-bold text-white sm:text-4xl">What Our Clients Say</Reveal>
         <Reveal
           variant="zoom"
           as="span"

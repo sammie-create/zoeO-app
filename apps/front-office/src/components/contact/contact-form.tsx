@@ -56,15 +56,15 @@ export function ContactForm() {
           <Icon name="check" className="size-7" />
         </span>
         <h2 className="font-display text-2xl">Message sent</h2>
-        <p className="mx-auto mt-2.5 max-w-sm text-noir-300">
+        <p className="mx-auto mt-2.5 max-w-sm text-noir-300 light:text-noir-600">
           Thank you, {sent.firstName}. We&apos;ve received your note about{" "}
-          <strong className="text-white">{sent.topicLabel.toLowerCase()}</strong> and will reply to {sent.email}{" "}
-          within one business day.
+          <strong className="text-white light:text-noir-900">{sent.topicLabel.toLowerCase()}</strong> and will reply to{" "}
+          {sent.email} within one business day.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link
             href="/shop"
-            className="inline-flex h-11 items-center rounded-full border border-white/20 px-5 text-sm font-bold uppercase hover:bg-white/6"
+            className="inline-flex h-11 items-center rounded-full border border-white/20 px-5 text-sm font-bold uppercase hover:bg-white/6 light:border-noir-900/20 light:hover:bg-noir-900/6"
           >
             Continue shopping
           </Link>
@@ -82,7 +82,7 @@ export function ContactForm() {
   return (
     <>
       <h2 className="h2 mb-2">Send a message</h2>
-      <p className="mb-7 text-sm text-noir-400">We reply within one business day.</p>
+      <p className="mb-7 text-sm text-noir-400 light:text-noir-600">We reply within one business day.</p>
       <form onSubmit={handleSubmit} className="book__form" noValidate>
         <div className="row2">
           <div className={`field ${invalid.has("name") ? "is-invalid" : ""}`}>

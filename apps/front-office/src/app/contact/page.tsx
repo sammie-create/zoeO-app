@@ -89,7 +89,7 @@ export default async function ContactPage() {
         <section id="faq" className="bg-bg-alt py-[clamp(64px,9vw,120px)] px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-[1280px]">
             <div className="center mb-[clamp(40px,5vw,64px)]">
-              <Reveal as="span" className="block text-[13px] font-bold tracking-[.02em] text-violet-400 uppercase">
+              <Reveal as="span" className="block text-[13px] font-bold tracking-[.02em] text-violet-400 uppercase light:text-violet-600">
                 Help &amp; FAQs
               </Reveal>
               <Reveal as="h2" className="h1 mt-3.5 block">

@@ -6,7 +6,7 @@ export function Follow() {
     <section className="bg-[#2a1245] px-4 py-[clamp(56px,7vw,100px)] sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-8">
         <div>
-          <Reveal as="h2" className="font-display block text-[clamp(34px,4.6vw,60px)] leading-[1.08] font-bold">
+          <Reveal as="h2" className="font-display block text-[clamp(34px,4.6vw,60px)] leading-[1.08] font-bold text-white">
             Follow us <em className="text-violet-300 font-normal italic">on Instagram</em>
           </Reveal>
           <Reveal as="p" className="mt-2.5 text-noir-400">

@@ -8,21 +8,21 @@ export function Topbar() {
   const { currency, setCurrency } = useCurrency();
 
   return (
-    <div className="border-b border-white/8 bg-noir-900 text-[13px]">
+    <div className="border-b border-white/8 bg-noir-900 text-[13px] light:border-noir-900/8 light:bg-surface">
       <div className="mx-auto flex h-11 max-w-[1280px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <div className="hidden items-center gap-3.5 text-noir-200 md:flex">
-          <a href="https://instagram.com/zoeoallure" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="opacity-85 hover:text-violet-300 hover:opacity-100">
+        <div className="hidden items-center gap-3.5 text-noir-200 md:flex light:text-noir-900/70">
+          <a href="https://instagram.com/zoeoallure" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="opacity-85 hover:text-violet-300 hover:opacity-100 light:hover:text-noir-900">
             <Icon name="instagram" className="size-4" />
           </a>
-          <a href="https://x.com/zoeoallure" target="_blank" rel="noopener noreferrer" aria-label="X" className="opacity-85 hover:text-violet-300 hover:opacity-100">
+          <a href="https://x.com/zoeoallure" target="_blank" rel="noopener noreferrer" aria-label="X" className="opacity-85 hover:text-violet-300 hover:opacity-100 light:hover:text-noir-900">
             <Icon name="x" className="size-4" />
           </a>
-          <a href="https://facebook.com/zoeoallure" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="opacity-85 hover:text-violet-300 hover:opacity-100">
+          <a href="https://facebook.com/zoeoallure" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="opacity-85 hover:text-violet-300 hover:opacity-100 light:hover:text-noir-900">
             <Icon name="facebook" className="size-4" />
           </a>
         </div>
 
-        <div className="flex items-center gap-2.5 text-white">
+        <div className="flex items-center gap-2.5 text-white light:text-noir-900">
           <span>New HELicia Hair Care collection now live</span>
           <Link
             href="/shop?cat=hair"
@@ -32,20 +32,20 @@ export function Topbar() {
           </Link>
         </div>
 
-        <div className="hidden items-center gap-5 text-noir-300 lg:flex">
+        <div className="hidden items-center gap-5 text-noir-300 lg:flex light:text-noir-900/60">
           <select
             value={currency}
             onChange={(e) => setCurrency(e.target.value as "NGN" | "USD")}
             aria-label="Currency"
-            className="rounded-none bg-transparent text-noir-300 outline-none hover:text-white"
+            className="rounded-none bg-transparent text-noir-300 outline-none hover:text-white light:text-noir-900/60 light:hover:text-noir-900"
           >
-            <option value="NGN">NGN ₦ (Nigeria)</option>
-            <option value="USD">USD $ (United States)</option>
+            <option value="NGN" className="bg-white text-noir-900">NGN ₦ (Nigeria)</option>
+            <option value="USD" className="bg-white text-noir-900">USD $ (United States)</option>
           </select>
-          <Link href="/about" className="hover:text-white">
+          <Link href="/about" className="hover:text-white light:hover:text-noir-900">
             About
           </Link>
-          <Link href="/contact#faq" className="hover:text-white">
+          <Link href="/contact#faq" className="hover:text-white light:hover:text-noir-900">
             Help &amp; FAQs
           </Link>
         </div>

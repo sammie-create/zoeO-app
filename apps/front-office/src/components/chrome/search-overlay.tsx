@@ -48,20 +48,20 @@ export function SearchOverlay({ products, services }: { products: Product[]; ser
     >
       <div
         onClick={() => setSearchOpen(false)}
-        className={`absolute inset-0 bg-[rgba(8,6,12,.7)] backdrop-blur-[12px] transition-opacity duration-[420ms] ${
+        className={`absolute inset-0 bg-[rgba(8,6,12,.7)] backdrop-blur-[12px] transition-opacity duration-[420ms] light:bg-noir-900/35 ${
           searchOpen ? "opacity-100" : "opacity-0"
         }`}
       />
       <div
         role="dialog"
         aria-label="Search"
-        className={`relative border-b border-white/8 bg-noir-800 pt-8 pb-10 transition-transform duration-[420ms] ease-[var(--ease)] ${
+        className={`relative border-b border-white/8 bg-noir-800 pt-8 pb-10 transition-transform duration-[420ms] ease-[var(--ease)] light:border-noir-900/8 light:bg-surface ${
           searchOpen ? "translate-y-0" : "-translate-y-full"
         }`}
       >
         <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-4 border-b-[1.5px] border-white/16 pb-3.5">
-            <Icon name="search" className="size-7 shrink-0 text-noir-400" />
+          <div className="flex items-center gap-4 border-b-[1.5px] border-white/16 pb-3.5 light:border-noir-900/16">
+            <Icon name="search" className="size-7 shrink-0 text-noir-400 light:text-noir-500" />
             <input
               ref={inputRef}
               value={query}
@@ -70,13 +70,13 @@ export function SearchOverlay({ products, services }: { products: Product[]; ser
               placeholder="Search products & services"
               autoComplete="off"
               aria-label="Search"
-              className="font-display flex-1 bg-transparent text-2xl text-white outline-none placeholder:text-noir-500 sm:text-4xl"
+              className="font-display flex-1 bg-transparent text-2xl text-white outline-none placeholder:text-noir-500 sm:text-4xl light:text-noir-900 light:placeholder:text-noir-400"
             />
             <button
               type="button"
               onClick={() => setSearchOpen(false)}
               aria-label="Close search"
-              className="grid size-9 shrink-0 place-items-center rounded-full text-white hover:bg-white/8"
+              className="grid size-9 shrink-0 place-items-center rounded-full text-white hover:bg-white/8 light:text-noir-900 light:hover:bg-noir-900/6"
             >
               <Icon name="close" className="size-5" />
             </button>
@@ -89,7 +89,7 @@ export function SearchOverlay({ products, services }: { products: Product[]; ser
                   key={s}
                   type="button"
                   onClick={() => setQuery(s)}
-                  className="h-[34px] rounded-full border border-white/16 px-4 text-sm text-noir-200 hover:border-violet-300 hover:text-white"
+                  className="h-[34px] rounded-full border border-white/16 px-4 text-sm text-noir-200 hover:border-violet-300 hover:text-white light:border-noir-900/16 light:text-noir-900/70 light:hover:text-noir-900"
                 >
                   {s}
                 </button>
@@ -103,7 +103,7 @@ export function SearchOverlay({ products, services }: { products: Product[]; ser
                 <Link
                   key={p.id}
                   href={`/product/${p.id}`}
-                  className="flex items-center gap-3.5 rounded-xl p-2.5 hover:bg-white/6"
+                  className="flex items-center gap-3.5 rounded-xl p-2.5 hover:bg-white/6 light:hover:bg-noir-900/6"
                 >
                   {p.image_url && (
                     // eslint-disable-next-line @next/next/no-img-element -- Supabase Storage URL, no next/image loader configured
@@ -111,7 +111,7 @@ export function SearchOverlay({ products, services }: { products: Product[]; ser
                   )}
                   <div>
                     <p className="font-display text-base">{p.name}</p>
-                    <p className="text-[13px] text-noir-300">{money(p.price)}</p>
+                    <p className="text-[13px] text-noir-300 light:text-noir-900/60">{money(p.price)}</p>
                   </div>
                 </Link>
               ))}
@@ -119,7 +119,7 @@ export function SearchOverlay({ products, services }: { products: Product[]; ser
                 <Link
                   key={s.id}
                   href={`/services?service=${s.id}#book`}
-                  className="flex items-center gap-3.5 rounded-xl p-2.5 hover:bg-white/6"
+                  className="flex items-center gap-3.5 rounded-xl p-2.5 hover:bg-white/6 light:hover:bg-noir-900/6"
                 >
                   {s.image_url && (
                     // eslint-disable-next-line @next/next/no-img-element -- Supabase Storage URL, no next/image loader configured
@@ -127,11 +127,11 @@ export function SearchOverlay({ products, services }: { products: Product[]; ser
                   )}
                   <div>
                     <p className="font-display text-base">{s.name}</p>
-                    <p className="text-[13px] text-noir-300">Service · from {money(s.price)}</p>
+                    <p className="text-[13px] text-noir-300 light:text-noir-900/60">Service · from {money(s.price)}</p>
                   </div>
                 </Link>
               ))}
-              {!hasResults && <p className="text-noir-400">No matches for &ldquo;{query}&rdquo;. Try &ldquo;shampoo&rdquo; or &ldquo;wig&rdquo;.</p>}
+              {!hasResults && <p className="text-noir-400 light:text-noir-900/50">No matches for &ldquo;{query}&rdquo;. Try &ldquo;shampoo&rdquo; or &ldquo;wig&rdquo;.</p>}
             </div>
           )}
         </div>
