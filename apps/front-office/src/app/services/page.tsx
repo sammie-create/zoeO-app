@@ -11,7 +11,8 @@ import { MoneyLabel } from "@/components/shared/money-label";
 
 export const metadata = { title: "Beauty Services — ZoeO Allure" };
 
-const gallery = ["nails-art", "gallery-5", "client-1", "gallery-3", "line-zoe-onirun"];
+// Cut along with the Instagram strip below — see that comment for why.
+// const gallery = ["nails-art", "gallery-5", "client-1", "gallery-3", "line-zoe-onirun"];
 
 const bigMarquee = ["The ZoeO Experience.", "Beauty in all its forms."];
 const smallMarquee = ["Wigs & revamp", "Bridal artistry", "Gele styling", "Lash extensions", "Nails", "Wig installation"];
@@ -73,7 +74,7 @@ export default async function ServicesPage() {
     <>
       <section className="svc-hero">
         {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-        <img src="/img/glow-banner.webp" alt="Close-up of a woman with glowing skin and glossy red lips" />
+        <img src="/img/svc-hero-bts.webp" alt="Backstage at a ZoeO Allure beauty session, makeup being applied" />
         <div className="svc-hero__body">
           <Reveal
             variant="fade"
@@ -91,9 +92,10 @@ export default async function ServicesPage() {
             Wigs, bridal glam, gele, lashes and nails — handled by one trusted team, so you spend less time
             coordinating and more time enjoying the moment.
           </Reveal>
-          <Reveal as="p" delay={380}>
+          {/* Cut — restates the h1/intro paragraph's "one place" message immediately above it. */}
+          {/* <Reveal as="p" delay={380}>
             <strong>One destination. Multiple beauty needs. One less thing to worry about.</strong>
-          </Reveal>
+          </Reveal> */}
           <Reveal delay={460} className="svc-hero__ctas">
             <Link href="#book" className="ed-link">
               Book your session <Icon name="arrow" className="size-4" />
@@ -108,15 +110,15 @@ export default async function ServicesPage() {
 
       <Marquee words={bigMarquee} />
 
-      <section className="py-[clamp(64px,9vw,120px)] px-4 sm:px-6 lg:px-8">
+      {/* Cut — this section just restated the hero's "everything under one brand" message in
+          different words. "The Allure Menu" section right below already leads into the menu. */}
+      {/* <section className="py-[clamp(64px,9vw,120px)] px-4 sm:px-6 lg:px-8">
         <div className="ed-intro mx-auto max-w-[1280px]">
           <div className="ed-intro__imgs">
             <figure>
-              {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
               <img src="/img/portrait-braids.webp" alt="Woman with long braids and glossy makeup" />
             </figure>
             <figure>
-              {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
               <img
                 src="/img/line-bridals.webp"
                 alt="Bride with veil and soft glam"
@@ -126,13 +128,13 @@ export default async function ServicesPage() {
           </div>
           <div className="ed-intro__text">
             <Reveal as="p">
-              Whether it&apos;s your wedding day, a special event, a photoshoot or your everyday beauty needs, you
-              shouldn&apos;t have to manage a logistics team to look the way you want. ZoeO brings every beauty
+              Whether it's your wedding day, a special event, a photoshoot or your everyday beauty needs, you
+              shouldn't have to manage a logistics team to look the way you want. ZoeO brings every beauty
               service together under one brand — from bridal makeup and hair to wigs, nails, lashes, gele styling and
               more.
             </Reveal>
             <Reveal as="p" className="ed-serif it-line">
-              Sit back. We&apos;ve got you.
+              Sit back. We've got you.
             </Reveal>
             <Reveal>
               <Link href="#menu" className="ed-link">
@@ -141,7 +143,7 @@ export default async function ServicesPage() {
             </Reveal>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="px-4 pb-[clamp(64px,8vw,110px)] sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1280px]">
@@ -286,7 +288,7 @@ export default async function ServicesPage() {
             <Reveal as="div" delay={240} className="ed-pk__col">
               <figure>
                 {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-                <img src="/img/gallery-3.webp" alt="HELicia elixir and cream set on marble" />
+                <img src="/img/promo-helicia.webp" alt="HELicia shampoo and conditioner duo" />
               </figure>
               <h3>Allure Circle</h3>
               <div className="sub">Membership for regulars</div>
@@ -304,7 +306,9 @@ export default async function ServicesPage() {
       </section>
 
       <ServicesTestimonials testimonials={testimonials} />
-      <div className="ed-band">The beauty of one trusted team</div>
+      {/* Cut — 4th repeat of the "one trusted team" message already made in the hero,
+          the (now-cut) intro section, and the Allure Menu section. */}
+      {/* <div className="ed-band">The beauty of one trusted team</div> */}
 
       <Suspense>
         <BookingSection services={services} />
@@ -314,7 +318,7 @@ export default async function ServicesPage() {
         <section className="ed-light py-[clamp(64px,9vw,120px)] px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-[1280px]">
             <div className="center mb-[clamp(40px,5vw,64px)]">
-              <Reveal as="span" className=" block text-violet-400 text-[13px] font-bold tracking-[.2em] uppercase">
+              <Reveal as="span" className=" block text-violet-700 text-[13px] font-bold tracking-[.2em] uppercase">
                 FAQ
               </Reveal>
               <h2 className="h2 ed-serif mt-3">Find the answers you seek.</h2>
@@ -332,40 +336,42 @@ export default async function ServicesPage() {
 
       <Marquee words={closingMarquee} reverse />
 
-      <section className="py-[clamp(64px,9vw,120px)] px-4 sm:px-6 lg:px-8">
-        <div className="ed-close mx-auto max-w-[1280px]">
-          <div>
-            <Reveal as="p">
-              Step into a space of care, calm and craft — and leave with a look you&apos;ll carry confidently into
-              every occasion.
-            </Reveal>
-            <Reveal as="div" className="it-line">
-              Beauty, made easier.
-            </Reveal>
-            <Reveal>
-              <Link href="#book" className="ed-link">
-                Book your session now <Icon name="arrow" className="size-4" />
-              </Link>
-            </Reveal>
-          </div>
-          <div className="ed-close__imgs">
-            <figure>
-              {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-              <img src="/img/salon-journey.webp" alt="The warmly lit ZoeO salon suite" />
-            </figure>
-            <figure className="mt-[60px]">
-              {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-              <img
-                src="/img/p-deep-wave-lace-front.webp"
-                alt="Freshly installed deep wave lace front"
-                style={{ objectPosition: "50% 20%" }}
-              />
-            </figure>
-          </div>
-        </div>
-      </section>
+      {/*<section className="py-[clamp(64px,9vw,120px)] px-4 sm:px-6 lg:px-8">*/}
+      {/*  <div className="ed-close mx-auto max-w-[1280px]">*/}
+      {/*    <div>*/}
+      {/*      <Reveal as="p">*/}
+      {/*        Step into a space of care, calm and craft — and leave with a look you&apos;ll carry confidently into*/}
+      {/*        every occasion.*/}
+      {/*      </Reveal>*/}
+      {/*      <Reveal as="div" className="it-line">*/}
+      {/*        Beauty, made easier.*/}
+      {/*      </Reveal>*/}
+      {/*      <Reveal>*/}
+      {/*        <Link href="#book" className="ed-link">*/}
+      {/*          Book your session now <Icon name="arrow" className="size-4" />*/}
+      {/*        </Link>*/}
+      {/*      </Reveal>*/}
+      {/*    </div>*/}
+      {/*    /!* Cut — extra decorative imagery, low value this far down a long page.*/}
+      {/*        Note: .ed-close is a 2-column grid, so removing this leaves an empty*/}
+      {/*        column on desktop; revisit the grid if this stays cut for good. *!/*/}
+      {/*    <div className="ed-close__imgs">*/}
+      {/*      <figure>*/}
+      {/*        <img src="/img/salon-journey.webp" alt="The warmly lit ZoeO salon suite" />*/}
+      {/*      </figure>*/}
+      {/*      <figure className="mt-[60px]">*/}
+      {/*        <img*/}
+      {/*          src="/img/p-deep-wave-lace-front.webp"*/}
+      {/*          alt="Freshly installed deep wave lace front"*/}
+      {/*          style={{ objectPosition: "50% 20%" }}*/}
+      {/*        />*/}
+      {/*      </figure>*/}
+      {/*    </div>*/}
+      {/*  </div>*/}
+      {/*</section>*/}
 
-      <div className="ed-strip-head">
+      {/* Cut — Instagram strip, low-value real estate at the very bottom of an already-long page. */}
+      {/* <div className="ed-strip-head">
         <span className="text-[12px] font-bold tracking-[.18em] text-noir-400 uppercase">
           Join our community · @zoeoallure
         </span>
@@ -379,11 +385,10 @@ export default async function ServicesPage() {
             rel="noopener noreferrer"
             aria-label="ZoeO Allure on Instagram"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
             <img src={`/img/${g}.webp`} alt="" />
           </a>
         ))}
-      </div>
+      </div> */}
     </>
   );
 }

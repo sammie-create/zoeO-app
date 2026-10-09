@@ -32,7 +32,7 @@ export default async function ContactPage() {
       <section className="page-hero">
         <div className="page-hero__frame" style={{ minHeight: 400 }}>
           {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-          <img src="/img/hero-home.webp" alt="" style={{ objectPosition: "60% 30%" }} />
+          <img src="/img/hero-home.webp" alt="" style={{ objectPosition: "50% 30%" }} />
           <div>
             <Reveal as="span" className="block text-[13px] font-bold tracking-[.02em] uppercase text-violet-400">
               + Contact us

@@ -9,10 +9,11 @@ import { Reveal } from "@/components/shared/reveal";
 import { useParallax } from "@/components/shared/use-parallax";
 
 const slides = [
-  { num: "04", title: "Four core categories", text: "From hair care and personal care to nails, lashes and hair extensions." },
-  { num: "01", title: "Hair Care", text: "HELicia botanicals for depth, shine and healthy volume — made for textured hair." },
-  { num: "02", title: "Nail Care", text: "FELenee press-ons and care kits: salon-grade artistry you can wear at home." },
-  { num: "03", title: "Extensions", text: "Zoe Onirun units and revamps — good hair days, custom-built to last." },
+  { num: "00", title: "Four core categories", text: "From hair extensions and hair care to nails, lashes and personal care." },
+  { num: "01", title: "Extensions", text: "Premium wigs, extensions and professional wig services." },
+  { num: "02", title: "Hair Care", text: "Quality hair care essentials for clean, healthy and well-maintained hair." },
+  { num: "03", title: "Nail Care", text: "Nail care essentials for healthy, beautiful and well-groomed nails." },
+  { num: "04", title: "Personal Care", text: "Everyday essentials to keep you fresh, confident and beautifully put together." },
 ];
 
 const values = [

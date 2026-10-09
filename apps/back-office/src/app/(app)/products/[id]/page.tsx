@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Badge } from "../../badge";
 import { Button } from "@/components/ui/button";
 import { ProductThumb } from "@/components/product-thumb";
-import { LINE_META, STOCK_BADGE, stockLevel } from "@/lib/catalog";
+import { LINE_META, PRODUCT_STATUS_BADGE, STOCK_BADGE, stockLevel } from "@/lib/catalog";
 import { getLowStockThreshold } from "@/lib/settings";
 import { ngn } from "@/lib/format";
 import { ToggleHideButton } from "./toggle-hide-button";
@@ -78,6 +78,18 @@ export default async function ProductViewPage({ params }: { params: Promise<{ id
             <div>
               <div className="text-[11px] text-noir-400">Low-stock alert at</div>
               <div className="mt-1.5 text-[15px] font-bold">{lowStockThreshold} units</div>
+            </div>
+            <div>
+              <div className="text-[11px] text-noir-400">Availability</div>
+              <span
+                className="mt-1.5 inline-block rounded-full px-[11px] py-[5px] text-[11px] font-bold"
+                style={{
+                  background: PRODUCT_STATUS_BADGE[product.status].bg,
+                  color: PRODUCT_STATUS_BADGE[product.status].fg,
+                }}
+              >
+                {PRODUCT_STATUS_BADGE[product.status].label}
+              </span>
             </div>
           </div>
 

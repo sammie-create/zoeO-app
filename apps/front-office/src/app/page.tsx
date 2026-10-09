@@ -1,5 +1,6 @@
 import { Bestsellers } from "@/components/home/bestsellers";
 import { Categories } from "@/components/home/categories";
+import { ComingSoon } from "@/components/home/coming-soon";
 import { Community } from "@/components/home/community";
 import { Follow } from "@/components/home/follow";
 import { Hero } from "@/components/home/hero";
@@ -9,10 +10,14 @@ import { ServicesTeaser } from "@/components/home/services-teaser";
 import { Testimonials } from "@/components/home/testimonials";
 import { Transformation } from "@/components/home/transformation";
 import { Why } from "@/components/home/why";
-import { getBestsellers, getTestimonials } from "@/lib/queries";
+import { getBestsellers, getComingSoonProducts, getTestimonials } from "@/lib/queries";
 
 export default async function Home() {
-  const [bestsellers, testimonials] = await Promise.all([getBestsellers(4), getTestimonials()]);
+  const [bestsellers, comingSoon, testimonials] = await Promise.all([
+    getBestsellers(4),
+    getComingSoonProducts(8),
+    getTestimonials(6),
+  ]);
 
   return (
     <div className="flex flex-col bg-bg">
@@ -22,6 +27,7 @@ export default async function Home() {
       <Why />
       <Transformation />
       <Bestsellers products={bestsellers} />
+        <ComingSoon products={comingSoon} />
       <ServicesTeaser />
       <Testimonials testimonials={testimonials} />
       <Community />

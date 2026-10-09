@@ -2,15 +2,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/shared/icon";
 import { Reveal } from "@/components/shared/reveal";
+import { getCategoryAvailability } from "@/lib/queries";
+import type { ProductCategory } from "@zoeallure/supabase";
 
-const categories = [
+const categories: { label: string; cat: ProductCategory; img: string; alt: string }[] = [
+  { label: "Extensions", cat: "wigs", img: "cat-extensions", alt: "Long wavy wig on a mannequin" },
   { label: "Hair Care", cat: "hair", img: "cat-hair", alt: "HELicia hair care bottle" },
   { label: "Personal Care", cat: "personal", img: "cat-personal", alt: "Lip gloss and roll-on deodorant" },
   { label: "Nail Care", cat: "nails", img: "cat-nail", alt: "Jewelled press-on nails on green velvet" },
-  { label: "Extensions", cat: "wigs", img: "cat-extensions", alt: "Long wavy wig on a mannequin" },
 ];
 
-export function Categories() {
+export async function Categories() {
+  const availability = await getCategoryAvailability();
+
   return (
     <section className="py-[clamp(64px,9vw,120px)]">
       <Reveal
@@ -24,46 +28,59 @@ export function Categories() {
         as="div"
         className="group/cats grid grid-cols-1 gap-1.5 md:grid-cols-2 lg:flex lg:h-[clamp(460px,48vw,720px)] lg:flex-row"
       >
-        {categories.map((c) => (
-          <Link
-            key={c.cat}
-            href={`/shop?cat=${c.cat}`}
-            className="group/cat relative flex h-[280px] overflow-hidden transition-[flex] duration-700 ease-[var(--ease)] md:h-[340px] lg:h-auto lg:flex-1 lg:hover:flex-[1.45]"
-          >
-            <Image
-              src={`/img/${c.img}.webp`}
-              alt={c.alt}
-              fill
-              sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
-              className="object-cover transition-[filter,transform] duration-1000 ease-[var(--ease)] hover:scale-[1.06] lg:group-hover/cats:not-hover:brightness-[.7] lg:group-hover/cats:not-hover:saturate-[.85]"
-            />
-            <div
-              className="pointer-events-none absolute inset-0"
-              style={{
-                backgroundImage:
-                  "linear-gradient(180deg, rgba(14,12,18,.35), rgba(14,12,18,0) 45%, rgba(14,12,18,.45))",
-              }}
-            />
-            <span
-              className="font-display absolute z-[2] text-[clamp(28px,2.8vw,42px)] leading-none font-bold whitespace-nowrap text-white capitalize [writing-mode:horizontal-tb] lg:[writing-mode:vertical-rl] lg:rotate-180"
-              style={{
-                top: "clamp(24px, 4vw, 56px)",
-                left: "clamp(20px, 2.6vw, 40px)",
-              }}
+        {categories.map((c) => {
+          const isAvailable = availability[c.cat];
+
+          return (
+            <Link
+              key={c.cat}
+              href={`/shop?cat=${c.cat}`}
+              className="group/cat relative flex h-[280px] overflow-hidden transition-[flex] duration-700 ease-[var(--ease)] md:h-[340px] lg:h-auto lg:flex-1 lg:hover:flex-[1.45]"
             >
-              {c.label}
-            </span>
-            <span
-              className="group/pill absolute z-[2] inline-flex h-11 items-center gap-3.5 rounded-full bg-white py-0 pr-1.5 pl-5 text-sm font-semibold whitespace-nowrap text-noir-900 shadow-[0_0_0_1.5px_rgba(255,255,255,.2)] transition-shadow duration-300 ease-[var(--ease)] hover:shadow-[0_12px_30px_-12px_rgba(127,35,224,.8),0_0_0_1.5px_rgba(255,255,255,.3)]"
-              style={{ left: "clamp(16px, 2.2vw, 36px)", bottom: "clamp(24px, 3vw, 48px)" }}
-            >
-              Shop {c.label}
-              <span className="grid size-7.5 place-items-center rounded-full bg-violet-800 text-white transition-[transform,background-color] duration-[280ms] ease-[var(--ease)] group-hover/pill:translate-x-[3px] group-hover/pill:bg-violet-500">
-                <Icon name="arrow" className="size-4" />
+              <Image
+                src={`/img/${c.img}.webp`}
+                alt={c.alt}
+                fill
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+                className="object-cover transition-[filter,transform] duration-1000 ease-[var(--ease)] hover:scale-[1.06] lg:group-hover/cats:not-hover:brightness-[.7] lg:group-hover/cats:not-hover:saturate-[.85]"
+              />
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(180deg, rgba(14,12,18,.35), rgba(14,12,18,0) 45%, rgba(14,12,18,.45))",
+                }}
+              />
+              <span
+                className={`absolute z-[2] inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold tracking-[.08em] uppercase ${
+                  isAvailable ? "bg-violet-500 text-white" : "bg-white/95 text-noir-900"
+                }`}
+                style={{ top: "clamp(20px, 2.4vw, 32px)", right: "clamp(16px, 2vw, 28px)" }}
+              >
+                {!isAvailable && <span className="size-1.5 animate-pulse rounded-full bg-violet-500" aria-hidden="true" />}
+                {isAvailable ? "Available now" : "Coming Soon"}
               </span>
-            </span>
-          </Link>
-        ))}
+              <span
+                className="font-display absolute z-[2] text-[clamp(28px,2.8vw,42px)] leading-none font-bold whitespace-nowrap text-white capitalize [writing-mode:horizontal-tb] lg:[writing-mode:vertical-rl] lg:rotate-180"
+                style={{
+                  top: "clamp(24px, 4vw, 56px)",
+                  left: "clamp(20px, 2.6vw, 40px)",
+                }}
+              >
+                {c.label}
+              </span>
+              <span
+                className="group/pill absolute z-[2] inline-flex h-11 items-center gap-3.5 rounded-full bg-white py-0 pr-1.5 pl-5 text-sm font-semibold whitespace-nowrap text-noir-900 shadow-[0_0_0_1.5px_rgba(255,255,255,.2)] transition-shadow duration-300 ease-[var(--ease)] hover:shadow-[0_12px_30px_-12px_rgba(127,35,224,.8),0_0_0_1.5px_rgba(255,255,255,.3)]"
+                style={{ left: "clamp(16px, 2.2vw, 36px)", bottom: "clamp(24px, 3vw, 48px)" }}
+              >
+                Shop {c.label}
+                <span className="grid size-7.5 place-items-center rounded-full bg-violet-800 text-white transition-[transform,background-color] duration-[280ms] ease-[var(--ease)] group-hover/pill:translate-x-[3px] group-hover/pill:bg-violet-500">
+                  <Icon name="arrow" className="size-4" />
+                </span>
+              </span>
+            </Link>
+          );
+        })}
       </Reveal>
     </section>
   );

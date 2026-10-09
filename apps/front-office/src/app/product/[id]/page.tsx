@@ -67,7 +67,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
           <div className="stock">
             <div>
-              <span className="pulse-dot size-2 animate-pulse rounded-full" />
+              <span className="pulse-dot size-2 rounded-full" />
               {product.stock_units > 0 ? `${product.stock_units} in stock — ships out tomorrow` : "Currently out of stock"}
             </div>
             <div className="muted">

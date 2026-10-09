@@ -35,6 +35,8 @@ export function TestimonialModal({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
+  const [posX, setPosX] = useState(50);
+  const [posY, setPosY] = useState(25);
 
   useEffect(() => {
     if (open) {
@@ -44,8 +46,17 @@ export function TestimonialModal({
       setImageFile(null);
       setImagePreview(testimonial?.photo_url ?? null);
       setRemoveImage(false);
+      setPosX(testimonial?.photo_pos_x ?? 50);
+      setPosY(testimonial?.photo_pos_y ?? 25);
     }
   }, [open, testimonial]);
+
+  function handleFocalClick(e: React.MouseEvent<HTMLDivElement>) {
+    if (!imagePreview) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPosX(Math.max(0, Math.min(100, Math.round(((e.clientX - rect.left) / rect.width) * 100))));
+    setPosY(Math.max(0, Math.min(100, Math.round(((e.clientY - rect.top) / rect.height) * 100))));
+  }
 
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -80,7 +91,15 @@ export function TestimonialModal({
         photoUrl = null;
       }
 
-      const input = { customer_name: name, quote, service_label: service || null, photo_url: photoUrl, status };
+      const input = {
+        customer_name: name,
+        quote,
+        service_label: service || null,
+        photo_url: photoUrl,
+        photo_pos_x: posX,
+        photo_pos_y: posY,
+        status,
+      };
       if (isEdit) {
         await updateTestimonial(testimonial.id, input);
         toast.success("Testimonial updated");
@@ -117,31 +136,54 @@ export function TestimonialModal({
               onChange={handleFileChange}
               className="hidden"
             />
-            <div className="flex items-center gap-3">
-              <div className="relative size-16 flex-none overflow-hidden rounded-full border-[1.5px] border-dashed border-noir-200 bg-noir-50">
+            <div className="flex items-start gap-3">
+              <div
+                className={`relative size-28 flex-none overflow-hidden rounded-[14px] border-[1.5px] border-dashed border-noir-200 bg-noir-50 ${imagePreview ? "cursor-crosshair" : ""}`}
+                onClick={handleFocalClick}
+              >
                 {imagePreview && (
-                  // eslint-disable-next-line @next/next/no-img-element -- local object URL / Supabase Storage URL, no next/image loader configured
-                  <img src={imagePreview} alt={name || "Customer photo"} className="size-full object-cover" />
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element -- local object URL / Supabase Storage URL, no next/image loader configured */}
+                    <img
+                      src={imagePreview}
+                      alt={name || "Customer photo"}
+                      className="pointer-events-none size-full object-cover"
+                      style={{ objectPosition: `${posX}% ${posY}%` }}
+                    />
+                    <span
+                      className="pointer-events-none absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-violet-500 shadow-[0_0_0_1px_rgba(0,0,0,.25)]"
+                      style={{ left: `${posX}%`, top: `${posY}%` }}
+                    />
+                  </>
                 )}
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                className="h-auto rounded-full border-noir-200 px-3.5 py-1.5 text-[11.5px] font-bold"
-              >
-                {imagePreview ? "Change" : "Upload"}
-              </Button>
-              {imagePreview && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleRemoveImage}
-                  className="h-auto rounded-full border-noir-200 px-3.5 py-1.5 text-[11.5px] font-bold"
-                >
-                  Remove
-                </Button>
-              )}
+              <div className="flex flex-col items-start gap-2">
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="h-auto rounded-full border-noir-200 px-3.5 py-1.5 text-[11.5px] font-bold"
+                  >
+                    {imagePreview ? "Change" : "Upload"}
+                  </Button>
+                  {imagePreview && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleRemoveImage}
+                      className="h-auto rounded-full border-noir-200 px-3.5 py-1.5 text-[11.5px] font-bold"
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </div>
+                {imagePreview && (
+                  <p className="text-[11px] leading-snug text-noir-400">
+                    Click anywhere on the photo to set its crop focal point.
+                  </p>
+                )}
+              </div>
             </div>
           </div>
           <div>

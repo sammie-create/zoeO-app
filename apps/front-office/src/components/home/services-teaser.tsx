@@ -11,10 +11,11 @@ const teasers = [
   },
   {
     title: "Bridal Hair & Makeup",
-    image: "/img/svc-bridal.webp",
-    alt: "Bride with glittering eye makeup",
+    image: "/img/svc-bridal-new.webp",
+    alt: "Bride with a sleek pinned updo and soft glam makeup",
     text: "Flawless, bespoke bridal transformations tailored beautifully for your magical celebration.",
     right: true,
+    pos: "35% 20%",
   },
   {
     title: "Lash Extensions",
@@ -24,10 +25,11 @@ const teasers = [
   },
   {
     title: "Nail Services",
-    image: "/img/svc-nail.webp",
-    alt: "Almond nails with red French tips and gold detail",
+    image: "/img/svc-nail-new.webp",
+    alt: "Almond nails with black French tips on marble",
     text: "Relaxing aesthetic manicures and pedicures, expert extensions, and custom nail art designs.",
     right: true,
+    pos: "30% 50%",
   },
 ];
 
@@ -56,7 +58,12 @@ export function ServicesTeaser() {
                 className={`svc block ${t.right ? "svc--right" : ""}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element -- local marketing asset */}
-                <img src={t.image} alt={t.alt} loading="lazy" />
+                <img
+                  src={t.image}
+                  alt={t.alt}
+                  loading="lazy"
+                  style={t.pos ? { objectPosition: t.pos } : undefined}
+                />
                 <div className="svc__body">
                   <h3>{t.title}</h3>
                   <span className="svc__hint">

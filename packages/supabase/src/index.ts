@@ -2,4 +2,4 @@ export { createClient as createBrowserClient } from "./client";
 export { createClient as createServerClient } from "./server";
 export { createAdminClient } from "./admin";
 export { updateSession } from "./middleware";
-export type { Database, Json, ProductCategory, Tables, TablesInsert, TablesUpdate } from "./types";
+export type { Database, Json, ProductCategory, ProductStatus, Tables, TablesInsert, TablesUpdate } from "./types";

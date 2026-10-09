@@ -6,6 +6,7 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type ProductCategory = "hair" | "personal" | "nails" | "wigs";
+export type ProductStatus = "available" | "coming_soon" | "out_of_stock";
 
 export interface Database {
   public: {
@@ -93,6 +94,7 @@ export interface Database {
           stock_units: number;
           is_hidden: boolean;
           is_bestseller: boolean;
+          status: ProductStatus;
           description: string | null;
           image_url: string | null;
           created_at: string;
@@ -108,6 +110,7 @@ export interface Database {
           stock_units?: number;
           is_hidden?: boolean;
           is_bestseller?: boolean;
+          status?: ProductStatus;
           description?: string | null;
           image_url?: string | null;
           created_at?: string;
@@ -123,6 +126,7 @@ export interface Database {
           stock_units?: number;
           is_hidden?: boolean;
           is_bestseller?: boolean;
+          status?: ProductStatus;
           description?: string | null;
           image_url?: string | null;
           created_at?: string;
@@ -452,6 +456,8 @@ export interface Database {
           customer_name: string;
           service_label: string | null;
           photo_url: string | null;
+          photo_pos_x: number;
+          photo_pos_y: number;
           status: "draft" | "published";
           created_at: string;
           updated_at: string;
@@ -462,6 +468,8 @@ export interface Database {
           customer_name: string;
           service_label?: string | null;
           photo_url?: string | null;
+          photo_pos_x?: number;
+          photo_pos_y?: number;
           status?: "draft" | "published";
           created_at?: string;
           updated_at?: string;
@@ -472,6 +480,8 @@ export interface Database {
           customer_name?: string;
           service_label?: string | null;
           photo_url?: string | null;
+          photo_pos_x?: number;
+          photo_pos_y?: number;
           status?: "draft" | "published";
           created_at?: string;
           updated_at?: string;
@@ -694,6 +704,7 @@ export interface Database {
     };
     Enums: {
       product_category: ProductCategory;
+      product_status: ProductStatus;
     };
     CompositeTypes: Record<string, never>;
   };
