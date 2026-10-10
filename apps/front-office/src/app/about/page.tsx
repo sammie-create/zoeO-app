@@ -55,7 +55,11 @@ export default async function AboutPage() {
       <section className="about-hero">
         <div className="about-hero__frame">
           {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-          <img src="/img/hero-about.webp" alt="Woman with long braids and glossy makeup" />
+          <img
+            src="/img/hero-about-gele-portrait.webp"
+            alt="Woman in a gold gele and blue and purple aso-oke"
+            style={{ objectPosition: "50% 60%" }}
+          />
           <Reveal as="span" className="block text-sm font-bold text-violet-300 uppercase">
             + About us
           </Reveal>
