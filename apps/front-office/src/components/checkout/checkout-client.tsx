@@ -1,21 +1,31 @@
 "use client";
 
+import { createClient as createBrowserClient } from "@zoeallure/supabase/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Icon } from "@/components/shared/icon";
 import { Reveal } from "@/components/shared/reveal";
 import { placeOrder } from "@/lib/actions";
-import type { Product } from "@/lib/queries";
+import { uploadImage, validateUploadImage } from "@/lib/image-upload";
+import type { Product, SiteSettings } from "@/lib/queries";
 import { useCart } from "@/lib/store/cart";
 import { useCurrency } from "@/lib/store/currency";
 
-export function CheckoutClient({ products }: { products: Product[] }) {
+const PAYMENT_PROOFS_BUCKET = "payment-proofs";
+
+export function CheckoutClient({
+  products,
+  settings,
+}: {
+  products: Product[];
+  settings: SiteSettings | null;
+}) {
   const { items, clear } = useCart();
   const { money } = useCurrency();
   const router = useRouter();
+  const [supabase] = useState(() => createBrowserClient());
 
-  const [mode, setMode] = useState<"ship" | "pickup">("ship");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -23,10 +33,35 @@ export function CheckoutClient({ products }: { products: Product[] }) {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("Lagos");
   const [state, setState] = useState("Lagos");
-  const [pay, setPay] = useState("Paystack");
+  const pay = "Bank transfer";
+  const [proofUrl, setProofUrl] = useState<string | null>(null);
+  const [proofFileName, setProofFileName] = useState<string | null>(null);
+  const [uploadingProof, setUploadingProof] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [invalid, setInvalid] = useState<Set<string>>(new Set());
+
+  async function handleProofChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const err = validateUploadImage(file);
+    if (err) {
+      setUploadError(err);
+      return;
+    }
+    setUploadError(null);
+    setUploadingProof(true);
+    try {
+      const url = await uploadImage(supabase, PAYMENT_PROOFS_BUCKET, file);
+      setProofUrl(url);
+      setProofFileName(file.name);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Could not upload file.");
+    } finally {
+      setUploadingProof(false);
+    }
+  }
 
   const rows = items
     .map((i) => ({ item: i, product: products.find((p) => p.id === i.id) }))
@@ -50,7 +85,7 @@ export function CheckoutClient({ products }: { products: Product[] }) {
   }
 
   const subtotal = rows.reduce((s, r) => s + r.product.price * r.item.qty, 0);
-  const shipping = mode === "pickup" || subtotal >= 50000 ? 0 : state === "Lagos" ? 2500 : 4500;
+  const shipping = subtotal >= 50000 ? 0 : state === "Lagos" ? 2500 : 4500;
   const total = subtotal + shipping;
 
   async function handleSubmit(e: FormEvent) {
@@ -60,28 +95,28 @@ export function CheckoutClient({ products }: { products: Product[] }) {
     const next = new Set<string>();
     if (!/\S+@\S+\.\S+/.test(email)) next.add("email");
     if (phone.replace(/\D/g, "").length < 7) next.add("phone");
-    if (mode === "ship") {
-      if (!firstName.trim()) next.add("firstName");
-      if (!lastName.trim()) next.add("lastName");
-      if (!address.trim()) next.add("address");
-      if (!city.trim()) next.add("city");
-    }
+    if (!firstName.trim()) next.add("firstName");
+    if (!lastName.trim()) next.add("lastName");
+    if (!address.trim()) next.add("address");
+    if (!city.trim()) next.add("city");
+    if (!proofUrl) next.add("proof");
     setInvalid(next);
     if (next.size > 0) return;
 
     setSubmitting(true);
     try {
       const order = await placeOrder({
-        name: mode === "ship" ? `${firstName} ${lastName}`.trim() : (firstName || "Guest").trim(),
+        name: `${firstName} ${lastName}`.trim(),
         phone,
         email,
-        fulfilmentType: mode === "ship" ? "delivery" : "pickup",
-        fulfilmentDetail: mode === "ship" ? `${city}, ${state}` : "Ikeja pickup",
-        address: mode === "ship" ? address : null,
+        fulfilmentType: "delivery",
+        fulfilmentDetail: `${city}, ${state}`,
+        address,
         items: rows.map((r) => ({ id: r.product.id, qty: r.item.qty })),
+        paymentProofUrl: proofUrl,
       });
       clear();
-      router.push(`/checkout/confirmation?ref=${order.ref}&pay=${encodeURIComponent(pay)}&total=${total}&mode=${mode}&email=${encodeURIComponent(email)}`);
+      router.push(`/checkout/confirmation?ref=${order.ref}&pay=${encodeURIComponent(pay)}&total=${total}&mode=ship&email=${encodeURIComponent(email)}`);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Something went wrong placing your order.");
       setSubmitting(false);
@@ -100,6 +135,30 @@ export function CheckoutClient({ products }: { products: Product[] }) {
           <form onSubmit={handleSubmit} noValidate>
             <Reveal as="fieldset" className="mb-9 border-0 p-0">
               <h2>Contact</h2>
+              <div className="grid2">
+                <div className={`field ${invalid.has("firstName") ? "is-invalid" : ""}`}>
+                  <label htmlFor="co-first">First name</label>
+                  <input
+                    id="co-first"
+                    className="input"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    autoComplete="given-name"
+                  />
+                  <span className="err">Required.</span>
+                </div>
+                <div className={`field ${invalid.has("lastName") ? "is-invalid" : ""}`}>
+                  <label htmlFor="co-last">Last name</label>
+                  <input
+                    id="co-last"
+                    className="input"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    autoComplete="family-name"
+                  />
+                  <span className="err">Required.</span>
+                </div>
+              </div>
               <div className="grid2">
                 <div className={`field ${invalid.has("email") ? "is-invalid" : ""}`}>
                   <label htmlFor="co-email">Email</label>
@@ -132,39 +191,22 @@ export function CheckoutClient({ products }: { products: Product[] }) {
             <Reveal as="fieldset" delay={80} className="mb-9 border-0 p-0">
               <h2>Delivery</h2>
               <div className="seg mb-1" role="radiogroup">
-                <button type="button" onClick={() => setMode("ship")} className={mode === "ship" ? "is-active" : ""}>
+                <button type="button" className="is-active">
                   Ship to me
                 </button>
-                <button type="button" onClick={() => setMode("pickup")} className={mode === "pickup" ? "is-active" : ""}>
+                <button
+                  type="button"
+                  disabled
+                  className="relative cursor-not-allowed opacity-50"
+                  title="Pickup isn't available yet"
+                >
                   Pick up in Ikeja
+                  <span className="absolute top-1 right-1.5 rounded-full bg-violet-500 px-1.5 py-0.5 text-[9px] font-bold tracking-wide text-white uppercase">
+                    Soon
+                  </span>
                 </button>
               </div>
-              {mode === "ship" && (
-                <div className="grid gap-4 pt-4">
-                  <div className="grid2">
-                    <div className={`field ${invalid.has("firstName") ? "is-invalid" : ""}`}>
-                      <label htmlFor="co-first">First name</label>
-                      <input
-                        id="co-first"
-                        className="input"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        autoComplete="given-name"
-                      />
-                      <span className="err">Required.</span>
-                    </div>
-                    <div className={`field ${invalid.has("lastName") ? "is-invalid" : ""}`}>
-                      <label htmlFor="co-last">Last name</label>
-                      <input
-                        id="co-last"
-                        className="input"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        autoComplete="family-name"
-                      />
-                      <span className="err">Required.</span>
-                    </div>
-                  </div>
+              <div className="grid gap-4 pt-4">
                   <div className={`field ${invalid.has("address") ? "is-invalid" : ""}`}>
                     <label htmlFor="co-addr">Address</label>
                     <input
@@ -196,22 +238,65 @@ export function CheckoutClient({ products }: { products: Product[] }) {
                     </div>
                   </div>
                 </div>
-              )}
             </Reveal>
 
             <Reveal as="fieldset" delay={160} className="mb-9 border-0 p-0">
               <h2>Payment</h2>
               <div className="flex flex-col gap-2.5">
-                {["Paystack", "Flutterwave", "Bank transfer"].map((opt) => (
+                {/* Paystack and Flutterwave aren't integrated yet — bank transfer only for now.
+                {["Paystack", "Flutterwave"].map((opt) => (
                   <label key={opt} className={`pay-opt ${pay === opt ? "is-active" : ""}`}>
-                    <input type="radio" name="pay" checked={pay === opt} onChange={() => setPay(opt)} />
+                    <input type="radio" name="pay" checked={pay === opt} readOnly />
+                    {opt === "Paystack" ? "Paystack — card, bank or USSD" : opt}
+                  </label>
+                ))}
+                */}
+                {["Bank transfer"].map((opt) => (
+                  <label key={opt} className={`pay-opt ${pay === opt ? "is-active" : ""}`}>
+                    <input type="radio" name="pay" checked={pay === opt} readOnly />
                     {opt === "Paystack" ? "Paystack — card, bank or USSD" : opt}
                   </label>
                 ))}
               </div>
+              <div className="mt-3.5 rounded-xl border border-white/12 light:border-noir-900/12 p-4 text-[13.5px] leading-relaxed">
+                <p className="mb-2 font-bold uppercase tracking-[0.05em] text-[11px] text-noir-400 light:text-noir-600">
+                  Transfer to
+                </p>
+                <p>
+                  Bank: <strong>{settings?.bank_name || "—"}</strong>
+                  <br />
+                  Account name: <strong>{settings?.bank_account_name || "—"}</strong>
+                  <br />
+                  Account number: <strong>{settings?.bank_account_number || "—"}</strong>
+                </p>
+                <p className="mt-2 text-noir-400 light:text-noir-600">
+                  After transferring, upload a screenshot or PDF of the receipt below — we&apos;ll confirm your order once
+                  it&apos;s reviewed.
+                </p>
+              </div>
+
+              <div className={`field mt-3.5 ${invalid.has("proof") ? "is-invalid" : ""}`}>
+                <label htmlFor="co-proof">Proof of payment</label>
+                <input
+                  id="co-proof"
+                  type="file"
+                  accept="image/*,application/pdf"
+                  className="input"
+                  onChange={handleProofChange}
+                  disabled={uploadingProof}
+                />
+                <span className="err">Please upload proof of your bank transfer.</span>
+                {uploadingProof && <p className="mt-1.5 text-[13px] text-noir-400 light:text-noir-600">Uploading…</p>}
+                {proofFileName && !uploadingProof && (
+                  <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-noir-400 light:text-noir-600">
+                    <Icon name="check" className="size-4 text-status-booked" /> {proofFileName}
+                  </p>
+                )}
+                {uploadError && <p className="mt-1.5 text-[13px] font-medium text-status-cancelled">{uploadError}</p>}
+              </div>
+
               <p className="mt-3 flex items-center gap-2 text-[13px] text-noir-400 light:text-noir-600">
-                <Icon name="lock" className="size-4" /> Payments are SSL encrypted. You&apos;ll be redirected to complete
-                payment securely.
+                <Icon name="lock" className="size-4" /> Your details are encrypted and only used to process this order.
               </p>
             </Reveal>
 
@@ -252,7 +337,7 @@ export function CheckoutClient({ products }: { products: Product[] }) {
               <span>{money(subtotal, { decimals: true })}</span>
             </div>
             <div className="sum-row">
-              <span>{mode === "pickup" ? "Store pickup" : "Shipping"}</span>
+              <span>Shipping</span>
               <span>{shipping ? money(shipping, { decimals: true }) : "Free"}</span>
             </div>
             <div className="sum-row grand">

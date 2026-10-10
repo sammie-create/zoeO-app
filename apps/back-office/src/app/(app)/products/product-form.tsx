@@ -248,7 +248,16 @@ export function ProductForm({
                 >
                   −
                 </Button>
-                <span className="flex-1 text-center text-sm font-bold">{ngn(price)}</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={ngn(price)}
+                  onChange={(e) => {
+                    const digits = e.target.value.replace(/[^0-9]/g, "");
+                    setPrice(digits ? Number(digits) : 0);
+                  }}
+                  className="w-full flex-1 bg-transparent text-center text-sm font-bold outline-none"
+                />
                 <Button
                   type="button"
                   variant="ghost"
@@ -274,7 +283,16 @@ export function ProductForm({
                 >
                   −
                 </Button>
-                <span className="flex-1 text-center text-sm font-bold">{units}</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={units}
+                  onChange={(e) => {
+                    const digits = e.target.value.replace(/[^0-9]/g, "");
+                    setUnits(digits ? Number(digits) : 0);
+                  }}
+                  className="w-full flex-1 bg-transparent text-center text-sm font-bold outline-none"
+                />
                 <Button
                   type="button"
                   variant="ghost"
