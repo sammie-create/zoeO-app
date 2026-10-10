@@ -5,7 +5,7 @@ import { Reveal } from "@/components/shared/reveal";
 export function Hero() {
   return (
     <section data-hero className="p-2 sm:p-4">
-      <div className="relative flex min-h-[560px] items-end overflow-hidden rounded-[28px] border border-white/28 sm:min-h-[92vh] sm:max-h-[860px]">
+      <div className="relative flex min-h-[100svh] items-end overflow-hidden rounded-[28px] border border-white/28 sm:min-h-[92vh] sm:max-h-[860px]">
         <Image
           src="/img/hero-home.webp"
           alt="Smiling bride with soft curls and pearl earrings"
