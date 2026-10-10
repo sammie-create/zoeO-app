@@ -42,6 +42,16 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               Payment status
             </div>
             <PaymentStatusPicker orderId={order.id} current={order.payment_status} />
+            {order.payment_proof_url && (
+              <a
+                href={order.payment_proof_url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3.5 inline-flex items-center gap-1.5 text-[12.5px] font-bold text-violet-600 hover:underline"
+              >
+                View proof of payment →
+              </a>
+            )}
           </div>
 
           <div className="rounded-[18px] border border-noir-100 p-6">

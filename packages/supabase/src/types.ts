@@ -203,6 +203,7 @@ export interface Database {
             | "delivered"
             | "ready_for_pickup"
             | "picked_up";
+          payment_proof_url: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -223,6 +224,7 @@ export interface Database {
             | "delivered"
             | "ready_for_pickup"
             | "picked_up";
+          payment_proof_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -243,6 +245,7 @@ export interface Database {
             | "delivered"
             | "ready_for_pickup"
             | "picked_up";
+          payment_proof_url?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -643,6 +646,9 @@ export interface Database {
           show_exhibition_teaser: boolean;
           whatsapp_number: string;
           instagram_handle: string;
+          bank_name: string;
+          bank_account_name: string;
+          bank_account_number: string;
           updated_at: string;
         };
         Insert: {
@@ -652,6 +658,9 @@ export interface Database {
           show_exhibition_teaser?: boolean;
           whatsapp_number?: string;
           instagram_handle?: string;
+          bank_name?: string;
+          bank_account_name?: string;
+          bank_account_number?: string;
           updated_at?: string;
         };
         Update: {
@@ -661,6 +670,9 @@ export interface Database {
           show_exhibition_teaser?: boolean;
           whatsapp_number?: string;
           instagram_handle?: string;
+          bank_name?: string;
+          bank_account_name?: string;
+          bank_account_number?: string;
           updated_at?: string;
         };
         Relationships: [];

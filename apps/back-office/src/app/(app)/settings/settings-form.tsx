@@ -18,6 +18,9 @@ export function SettingsForm({ settings }: { settings: Tables<"site_settings"> }
   const [teaser, setTeaser] = useState(settings.show_exhibition_teaser);
   const [whatsapp, setWhatsapp] = useState(settings.whatsapp_number);
   const [instagram, setInstagram] = useState(settings.instagram_handle);
+  const [bankName, setBankName] = useState(settings.bank_name);
+  const [bankAccountName, setBankAccountName] = useState(settings.bank_account_name);
+  const [bankAccountNumber, setBankAccountNumber] = useState(settings.bank_account_number);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -31,6 +34,9 @@ export function SettingsForm({ settings }: { settings: Tables<"site_settings"> }
         show_exhibition_teaser: teaser,
         whatsapp_number: whatsapp,
         instagram_handle: instagram,
+        bank_name: bankName,
+        bank_account_name: bankAccountName,
+        bank_account_number: bankAccountNumber,
       });
       router.refresh();
       setSaved(true);
@@ -132,6 +138,43 @@ export function SettingsForm({ settings }: { settings: Tables<"site_settings"> }
             onChange={(e) => setInstagram(e.target.value)}
             className="h-auto w-full rounded-control border-noir-200 bg-noir-50 px-3.5 py-3 text-sm font-semibold focus-visible:border-violet-500 focus-visible:ring-violet-100"
           />
+        </div>
+      </div>
+
+      <div className="grid gap-3.5 rounded-[18px] border border-noir-100 p-6.5 sm:col-span-2">
+        <div className="text-sm font-bold text-noir-800">Bank transfer details</div>
+        <div className="-mt-3 text-[12.5px] text-noir-400">
+          Shown at checkout — customers transfer here and upload proof of payment.
+        </div>
+        <div className="grid gap-4.5 sm:grid-cols-3">
+          <div>
+            <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">Bank name</div>
+            <Input
+              value={bankName}
+              onChange={(e) => setBankName(e.target.value)}
+              className="h-auto w-full rounded-control border-noir-200 bg-noir-50 px-3.5 py-3 text-sm font-semibold focus-visible:border-violet-500 focus-visible:ring-violet-100"
+            />
+          </div>
+          <div>
+            <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">
+              Account name
+            </div>
+            <Input
+              value={bankAccountName}
+              onChange={(e) => setBankAccountName(e.target.value)}
+              className="h-auto w-full rounded-control border-noir-200 bg-noir-50 px-3.5 py-3 text-sm font-semibold focus-visible:border-violet-500 focus-visible:ring-violet-100"
+            />
+          </div>
+          <div>
+            <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">
+              Account number
+            </div>
+            <Input
+              value={bankAccountNumber}
+              onChange={(e) => setBankAccountNumber(e.target.value)}
+              className="h-auto w-full rounded-control border-noir-200 bg-noir-50 px-3.5 py-3 text-sm font-semibold focus-visible:border-violet-500 focus-visible:ring-violet-100"
+            />
+          </div>
         </div>
       </div>
 

@@ -12,6 +12,7 @@ export async function placeOrder(input: {
   fulfilmentDetail: string | null;
   address: string | null;
   items: CartLine[];
+  paymentProofUrl: string | null;
 }) {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("create_guest_order", {
@@ -22,6 +23,7 @@ export async function placeOrder(input: {
     p_fulfilment_detail: input.fulfilmentDetail,
     p_address: input.address,
     p_items: input.items.map((i) => ({ product_id: i.id, quantity: i.qty })),
+    p_payment_proof_url: input.paymentProofUrl,
   });
   if (error) throw new Error(error.message);
   return data;
