@@ -60,7 +60,11 @@ export function ShopClient({ products }: { products: Product[] }) {
   const [page, setPage] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(!!initialBrand);
   const [brands, setBrands] = useState<Set<string>>(new Set(initialBrand ? [initialBrand] : []));
-  const [maxPrice, setMaxPrice] = useState(60000);
+  const priceCeiling = useMemo(() => {
+    const highest = products.reduce((max, p) => Math.max(max, p.price), 0);
+    return Math.max(60000, Math.ceil(highest / 5000) * 5000);
+  }, [products]);
+  const [maxPrice, setMaxPrice] = useState(priceCeiling);
   const [stockOnly, setStockOnly] = useState(false);
   const [lowOnly, setLowOnly] = useState(false);
   const [view, setView] = useState<"grid" | "list">(() => {
@@ -297,7 +301,7 @@ export function ShopClient({ products }: { products: Product[] }) {
                 type="range"
                 className="range"
                 min={4000}
-                max={60000}
+                max={priceCeiling}
                 step={500}
                 value={maxPrice}
                 onChange={(e) => {
