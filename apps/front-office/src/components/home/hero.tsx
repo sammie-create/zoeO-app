@@ -8,12 +8,12 @@ export function Hero() {
       <div className="relative flex min-h-[560px] items-end overflow-hidden rounded-[28px] border border-white/28 sm:min-h-[92vh] sm:max-h-[860px]">
         <Image
           src="/img/hero-home.webp"
-          alt="Woman with glowing makeup and crystal earrings"
+          alt="Smiling bride with soft curls and pearl earrings"
           fill
           priority
           sizes="100vw"
           className="animate-[kenburns_18s_ease-out_forwards] object-cover"
-          style={{ objectPosition: "60% 30%" }}
+          style={{ objectPosition: "50% 15%" }}
         />
         <div
           className="absolute inset-0"

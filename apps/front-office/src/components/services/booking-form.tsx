@@ -27,6 +27,7 @@ export function BookingForm({ services, preselectId }: { services: Service[]; pr
     if (preselectId && services.some((s) => s.id === preselectId)) setSelectedId(preselectId);
   }
   const selected = services.find((s) => s.id === selectedId) ?? services[0];
+  const [svcOpen, setSvcOpen] = useState(false);
   const [where, setWhere] = useState<"studio" | "home_service">("studio");
   const [date, setDate] = useState(isoToday(1));
   const [slot, setSlot] = useState<string | null>(null);
@@ -93,13 +94,13 @@ export function BookingForm({ services, preselectId }: { services: Service[]; pr
           <Icon name="check" className="size-7" />
         </span>
         <h3 className="font-display text-2xl">You&apos;re booked in</h3>
-        <p className="mt-2 text-noir-300">We&apos;ll confirm on {phone} shortly.</p>
+        <p className="mt-2 text-muted-foreground">We&apos;ll confirm on {phone} shortly.</p>
         <div className="appt">
           <div className="appt__who">
             <span className="avatar">{initials}</span>
             <div>
               <strong>{name.trim()}</strong>
-              <div className="text-noir-300">
+              <div className="text-muted-foreground">
                 {selected?.name} · {selected && durationLabel(selected.duration_mins)} ·{" "}
                 {where === "studio" ? "Salon" : "Home service"}
               </div>
@@ -117,13 +118,13 @@ export function BookingForm({ services, preselectId }: { services: Service[]; pr
           </div>
           <div className="appt__foot">
             <span className="chip chip--booked">Confirmed</span>
-            <span className="mono text-noir-400">#{confirmed.ref}</span>
+            <span className="mono text-muted-foreground">#{confirmed.ref}</span>
           </div>
         </div>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Link
             href="/services#book"
-            className="inline-flex h-12 items-center rounded-full border border-white/20 px-6 text-sm font-bold uppercase hover:bg-white/6"
+            className="inline-flex h-12 items-center rounded-full border border-white/20 light:border-noir-900/20 px-6 text-sm font-bold uppercase hover:bg-white/6 light:hover:bg-noir-900/6"
           >
             Book another
           </Link>
@@ -142,28 +143,56 @@ export function BookingForm({ services, preselectId }: { services: Service[]; pr
     <form onSubmit={handleSubmit} className="book__form" noValidate>
       <div className="field">
         <label>Choose a service</label>
-        <div className="svc-pick" role="radiogroup">
-          {services.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => setSelectedId(s.id)}
-              role="radio"
-              aria-checked={selected?.id === s.id}
-              className={`svc-opt ${selected?.id === s.id ? "is-active" : ""}`}
-            >
-              <span className="ic">
-                <Icon name={isIconName(s.icon) ? s.icon : "sparkle"} className="size-4" />
-              </span>
-              <span>
-                <strong>{s.name}</strong>
+        <div className={`svc-select ${svcOpen ? "is-open" : ""}`}>
+          <button
+            type="button"
+            className="svc-opt svc-select__trigger"
+            aria-expanded={svcOpen}
+            onClick={() => setSvcOpen((v) => !v)}
+          >
+            <span className="ic">
+              <Icon name={selected && isIconName(selected.icon) ? selected.icon : "sparkle"} className="size-4" />
+            </span>
+            <span>
+              <strong>{selected?.name}</strong>
+              {selected && (
                 <small>
-                  {durationLabel(s.duration_mins)} · <MoneyLabel ngn={s.price} />
+                  {durationLabel(selected.duration_mins)} · <MoneyLabel ngn={selected.price} />
                 </small>
-              </span>
-              <span className="radio" />
-            </button>
-          ))}
+              )}
+            </span>
+            <Icon name="chevronDown" className="chev size-4" />
+          </button>
+          <div className="svc-select__panel">
+            <div>
+              <div className="svc-pick" role="radiogroup">
+                {services.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedId(s.id);
+                      setSvcOpen(false);
+                    }}
+                    role="radio"
+                    aria-checked={selected?.id === s.id}
+                    className={`svc-opt ${selected?.id === s.id ? "is-active" : ""}`}
+                  >
+                    <span className="ic">
+                      <Icon name={isIconName(s.icon) ? s.icon : "sparkle"} className="size-4" />
+                    </span>
+                    <span>
+                      <strong>{s.name}</strong>
+                      <small>
+                        {durationLabel(s.duration_mins)} · <MoneyLabel ngn={s.price} />
+                      </small>
+                    </span>
+                    <span className="radio" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

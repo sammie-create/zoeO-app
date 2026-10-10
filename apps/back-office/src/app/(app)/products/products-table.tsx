@@ -9,7 +9,7 @@ import { RowMenu } from "../row-menu";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ProductThumb } from "@/components/product-thumb";
-import { LINE_META, STOCK_BADGE, stockLevel } from "@/lib/catalog";
+import { LINE_META, PRODUCT_STATUS_BADGE, STOCK_BADGE, stockLevel } from "@/lib/catalog";
 import { ngn } from "@/lib/format";
 import { deleteProduct, toggleProductHidden } from "./actions";
 import type { Tables } from "@zoeallure/supabase";
@@ -48,6 +48,9 @@ export function ProductsTable({
             <TableHead className="text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">Stock</TableHead>
             <TableHead className="text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">Units</TableHead>
             <TableHead className="text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">
+              Availability
+            </TableHead>
+            <TableHead className="text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">
               Visibility
             </TableHead>
             <TableHead />
@@ -56,7 +59,7 @@ export function ProductsTable({
         <TableBody>
           {products.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="px-5 py-8 text-[13px] whitespace-normal text-noir-400">
+              <TableCell colSpan={7} className="px-5 py-8 text-[13px] whitespace-normal text-noir-400">
                 No products yet — add your first one.
               </TableCell>
             </TableRow>
@@ -86,6 +89,13 @@ export function ProductsTable({
                   <Badge label={level.label} bg={level.bg} fg={level.fg} />
                 </TableCell>
                 <TableCell className="text-xs text-noir-600">{p.stock_units}</TableCell>
+                <TableCell>
+                  <Badge
+                    label={PRODUCT_STATUS_BADGE[p.status].label}
+                    bg={PRODUCT_STATUS_BADGE[p.status].bg}
+                    fg={PRODUCT_STATUS_BADGE[p.status].fg}
+                  />
+                </TableCell>
                 <TableCell>
                   <Badge
                     label={p.is_hidden ? "Hidden" : "Visible"}

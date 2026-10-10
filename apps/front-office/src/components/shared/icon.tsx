@@ -255,6 +255,23 @@ const paths = {
     </>
   ),
   moon: <path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" />,
+  grid: (
+    <>
+      <rect x="4" y="4" width="7" height="7" rx="1.5" />
+      <rect x="13" y="4" width="7" height="7" rx="1.5" />
+      <rect x="4" y="13" width="7" height="7" rx="1.5" />
+      <rect x="13" y="13" width="7" height="7" rx="1.5" />
+    </>
+  ),
+  list: (
+    <>
+      <path d="M9 6h11M9 12h11M9 18h11" />
+      <circle cx="4.8" cy="6" r="1" fill="currentColor" />
+      <circle cx="4.8" cy="12" r="1" fill="currentColor" />
+      <circle cx="4.8" cy="18" r="1" fill="currentColor" />
+    </>
+  ),
+  chevronDown: <path d="M6 9l6 6 6-6" />,
 } as const;
 
 export type IconName = keyof typeof paths;

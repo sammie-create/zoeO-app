@@ -18,21 +18,31 @@ const journeySteps = [
 
 const values = [
   {
-    title: "Quality",
-    text: "Products and services held to one standard - the one we would accept ourselves.",
-    img: "after-portrait",
-    imgPosition: "50% 20%",
+    title: "Excellence",
+    text: "Rigorous high standards in every formula and weave.",
+    img: "bridal-tiara-portrait",
+    imgPosition: "50% 0%",
   },
-  { title: "Community", text: "Empowering the artists, stylists and technicians who make this industry work.", img: "svc-wig-sq" },
-  { title: "Convenience", text: "Everything within reach - shop, book and collect without the running around.", img: "p-wig-revamp-kit" },
+  {
+    title: "Quality",
+    text: "Sourcing premium ingredients and top-tier custom units.",
+    img: "wig-on-stand-gold",
+    imgPosition: "50% 15%",
+  },
+  {
+    title: "Authenticity",
+    text: "Honest promises, transparent booking, real results.",
+    img: "authenticity-portrait",
+    imgPosition: "50% 25%",
+  },
 ];
 
 const chapters = [
   { yr: "2021", title: "Where it started", text: "Zoe Onirun begins with wigs and wig revamp — turning weaves women already owned into beautiful, wearable units.", img: "line-zoe-onirun" },
   { yr: "2023", title: "Registered as a company", text: "Zoe Onirun becomes a limited liability company. Clients buy wigs from us or bring their own for transformation.", img: "p-body-wave-wig", imgPosition: "50% 25%" },
-  { yr: "2024", title: "ZoeO Bridals & Artistry", text: "Our brides asked for more. Bridal hair, makeup and gele come together under one trusted team.", img: "line-bridals", imgPosition: "50% 30%" },
+  { yr: "2024", title: "ZoeO Bridals & Artistry", text: "Our brides asked for more. Bridal hair, makeup and gele come together under one trusted team.", img: "bridal-artistry-smile", imgPosition: "50% 20%" },
   { yr: "2025", title: "ZoeO Allure is born", text: "Registered on May 5, 2025 — the umbrella brand. Lash extensions, nails and brow lamination join the family.", img: "expert-helen", imgPosition: "50% 20%" },
-  { yr: "2026", title: "Products & experiences", text: "Four product lines launch at the Beauty Lounge Exhibition in November. The story continues.", img: "gallery-3", now: true },
+  { yr: "2026", title: "Products & experiences", text: "Four product lines launch at the Beauty Lounge Exhibition in November. The story continues.", img: "tenten-lipgloss-lineup", now: true },
 ];
 
 const marqueeWords = ["Listen", "Solve", "Improve", "Repeat"];
@@ -64,7 +74,7 @@ export default async function AboutPage() {
       <section className="py-[clamp(64px,9vw,120px)]">
         <div className="eco mx-auto max-w-[calc(1280px_+_clamp(16px,5vw,80px)*2)] px-[clamp(16px,5vw,80px)]">
           <div>
-            <Reveal as="span" className="block text-sm font-bold text-violet-400 uppercase">
+            <Reveal as="span" className="block text-sm font-bold text-violet-400 light:text-violet-600 uppercase">
               The vision &amp; concept
             </Reveal>
             <Reveal as="h2" className="font-display mt-[18px] mb-7 block text-[clamp(32px,3.4vw,48px)] leading-[1.08] font-bold">
@@ -78,7 +88,7 @@ export default async function AboutPage() {
             <Reveal>
               <Link
                 href="#lines"
-                className="mt-2 inline-flex h-12 items-center gap-2 rounded-full border border-white/20 px-6 text-sm font-bold uppercase hover:bg-white/6"
+                className="mt-2 inline-flex h-12 items-center gap-2 rounded-full border border-white/20 light:border-noir-900/20 px-6 text-sm font-bold uppercase hover:bg-white/6 light:hover:bg-noir-900/6"
               >
                 Explore the lines <Icon name="arrow" className="size-4" />
               </Link>
@@ -99,8 +109,8 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <section className="philo bg-noir-800/60 px-4 py-[clamp(64px,9vw,120px)] sm:px-6 lg:px-8">
-        <Reveal as="span" className="block text-sm font-bold text-violet-400 uppercase">
+      <section className="philo bg-bg-alt px-4 py-[clamp(64px,9vw,120px)] sm:px-6 lg:px-8">
+        <Reveal as="span" className="block text-sm font-bold text-violet-400 uppercase light:text-violet-600">
           Our philosophy
         </Reveal>
         <Reveal as="h2" className="h1 font-display block">
@@ -116,53 +126,53 @@ export default async function AboutPage() {
         </Reveal>
       </section>
 
-      <section className="journey">
-        <ImgReveal className="journey__img">
-          {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-          <img src="/img/salon-journey.webp" alt="Warmly lit spa suite with twin basins" />
-        </ImgReveal>
-        <div className="journey__body">
-          <div>
-            <Reveal as="span" className="block text-sm font-bold text-violet-400 uppercase">
-              How it works
-            </Reveal>
-            <Reveal as="h2" className="h1 font-display block">
-              The Salon Journey
-            </Reveal>
-          </div>
-          <StepsProgress>
-            {journeySteps.map((s, i) => (
-              <Reveal key={s.title} delay={i * 150} className="step">
-                <span className="step__n">{i + 1}</span>
-                <div>
-                  <h4>{s.title}</h4>
-                  <p>{s.text}</p>
-                </div>
-              </Reveal>
-            ))}
-          </StepsProgress>
-          <Reveal className="mt-11">
-            <Link
-              href="/services#book"
-              className="inline-flex h-12 w-fit items-center rounded-full bg-violet-500 px-6 text-sm font-bold text-white uppercase hover:bg-violet-600"
-            >
-              Book your session
-            </Link>
-          </Reveal>
-        </div>
-      </section>
+      {/*<section className="journey">*/}
+      {/*  <ImgReveal className="journey__img">*/}
+      {/*    /!* eslint-disable-next-line @next/next/no-img-element -- static marketing asset *!/*/}
+      {/*    <img src="/img/salon-journey.webp" alt="Warmly lit spa suite with twin basins" />*/}
+      {/*  </ImgReveal>*/}
+      {/*  <div className="journey__body">*/}
+      {/*    <div>*/}
+      {/*      <Reveal as="span" className="block text-sm font-bold text-violet-400 uppercase">*/}
+      {/*        How it works*/}
+      {/*      </Reveal>*/}
+      {/*      <Reveal as="h2" className="h1 font-display block">*/}
+      {/*        The Salon Journey*/}
+      {/*      </Reveal>*/}
+      {/*    </div>*/}
+      {/*    <StepsProgress>*/}
+      {/*      {journeySteps.map((s, i) => (*/}
+      {/*        <Reveal key={s.title} delay={i * 150} className="step">*/}
+      {/*          <span className="step__n">{i + 1}</span>*/}
+      {/*          <div>*/}
+      {/*            <h4>{s.title}</h4>*/}
+      {/*            <p>{s.text}</p>*/}
+      {/*          </div>*/}
+      {/*        </Reveal>*/}
+      {/*      ))}*/}
+      {/*    </StepsProgress>*/}
+      {/*    <Reveal className="mt-11">*/}
+      {/*      <Link*/}
+      {/*        href="/services#book"*/}
+      {/*        className="inline-flex h-12 w-fit items-center rounded-full bg-violet-500 px-6 text-sm font-bold text-white uppercase hover:bg-violet-600"*/}
+      {/*      >*/}
+      {/*        Book your session*/}
+      {/*      </Link>*/}
+      {/*    </Reveal>*/}
+      {/*  </div>*/}
+      {/*</section>*/}
 
-      <section className="founder-q bg-noir-800/60 px-4 py-[clamp(64px,9vw,120px)] sm:px-6 lg:px-8">
-        <Reveal>
-          <span aria-hidden className="qmark">
-            &ldquo;
-          </span>
-          <blockquote>Step away from the ordinary &amp; into a dedicated moment designed solely for you.</blockquote>
-          <cite>Helen O. Adetunbi (Founder)</cite>
-          {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-          <img src="/img/founder-round.webp" alt="Helen O. Adetunbi" />
-        </Reveal>
-      </section>
+      {/*<section className="founder-q bg-noir-800/60 px-4 py-[clamp(64px,9vw,120px)] sm:px-6 lg:px-8">*/}
+      {/*  <Reveal>*/}
+      {/*    <span aria-hidden className="qmark">*/}
+      {/*      &ldquo;*/}
+      {/*    </span>*/}
+      {/*    <blockquote>Step away from the ordinary &amp; into a dedicated moment designed solely for you.</blockquote>*/}
+      {/*    <cite>Helen O. Adetunbi (Founder)</cite>*/}
+      {/*    /!* eslint-disable-next-line @next/next/no-img-element -- static marketing asset *!/*/}
+      {/*    <img src="/img/founder-round.webp" alt="Helen O. Adetunbi" />*/}
+      {/*  </Reveal>*/}
+      {/*</section>*/}
 
       <section className="px-4 py-[clamp(64px,9vw,120px)] sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1280px]">
@@ -275,9 +285,9 @@ export default async function AboutPage() {
                   <span className="tape" style={{ rotate: "5deg" }} />
                   {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
                   <img
-                    src="/img/line-bridals.webp"
+                    src="/img/bridal-veil-tiara.webp"
                     alt="Bride in a lace veil with soft glam makeup"
-                    style={{ objectPosition: "50% 30%" }}
+                    style={{ objectPosition: "50% 15%" }}
                   />
                   <figcaption>Bridals &amp; Artistry — est. 2024</figcaption>
                 </figure>

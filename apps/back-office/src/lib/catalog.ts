@@ -1,4 +1,4 @@
-import type { ProductCategory } from "@zoeallure/supabase";
+import type { ProductCategory, ProductStatus } from "@zoeallure/supabase";
 
 export const LINE_META: Record<ProductCategory, { line: string; initials: string; swatch: string }> = {
   hair: { line: "HELicia · Hair care", initials: "HL", swatch: "#7F23E0" },
@@ -23,6 +23,14 @@ export function stockLevel(units: number, threshold = LOW_STOCK_THRESHOLD): Stoc
 export const STOCK_BADGE: Record<StockLevel, { label: string; bg: string; fg: string }> = {
   in_stock: { label: "In stock", bg: "#E7F5EC", fg: "#1F7A50" },
   low_stock: { label: "Low stock", bg: "#FBF4E6", fg: "#8A6A1E" },
+  out_of_stock: { label: "Out of stock", bg: "#FDEEF0", fg: "#B23A50" },
+};
+
+export const PRODUCT_STATUS_OPTIONS: ProductStatus[] = ["available", "coming_soon", "out_of_stock"];
+
+export const PRODUCT_STATUS_BADGE: Record<ProductStatus, { label: string; bg: string; fg: string }> = {
+  available: { label: "Available", bg: "#E7F5EC", fg: "#1F7A50" },
+  coming_soon: { label: "Coming soon", bg: "#F4ECFE", fg: "#55129B" },
   out_of_stock: { label: "Out of stock", bg: "#FDEEF0", fg: "#B23A50" },
 };
 

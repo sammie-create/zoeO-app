@@ -2,41 +2,46 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Icon } from "@/components/shared/icon";
 import { ProductCard } from "@/components/shop/product-card";
+import { ProductRow } from "@/components/shop/product-row";
 import { categoryLabels } from "@/lib/data";
 import type { Product } from "@/lib/queries";
 import { MoneyLabel } from "@/components/shared/money-label";
 
+const VIEW_STORAGE_KEY = "za_shop_view";
+
 const categories: { key: "all" | Product["category"]; label: string }[] = [
   { key: "all", label: "All" },
+  { key: "wigs", label: categoryLabels.wigs },
   { key: "hair", label: categoryLabels.hair },
   { key: "personal", label: categoryLabels.personal },
   { key: "nails", label: categoryLabels.nails },
-  { key: "wigs", label: categoryLabels.wigs },
 ];
 
-const PER_PAGE = 13; // 3 cards + promo card on row one, then rows of five
+const PER_PAGE = 15;
 
-function PromoCard() {
-  return (
-    <Link href="/shop?cat=hair" className="promo-card">
-      {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-      <img src="/img/cat-hair.webp" alt="Hair care products" />
-      <div>
-        <span className="block text-[11px] font-semibold text-white uppercase">The hair care essentials</span>
-        <h3 className="font-display my-2.5 text-[clamp(26px,2.2vw,32px)] font-bold">Discover Hair Care</h3>
-        <p className="mb-5 max-w-[420px] text-[15px] leading-[1.5]">
-          Premium ingredients crafted to restore shine, depth, and volume to your natural crown.
-        </p>
-        <span className="inline-flex h-11 items-center gap-2 rounded-full bg-violet-500 px-6 text-sm font-bold text-white uppercase transition-colors hover:bg-violet-600">
-          Shop now <Icon name="arrow" className="size-4" />
-        </span>
-      </div>
-    </Link>
-  );
-}
+// Commented out for now — revisit how this fits now that "All Products" uses
+// the sectioned Available/Coming-soon layout instead of a flat grid.
+// function PromoCard() {
+//   return (
+//     <Link href="/shop?cat=hair" className="promo-card">
+//       {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
+//       <img src="/img/cat-hair.webp" alt="Hair care products" />
+//       <div>
+//         <span className="block text-[11px] font-semibold text-white uppercase">The hair care essentials</span>
+//         <h3 className="font-display my-2.5 text-[clamp(26px,2.2vw,32px)] font-bold">Discover Hair Care</h3>
+//         <p className="mb-5 max-w-[420px] text-[15px] leading-[1.5]">
+//           Premium ingredients crafted to restore shine, depth, and volume to your natural crown.
+//         </p>
+//         <span className="inline-flex h-11 items-center gap-2 rounded-full bg-violet-500 px-6 text-sm font-bold text-white uppercase transition-colors hover:bg-violet-600">
+//           Shop now <Icon name="arrow" className="size-4" />
+//         </span>
+//       </div>
+//     </Link>
+//   );
+// }
 
 export function ShopClient({ products }: { products: Product[] }) {
   const router = useRouter();
@@ -58,13 +63,45 @@ export function ShopClient({ products }: { products: Product[] }) {
   const [maxPrice, setMaxPrice] = useState(60000);
   const [stockOnly, setStockOnly] = useState(false);
   const [lowOnly, setLowOnly] = useState(false);
+  const [view, setView] = useState<"grid" | "list">(() => {
+    if (typeof window === "undefined") return "grid";
+    const stored = localStorage.getItem(VIEW_STORAGE_KEY);
+    return stored === "list" ? "list" : "grid";
+  });
+
+  function changeView(next: "grid" | "list") {
+    setView(next);
+    localStorage.setItem(VIEW_STORAGE_KEY, next);
+  }
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash !== "#available" && hash !== "#coming-soon") return;
+    const t = setTimeout(() => {
+      document.querySelector(hash)?.scrollIntoView({ block: "start" });
+    }, 60);
+    return () => clearTimeout(t);
+  }, []);
 
   const allBrands = useMemo(
     () => Array.from(new Set(products.map((p) => p.brand).filter((b): b is string => !!b))).sort(),
     [products],
   );
 
-  const featured = useMemo(() => products.find((p) => p.is_bestseller) ?? products[0], [products]);
+  const featured = useMemo(() => {
+    const available = products.filter((p) => p.status === "available");
+    return available.find((p) => p.is_bestseller) ?? available[0];
+  }, [products]);
+
+  const categoryAvailability = useMemo(() => {
+    const available = new Set(products.filter((p) => p.status === "available").map((p) => p.category));
+    return {
+      hair: available.has("hair"),
+      personal: available.has("personal"),
+      nails: available.has("nails"),
+      wigs: available.has("wigs"),
+    };
+  }, [products]);
 
   function syncUrl(nextCat: typeof cat, nextSort: string) {
     const params = new URLSearchParams();
@@ -88,21 +125,49 @@ export function ShopClient({ products }: { products: Product[] }) {
     else if (sort === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
     else if (sort === "az") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     else if (sort === "best") list = [...list].sort((a, b) => Number(b.is_bestseller) - Number(a.is_bestseller));
+    // Items that can't be bought right now always sort last, regardless of the chosen sort.
+    const unbuyable = (p: Product) => p.status === "coming_soon" || p.status === "out_of_stock";
+    list = [...list].sort((a, b) => Number(unbuyable(a)) - Number(unbuyable(b)));
     return list;
   }, [products, cat, q, sort, brands, maxPrice, stockOnly, lowOnly]);
 
-  const pages = Math.max(1, Math.ceil(items.length / PER_PAGE));
+  const sectioned = cat === "all" && !q;
+
+  const pages = sectioned ? 1 : Math.max(1, Math.ceil(items.length / PER_PAGE));
   const currentPage = Math.min(page, pages);
-  const slice = items.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+  const slice = sectioned ? [] : items.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
   const title = q ? `Results for "${q}"` : cat === "all" ? "All Products" : categoryLabels[cat];
-  const showPromo = currentPage === 1 && cat !== "personal" && cat !== "nails" && cat !== "wigs" && !q && slice.length >= 3;
+  // Promo card temporarily disabled — see the commented-out PromoCard above.
 
-  const gridItems: ReactNode[] = [];
-  slice.forEach((p, i) => {
-    gridItems.push(<ProductCard key={p.id} product={p} index={i} />);
-    if (showPromo && i === 2) gridItems.push(<PromoCard key="promo" />);
-  });
+  function renderItems(list: Product[]) {
+    if (view === "list") {
+      return (
+        <div className="plist">
+          {list.map((p, i) => (
+            <ProductRow key={p.id} product={p} index={i} />
+          ))}
+        </div>
+      );
+    }
+    const gridItems: ReactNode[] = list.map((p, i) => <ProductCard key={p.id} product={p} index={i} />);
+    return <div className="pgrid">{gridItems}</div>;
+  }
+
+  const nowItems = useMemo(() => items.filter((p) => p.status !== "coming_soon"), [items]);
+  const soonItems = useMemo(() => items.filter((p) => p.status === "coming_soon"), [items]);
+  const soonByCategory = useMemo(
+    () =>
+      categories
+        .filter((c) => c.key !== "all")
+        .map((c) => ({
+          key: c.key,
+          label: c.label,
+          items: soonItems.filter((p) => p.category === c.key),
+        }))
+        .filter((g) => g.items.length > 0),
+    [soonItems],
+  );
 
   function toggleBrand(b: string) {
     setBrands((prev) => {
@@ -128,14 +193,14 @@ export function ShopClient({ products }: { products: Product[] }) {
     <main className="mx-auto max-w-[calc(1280px_+_clamp(16px,5vw,80px)*2)] px-[clamp(16px,5vw,80px)] pt-10 pb-16">
       <section className="shop-hero">
         {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-        <img className="bg" src="/img/gallery-3.webp" alt="" />
+        <img className="bg" src="/img/shop-hero-helicia.webp" alt="" />
         <div>
           <nav aria-label="Breadcrumb" className="crumbs">
             <Link href="/">Home</Link> ›{" "}
             <Link href="/shop">Collections</Link> ›{" "}
             <span className="cur">{q ? "Search" : cat === "all" ? "All" : categoryLabels[cat]}</span>
           </nav>
-          <h1 className="font-display text-[clamp(34px,4.6vw,60px)] leading-[1.08] font-bold">{title}</h1>
+          <h1 className="font-display text-[clamp(34px,4.6vw,60px)] leading-[1.08] font-bold text-white">{title}</h1>
         </div>
         {featured && (
           <Link href={`/product/${featured.id}`} className="feat-card">
@@ -146,7 +211,7 @@ export function ShopClient({ products }: { products: Product[] }) {
               <div className="size-[72px] rounded-[10px] bg-noir-700" />
             )}
             <div>
-              <span className="chip chip--violet">FEATURED</span>
+              <span className="chip chip--violet">AVAILABLE NOW</span>
               <strong>{featured.name}</strong>
               <span className="p">
                 <MoneyLabel ngn={featured.price} />
@@ -167,24 +232,48 @@ export function ShopClient({ products }: { products: Product[] }) {
           <Icon name="filter" className="size-4" />
           <span>{filtersOpen ? "Hide Filters" : "Show Filters"}</span>
         </button>
-        <label className="sort">
-          Sort by:
-          <select
-            value={sort}
-            onChange={(e) => {
-              setSort(e.target.value);
-              setPage(1);
-              syncUrl(cat, e.target.value);
-            }}
-            aria-label="Sort products"
-          >
-            <option value="featured">Featured</option>
-            <option value="best">Best selling</option>
-            <option value="price-asc">Price: low to high</option>
-            <option value="price-desc">Price: high to low</option>
-            <option value="az">Alphabetical A–Z</option>
-          </select>
-        </label>
+        <div className="shop-bar__right">
+          <div className="view-toggle" role="group" aria-label="Layout">
+            <button
+              type="button"
+              aria-label="Grid view"
+              aria-pressed={view === "grid"}
+              className={view === "grid" ? "is-active" : ""}
+              onClick={() => changeView("grid")}
+            >
+              <Icon name="grid" className="size-4" />
+              <span>Grid</span>
+            </button>
+            <button
+              type="button"
+              aria-label="List view"
+              aria-pressed={view === "list"}
+              className={view === "list" ? "is-active" : ""}
+              onClick={() => changeView("list")}
+            >
+              <Icon name="list" className="size-4" />
+              <span>List</span>
+            </button>
+          </div>
+          <label className="sort">
+            Sort by:
+            <select
+              value={sort}
+              onChange={(e) => {
+                setSort(e.target.value);
+                setPage(1);
+                syncUrl(cat, e.target.value);
+              }}
+              aria-label="Sort products"
+            >
+              <option value="featured">Featured</option>
+              <option value="best">Best selling</option>
+              <option value="price-asc">Price: low to high</option>
+              <option value="price-desc">Price: high to low</option>
+              <option value="az">Alphabetical A–Z</option>
+            </select>
+          </label>
+        </div>
       </div>
 
       <div id="filters" className={`filters ${filtersOpen ? "is-open" : ""}`}>
@@ -262,30 +351,90 @@ export function ShopClient({ products }: { products: Product[] }) {
               }}
             >
               {c.label}
+              {c.key !== "all" && !categoryAvailability[c.key] && <span className="soon-tag">Soon</span>}
             </button>
           ))}
         </div>
         <div className="count" aria-live="polite">
-          {items.length} product{items.length === 1 ? "" : "s"} in total
+          {sectioned
+            ? `${nowItems.length} available now · ${soonItems.length} coming soon`
+            : `${items.length} product${items.length === 1 ? "" : "s"} in total`}
         </div>
       </div>
 
-      <div className="pgrid">
-        {gridItems}
-        {slice.length === 0 && (
+      {sectioned ? (
+        <>
+          {nowItems.length > 0 && (
+            <section className="shop-sec" id="available">
+              <div className="shop-sec__head">
+                <div>
+                  <span className="block text-[13px] font-bold tracking-[.02em] text-violet-400 uppercase">
+                    Available now
+                  </span>
+                  <h2 className="h2">Order today</h2>
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  {nowItems.length} product{nowItems.length === 1 ? "" : "s"}
+                </span>
+              </div>
+              {renderItems(nowItems)}
+            </section>
+          )}
+          {soonItems.length > 0 && (
+            <section className="shop-sec" id="coming-soon">
+              <div className="shop-sec__head">
+                <div>
+                  <span className="block text-[13px] font-bold tracking-[.02em] text-violet-400 uppercase">
+                    Launching soon
+                  </span>
+                  <h2 className="h2">Coming soon</h2>
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  {soonItems.length} product{soonItems.length === 1 ? "" : "s"}
+                </span>
+              </div>
+              {soonByCategory.map((g) => (
+                <div key={g.key}>
+                  <h3 className="shop-sub">
+                    {g.label}
+                    <span>{Array.from(new Set(g.items.map((p) => p.brand).filter(Boolean))).join(" · ")}</span>
+                  </h3>
+                  {renderItems(g.items)}
+                </div>
+              ))}
+            </section>
+          )}
+          {nowItems.length === 0 && soonItems.length === 0 && (
+            <div className="empty">
+              <h3 className="font-display text-2xl">Nothing matches yet</h3>
+              <p>Try another category or clear your filters.</p>
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="mt-5 h-11 rounded-full bg-violet-500 px-6 text-sm font-bold text-white"
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
+        </>
+      ) : slice.length === 0 ? (
+        <div className={view === "list" ? "plist" : "pgrid"}>
           <div className="empty">
-            <h3 className="font-display text-2xl">Nothing matches yet</h3>
-            <p>Try another category or clear your filters.</p>
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="mt-5 h-11 rounded-full bg-violet-500 px-6 text-sm font-bold text-white"
-            >
-              Clear filters
-            </button>
+              <h3 className="font-display text-2xl">Nothing matches yet</h3>
+              <p>Try another category or clear your filters.</p>
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="mt-5 h-11 rounded-full bg-violet-500 px-6 text-sm font-bold text-white"
+              >
+                Clear filters
+              </button>
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        renderItems(slice)
+      )}
 
       {pages > 1 && (
         <nav aria-label="Pagination" className="pager">

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { Icon } from "@/components/shared/icon";
 import { Reveal } from "@/components/shared/reveal";
@@ -64,22 +63,24 @@ export function Transformation() {
           style={{ "--pos": `${pos}%` } as React.CSSProperties}
         >
           <div className="ba__before">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element -- raw static asset, bypassing the image optimizer */}
+            <img
               src="/img/before.webp"
-              alt="Before: natural hair, no makeup"
-              fill
-              sizes="(min-width: 1280px) 1280px, 100vw"
+              alt="Before: fresh-faced, hair wrapped in a towel"
               draggable={false}
+              style={{ objectPosition: "center 15%" }}
             />
+            <span className="ba__tag ba__tag--b">before</span>
           </div>
           <div className="ba__after">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element -- raw static asset, bypassing the image optimizer */}
+            <img
               src="/img/after.webp"
-              alt="After: glam makeup and styled wig"
-              fill
-              sizes="(min-width: 1280px) 1280px, 100vw"
+              alt="After: bridal glam makeup and styled updo"
               draggable={false}
+              style={{ objectPosition: "center 15%" }}
             />
+            <span className="ba__tag ba__tag--a">after</span>
           </div>
           <div className="ba__line" />
           <div className="ba__handle">

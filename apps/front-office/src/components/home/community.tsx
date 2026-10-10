@@ -5,9 +5,9 @@ import { Reveal } from "@/components/shared/reveal";
 
 const gallery = [
   { img: "nails-art", alt: "Almond nails with red French tips and gold detail" },
-  { img: "gele", alt: "Woman in an emerald gele and lace aso-ebi", pos: "50% 15%" },
-  { img: "gallery-3", alt: "Luxury hair elixir set" },
-  { img: "portrait-braids", alt: "Woman with long braids and glossy makeup" },
+  { img: "gallery-2", alt: "Bride with a pearl tiara updo and beaded gown", pos: "50% 15%" },
+  { img: "community-lipgloss", alt: "TenTen lip gloss collection" },
+  { img: "community-wig-curls", alt: "Revamped curly wig on a mannequin", pos: "50% 15%" },
   { img: "gallery-5", alt: "Press-on nail designs" },
 ];
 

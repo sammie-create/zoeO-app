@@ -10,11 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { LINE_META, STOCK_BADGE, stockLevel } from "@/lib/catalog";
+import { LINE_META, PRODUCT_STATUS_BADGE, PRODUCT_STATUS_OPTIONS, STOCK_BADGE, stockLevel } from "@/lib/catalog";
 import { ngn } from "@/lib/format";
 import { deleteImage, uploadImage, validateUploadImage } from "@/lib/image-upload";
 import { createProduct, updateProduct } from "./actions";
-import type { ProductCategory, Tables } from "@zoeallure/supabase";
+import type { ProductCategory, ProductStatus, Tables } from "@zoeallure/supabase";
 
 const CATEGORY_OPTIONS: ProductCategory[] = ["hair", "personal", "nails", "wigs"];
 
@@ -37,6 +37,7 @@ export function ProductForm({
   const [price, setPrice] = useState(product?.price ?? 5000);
   const [units, setUnits] = useState(product?.stock_units ?? 20);
   const [isBestseller, setIsBestseller] = useState(product?.is_bestseller ?? false);
+  const [status, setStatus] = useState<ProductStatus>(product?.status ?? "available");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -94,6 +95,7 @@ export function ProductForm({
         price,
         stock_units: units,
         is_bestseller: isBestseller,
+        status,
         image_url: imageUrl,
         ...(isEdit ? {} : { slug: slug || `product-${Date.now()}` }),
       };
@@ -284,6 +286,38 @@ export function ProductForm({
                 </Button>
               </div>
             </div>
+          </div>
+
+          <div>
+            <div className="mb-1.5 text-[11px] font-bold tracking-[0.1em] text-noir-400 uppercase">
+              Availability
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {PRODUCT_STATUS_OPTIONS.map((s) => {
+                const active = s === status;
+                const badge = PRODUCT_STATUS_BADGE[s];
+                return (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    key={s}
+                    onClick={() => setStatus(s)}
+                    className="h-auto rounded-full border px-4 py-2.5 text-[12.5px] font-bold"
+                    style={{
+                      borderColor: active ? "transparent" : "#D8D5E0",
+                      background: active ? badge.fg : "transparent",
+                      color: active ? "#fff" : "#403B4C",
+                    }}
+                  >
+                    {badge.label}
+                  </Button>
+                );
+              })}
+            </div>
+            <p className="mt-1.5 text-[11.5px] text-noir-400">
+              Controls whether this product shows as available on the storefront — including its category tile on
+              the homepage.
+            </p>
           </div>
 
           <div className="flex items-center justify-between gap-3 rounded-xl border border-noir-100 bg-noir-50 px-4 py-3.5">

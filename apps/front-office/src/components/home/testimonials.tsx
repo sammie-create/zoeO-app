@@ -46,6 +46,7 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
                         src={t.photo_url}
                         alt={t.customer_name}
                         className={i === active ? "is-active" : ""}
+                        style={{ objectPosition: `${t.photo_pos_x}% ${t.photo_pos_y}%` }}
                       />
                     ),
                 )}
@@ -59,9 +60,12 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
             </Reveal>
           )}
 
-          <Reveal>
+          <Reveal className="text-center lg:text-left">
             <p className="font-display mb-11 h-[50px] text-[100px] leading-[.6] text-violet-400">&rdquo;</p>
-            <div className="mb-[26px] flex gap-1.5 text-violet-800" aria-label="5 out of 5 stars">
+            <div
+              className="mb-[26px] flex justify-center gap-1.5 text-violet-800 lg:justify-start"
+              aria-label="5 out of 5 stars"
+            >
               {Array.from({ length: 5 }).map((_, i) => (
                 <Icon key={i} name="star" className="size-[26px] fill-current" />
               ))}
@@ -69,14 +73,14 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
             <blockquote className="font-display mb-7 text-[clamp(22px,2.2vw,31px)] leading-[1.45]">
               {current.quote}
             </blockquote>
-            <div className="flex items-center gap-3 text-[19px] font-bold">
+            <div className="flex items-center justify-center gap-3 text-[19px] font-bold lg:justify-start">
               <span className="size-3 rounded-full bg-violet-400" />
               {current.customer_name}
             </div>
             {current.service_label && (
               <p className="mt-[22px] text-[15px] text-noir-500">Service: {current.service_label}</p>
             )}
-            <div className="mt-11 flex items-center gap-[22px]">
+            <div className="mt-11 flex items-center justify-center gap-[22px] lg:justify-start">
               <button
                 type="button"
                 aria-label="Previous testimonial"
@@ -85,13 +89,16 @@ export function Testimonials({ testimonials }: { testimonials: Testimonial[] }) 
               >
                 <Icon name="arrowL" className="size-4" />
               </button>
-              <div className="flex items-center gap-1.5">
+              <div
+                className="flex min-w-0 flex-1 items-center justify-center gap-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden"
+                style={{ scrollbarWidth: "none" }}
+              >
                 {testimonials.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setActive(i)}
                     aria-label={`Testimonial ${i + 1}`}
-                    className={`h-1 rounded-[2px] transition-all ${i === active ? "w-11 bg-violet-400" : "w-4 bg-noir-600"}`}
+                    className={`h-1 flex-none rounded-[2px] transition-all ${i === active ? "w-11 bg-violet-400" : "w-4 bg-noir-600"}`}
                   />
                 ))}
               </div>

@@ -12,7 +12,7 @@ export function ServicesTestimonials({ testimonials }: { testimonials: Testimoni
     if (testimonials.length < 2) return;
     const t = setInterval(() => setActive((a) => (a + 1) % testimonials.length), 7000);
     return () => clearInterval(t);
-  }, [testimonials.length]);
+  }, [active, testimonials.length]);
 
   if (testimonials.length === 0) return null;
 
@@ -62,7 +62,7 @@ export function ServicesTestimonials({ testimonials }: { testimonials: Testimoni
                 src={t.photo_url}
                 alt={t.customer_name}
                 className={i === active ? "is-active" : ""}
-                style={{ objectPosition: "50% 25%" }}
+                style={{ objectPosition: `${t.photo_pos_x}% ${t.photo_pos_y}%` }}
               />
             ),
         )}

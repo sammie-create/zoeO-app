@@ -1,5 +1,5 @@
 import { createClient } from "@zoeallure/supabase/server";
-import type { Tables } from "@zoeallure/supabase";
+import type { ProductCategory, Tables } from "@zoeallure/supabase";
 
 export type Product = Tables<"products">;
 export type Service = Tables<"services">;
@@ -12,6 +12,29 @@ export type SiteSettings = Tables<"site_settings">;
 export async function getProducts() {
   const supabase = await createClient();
   const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
+  return data ?? [];
+}
+
+export async function getCategoryAvailability(): Promise<Record<ProductCategory, boolean>> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("products").select("category").eq("status", "available");
+  const available = new Set((data ?? []).map((p) => p.category));
+  return {
+    hair: available.has("hair"),
+    personal: available.has("personal"),
+    nails: available.has("nails"),
+    wigs: available.has("wigs"),
+  };
+}
+
+export async function getComingSoonProducts(limit = 8) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("products")
+    .select("*")
+    .eq("status", "coming_soon")
+    .order("created_at", { ascending: false })
+    .limit(limit);
   return data ?? [];
 }
 
@@ -58,9 +81,11 @@ export async function getService(id: string) {
   return data;
 }
 
-export async function getTestimonials() {
+export async function getTestimonials(limit?: number) {
   const supabase = await createClient();
-  const { data } = await supabase.from("testimonials").select("*").order("created_at", { ascending: false });
+  let query = supabase.from("testimonials").select("*").order("created_at", { ascending: false });
+  if (limit) query = query.limit(limit);
+  const { data } = await query;
   return data ?? [];
 }
 
