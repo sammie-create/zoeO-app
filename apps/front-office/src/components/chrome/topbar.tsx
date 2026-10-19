@@ -1,10 +1,52 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Icon } from "@/components/shared/icon";
+import type { Product } from "@/lib/queries";
 import { useCurrency } from "@/lib/store/currency";
 
-export function Topbar() {
+const ROTATE_MS = 4500;
+
+function AnnouncementBanner({ products }: { products: Product[] }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (products.length < 2) return;
+    const id = setInterval(() => setIndex((i) => (i + 1) % products.length), ROTATE_MS);
+    return () => clearInterval(id);
+  }, [products.length]);
+
+  if (products.length === 0) return null;
+
+  const product = products[index % products.length];
+
+  return (
+    <div className="flex items-center gap-2.5 overflow-hidden text-white light:text-noir-900">
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={product.id}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.32 }}
+          className="flex items-center gap-2.5"
+        >
+          <span className="truncate">New: {product.brand ? `${product.brand} ` : ""}{product.name} now live</span>
+          <Link
+            href={`/product/${product.id}`}
+            className="hidden h-[22px] shrink-0 items-center rounded-full bg-violet-500 px-2.5 text-[10px] font-extrabold tracking-wide text-white uppercase sm:inline-flex"
+          >
+            Shop now
+          </Link>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export function Topbar({ announcedProducts }: { announcedProducts: Product[] }) {
   const { currency, setCurrency } = useCurrency();
 
   return (
@@ -22,15 +64,7 @@ export function Topbar() {
           </a>
         </div>
 
-        <div className="flex items-center gap-2.5 text-white light:text-noir-900">
-          <span>New HELicia Hair Care collection now live</span>
-          <Link
-            href="/shop?cat=hair"
-            className="hidden h-[22px] items-center rounded-full bg-violet-500 px-2.5 text-[10px] font-extrabold tracking-wide text-white uppercase sm:inline-flex"
-          >
-            Shop now
-          </Link>
-        </div>
+        <AnnouncementBanner products={announcedProducts} />
 
         <div className="hidden items-center gap-5 text-noir-300 lg:flex light:text-noir-900/60">
           <select

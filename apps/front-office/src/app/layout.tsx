@@ -26,6 +26,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const [products, services] = await Promise.all([getProducts(), getServices()]);
+  const announcedProducts = products.filter((p) => p.is_announced && p.status === "available");
 
   return (
     <html
@@ -44,7 +45,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full flex flex-col font-body">
         <AppProviders>
-          <SiteChrome products={products} services={services}>
+          <SiteChrome products={products} services={services} announcedProducts={announcedProducts}>
             {children}
           </SiteChrome>
         </AppProviders>
