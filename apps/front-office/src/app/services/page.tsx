@@ -326,7 +326,11 @@ export default async function ServicesPage() {
             <div className="ed-faq">
               <figure className="ed-faq__img">
                 {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-                <img src="/img/value-quality.webp" alt="Portrait with bold red lip" style={{ objectPosition: "50% 25%" }} />
+                <img
+                  src="/img/value-quality.webp"
+                  alt="Portrait in a lilac head wrap with soft glam makeup"
+                  style={{ objectPosition: "50% 30%" }}
+                />
               </figure>
               <FaqAccordion items={faqItems.map((f) => ({ question: f.question, answer: f.answer }))} />
             </div>
