@@ -33,10 +33,12 @@ export function SiteChrome({
   children,
   products,
   services,
+  announcedProducts,
 }: {
   children: ReactNode;
   products: Product[];
   services: Service[];
+  announcedProducts: Product[];
 }) {
   const pathname = usePathname();
   const showTopbar = topbarRoutes.some((r) => pathname.startsWith(r));
@@ -47,7 +49,7 @@ export function SiteChrome({
 
   return (
     <ChromeUiProvider>
-      {showTopbar && <Topbar />}
+      {showTopbar && <Topbar announcedProducts={announcedProducts} />}
       <Header />
       <MobileNav />
       <SearchOverlay products={products} services={services} />

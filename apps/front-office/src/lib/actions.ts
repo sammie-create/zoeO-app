@@ -1,6 +1,12 @@
 "use server";
 
 import { createClient } from "@zoeallure/supabase/server";
+import { sendPlunkEmail, upsertPlunkContact } from "@/lib/plunk";
+import { contactTopics } from "@/lib/contact-topics";
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+}
 
 export type CartLine = { id: string; qty: number };
 
@@ -27,6 +33,46 @@ export async function placeOrder(input: {
   });
   if (error) throw new Error(error.message);
   return data;
+}
+
+export async function submitContactMessage(input: {
+  name: string;
+  email: string;
+  phone: string;
+  topic: string;
+  message: string;
+  newsletter: boolean;
+}) {
+  if (input.name.trim().length < 2) throw new Error("Name is required");
+  if (!/\S+@\S+\.\S+/.test(input.email)) throw new Error("A valid email is required");
+  if (input.message.trim().length < 10) throw new Error("Message is too short");
+
+  const topicLabel = contactTopics.find((t) => t.value === input.topic)?.label ?? "General enquiry";
+
+  const notifyEmail = process.env.CONTACT_NOTIFICATION_EMAIL;
+  if (!notifyEmail) throw new Error("CONTACT_NOTIFICATION_EMAIL is not set");
+
+  const fromEmail = process.env.PLUNK_FROM_EMAIL;
+  if (!fromEmail) throw new Error("PLUNK_FROM_EMAIL is not set");
+
+  await sendPlunkEmail({
+    to: notifyEmail,
+    from: fromEmail,
+    subject: `New contact message: ${topicLabel}`,
+    body: `
+      <p><strong>Name:</strong> ${escapeHtml(input.name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(input.email)}</p>
+      <p><strong>Phone:</strong> ${escapeHtml(input.phone) || "—"}</p>
+      <p><strong>Topic:</strong> ${escapeHtml(topicLabel)}</p>
+      <p><strong>Message:</strong></p>
+      <p>${escapeHtml(input.message).replace(/\n/g, "<br/>")}</p>
+    `,
+    reply: input.email,
+  });
+
+  if (input.newsletter) {
+    await upsertPlunkContact({ email: input.email, subscribed: true, data: { name: input.name } });
+  }
 }
 
 export async function placeBooking(input: {

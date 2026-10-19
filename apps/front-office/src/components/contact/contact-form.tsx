@@ -2,19 +2,11 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState, useTransition, type FormEvent } from "react";
 import { toast } from "sonner";
 import { Icon } from "@/components/shared/icon";
-
-const topics = [
-  { value: "general", label: "General enquiry" },
-  { value: "order", label: "An order" },
-  { value: "product", label: "A product question" },
-  { value: "booking", label: "A booking" },
-  { value: "exhibition", label: "Register for the Exhibition" },
-  { value: "wholesale", label: "Wholesale & partnerships" },
-  { value: "careers", label: "Careers" },
-];
+import { submitContactMessage } from "@/lib/actions";
+import { contactTopics as topics } from "@/lib/contact-topics";
 
 export function ContactForm() {
   const searchParams = useSearchParams();
@@ -29,6 +21,7 @@ export function ContactForm() {
   const [newsletter, setNewsletter] = useState(false);
   const [invalid, setInvalid] = useState<Set<string>>(new Set());
   const [sent, setSent] = useState<{ firstName: string; topicLabel: string; email: string } | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const messagePlaceholder =
     topic === "exhibition"
@@ -45,8 +38,15 @@ export function ContactForm() {
     if (next.size > 0) return;
 
     const topicLabel = topics.find((t) => t.value === topic)?.label ?? "General enquiry";
-    setSent({ firstName: name.trim().split(" ")[0], topicLabel, email });
-    toast.success("Message sent", { description: "We'll be in touch shortly." });
+    startTransition(async () => {
+      try {
+        await submitContactMessage({ name, email, phone, topic, message, newsletter });
+        setSent({ firstName: name.trim().split(" ")[0], topicLabel, email });
+        toast.success("Message sent", { description: "We'll be in touch shortly." });
+      } catch {
+        toast.error("Couldn't send your message", { description: "Please try again in a moment." });
+      }
+    });
   }
 
   if (sent) {
@@ -151,9 +151,10 @@ export function ContactForm() {
         </label>
         <button
           type="submit"
-          className="h-14 rounded-full bg-violet-500 text-[15px] font-bold text-white uppercase transition-colors hover:bg-violet-600"
+          disabled={isPending}
+          className="h-14 rounded-full bg-violet-500 text-[15px] font-bold text-white uppercase transition-colors hover:bg-violet-600 disabled:opacity-60"
         >
-          Send message
+          {isPending ? "Sending…" : "Send message"}
         </button>
       </form>
     </>

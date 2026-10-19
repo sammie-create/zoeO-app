@@ -1,6 +1,6 @@
-import DOMPurify from "isomorphic-dompurify";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import sanitizeHtml from "sanitize-html";
 import { Icon } from "@/components/shared/icon";
 import { formatDate, readingMinutes } from "@/lib/blog";
 import { getPost } from "@/lib/queries";
@@ -10,16 +10,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
   const post = await getPost(id);
   if (!post) notFound();
 
-  const bodyHtml = DOMPurify.sanitize(post.body, {
-    ALLOWED_TAGS: ["p", "h2", "h3", "ul", "ol", "li", "blockquote", "strong", "em", "s", "a", "br"],
-    ALLOWED_ATTR: ["href", "target", "rel"],
+  const bodyHtml = sanitizeHtml(post.body, {
+    allowedTags: ["p", "h2", "h3", "ul", "ol", "li", "blockquote", "strong", "em", "s", "a", "br"],
+    allowedAttributes: { a: ["href", "target", "rel"] },
   });
 
   return (
     <main className="px-4 py-16 sm:px-6 lg:px-8">
       <Link
         href="/blog"
-        className="mx-auto mb-10 flex max-w-[760px] items-center gap-1.5 text-sm text-noir-400 no-underline hover:text-white"
+        className="mx-auto mb-10 flex max-w-[760px] items-center gap-1.5 text-sm text-noir-400 no-underline hover:text-white light:text-noir-600 light:hover:text-noir-900"
       >
         ← Back to journal
       </Link>
@@ -34,11 +34,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
         ) : null}
         <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
       </article>
-      <div className="mx-auto mt-7 flex max-w-[760px] flex-wrap gap-3 border-t border-white/8 pt-8">
+      <div className="mx-auto mt-7 flex max-w-[760px] flex-wrap gap-3 border-t border-white/8 pt-8 light:border-noir-900/8">
         <Link href="/services#book" className="inline-flex h-12 items-center rounded-full bg-violet-500 px-6 text-sm font-bold text-white no-underline hover:bg-violet-600">
           Book a service
         </Link>
-        <Link href="/shop" className="inline-flex h-12 items-center rounded-full border border-white/20 px-6 text-sm font-bold text-white no-underline hover:border-white hover:bg-white/6">
+        <Link
+          href="/shop"
+          className="inline-flex h-12 items-center rounded-full border border-white/20 px-6 text-sm font-bold text-white no-underline hover:border-white hover:bg-white/6 light:border-noir-900/20 light:text-noir-900 light:hover:border-noir-900 light:hover:bg-noir-900/6"
+        >
           <Icon name="bag" className="mr-2 size-4" /> Shop products
         </Link>
       </div>

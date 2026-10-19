@@ -37,6 +37,7 @@ export function ProductForm({
   const [price, setPrice] = useState(product?.price ?? 5000);
   const [units, setUnits] = useState(product?.stock_units ?? 20);
   const [isBestseller, setIsBestseller] = useState(product?.is_bestseller ?? false);
+  const [isAnnounced, setIsAnnounced] = useState(product?.is_announced ?? false);
   const [status, setStatus] = useState<ProductStatus>(product?.status ?? "available");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,6 +96,7 @@ export function ProductForm({
         price,
         stock_units: units,
         is_bestseller: isBestseller,
+        is_announced: isAnnounced,
         status,
         image_url: imageUrl,
         ...(isEdit ? {} : { slug: slug || `product-${Date.now()}` }),
@@ -359,6 +361,13 @@ export function ProductForm({
               Feature this product in the storefront&apos;s &quot;Best Selling Products&quot; section
             </span>
             <Switch checked={isBestseller} onCheckedChange={setIsBestseller} />
+          </div>
+
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-noir-100 bg-noir-50 px-4 py-3.5">
+            <span className="text-[12.5px] text-noir-500">
+              Feature this product in the storefront&apos;s top announcement banner
+            </span>
+            <Switch checked={isAnnounced} onCheckedChange={setIsAnnounced} />
           </div>
 
           {error && <p className="text-[12.5px] font-medium text-status-cancelled">{error}</p>}

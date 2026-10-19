@@ -94,6 +94,7 @@ export interface Database {
           stock_units: number;
           is_hidden: boolean;
           is_bestseller: boolean;
+          is_announced: boolean;
           status: ProductStatus;
           description: string | null;
           image_url: string | null;
@@ -110,6 +111,7 @@ export interface Database {
           stock_units?: number;
           is_hidden?: boolean;
           is_bestseller?: boolean;
+          is_announced?: boolean;
           status?: ProductStatus;
           description?: string | null;
           image_url?: string | null;
@@ -126,6 +128,7 @@ export interface Database {
           stock_units?: number;
           is_hidden?: boolean;
           is_bestseller?: boolean;
+          is_announced?: boolean;
           status?: ProductStatus;
           description?: string | null;
           image_url?: string | null;
