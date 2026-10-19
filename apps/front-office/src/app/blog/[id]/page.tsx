@@ -1,6 +1,6 @@
-import DOMPurify from "isomorphic-dompurify";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import sanitizeHtml from "sanitize-html";
 import { Icon } from "@/components/shared/icon";
 import { formatDate, readingMinutes } from "@/lib/blog";
 import { getPost } from "@/lib/queries";
@@ -10,9 +10,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ id: s
   const post = await getPost(id);
   if (!post) notFound();
 
-  const bodyHtml = DOMPurify.sanitize(post.body, {
-    ALLOWED_TAGS: ["p", "h2", "h3", "ul", "ol", "li", "blockquote", "strong", "em", "s", "a", "br"],
-    ALLOWED_ATTR: ["href", "target", "rel"],
+  const bodyHtml = sanitizeHtml(post.body, {
+    allowedTags: ["p", "h2", "h3", "ul", "ol", "li", "blockquote", "strong", "em", "s", "a", "br"],
+    allowedAttributes: { a: ["href", "target", "rel"] },
   });
 
   return (
