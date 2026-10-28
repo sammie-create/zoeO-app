@@ -56,13 +56,13 @@ export function ProductQuickView({
             </div>
             <div className="guarantees">
               <span>
-                <Icon name="shield" className="size-4" /> 1-Year Warranty
+                <Icon name="shield" className="size-4" /> Warranty Protected
               </span>
               <span>
                 <Icon name="truck" className="size-4" /> Fast Delivery
               </span>
               <span>
-                <Icon name="swap" className="size-4" /> 30-Day Returns
+                <Icon name="swap" className="size-4" /> 3-Day Exchange
               </span>
             </div>
             {unavailable ? (

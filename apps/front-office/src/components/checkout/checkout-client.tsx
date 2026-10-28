@@ -4,10 +4,11 @@ import { createClient as createBrowserClient } from "@zoeallure/supabase/client"
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type ChangeEvent, type FormEvent } from "react";
+import { toast } from "sonner";
 import { Icon } from "@/components/shared/icon";
 import { Reveal } from "@/components/shared/reveal";
 import { placeOrder } from "@/lib/actions";
-import { uploadImage, validateUploadImage } from "@/lib/image-upload";
+import { uploadImage, validateUploadProof } from "@/lib/image-upload";
 import type { Product, SiteSettings } from "@/lib/queries";
 import { useCart } from "@/lib/store/cart";
 import { useCurrency } from "@/lib/store/currency";
@@ -45,7 +46,7 @@ export function CheckoutClient({
   async function handleProofChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const err = validateUploadImage(file);
+    const err = validateUploadProof(file);
     if (err) {
       setUploadError(err);
       return;
@@ -266,9 +267,30 @@ export function CheckoutClient({
                   Bank: <strong>{settings?.bank_name || "—"}</strong>
                   <br />
                   Account name: <strong>{settings?.bank_account_name || "—"}</strong>
-                  <br />
-                  Account number: <strong>{settings?.bank_account_number || "—"}</strong>
                 </p>
+                <div className="mt-1 flex items-center gap-1">
+                  <span>
+                    Account number: <strong>{settings?.bank_account_number || "—"}</strong>
+                  </span>
+                  {settings?.bank_account_number && (
+                    <button
+                      type="button"
+                      aria-label="Copy account number"
+                      onClick={async () => {
+                        const value = settings.bank_account_number;
+                        try {
+                          await navigator.clipboard.writeText(value);
+                          toast.success("Account number copied");
+                        } catch {
+                          toast.message("Copy this account number", { description: value });
+                        }
+                      }}
+                      className="-my-2 inline-flex size-9 shrink-0 items-center justify-center rounded-md text-noir-300 transition-colors hover:bg-white/8 hover:text-violet-300 active:bg-white/8 light:text-noir-500 light:hover:bg-noir-900/6 light:hover:text-violet-600 light:active:bg-noir-900/6"
+                    >
+                      <Icon name="copy" className="size-3.5" />
+                    </button>
+                  )}
+                </div>
                 <p className="mt-2 text-noir-400 light:text-noir-600">
                   After transferring, upload a screenshot or PDF of the receipt below — we&apos;ll confirm your order once
                   it&apos;s reviewed.
@@ -277,21 +299,32 @@ export function CheckoutClient({
 
               <div className={`field mt-3.5 ${invalid.has("proof") ? "is-invalid" : ""}`}>
                 <label htmlFor="co-proof">Proof of payment</label>
-                <input
-                  id="co-proof"
-                  type="file"
-                  accept="image/*,application/pdf"
-                  className="input"
-                  onChange={handleProofChange}
-                  disabled={uploadingProof}
-                />
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <label
+                    htmlFor="co-proof"
+                    className={`inline-flex h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-[var(--line-strong)] px-4.5 text-[13.5px] font-semibold text-foreground transition-colors hover:border-violet-400 ${
+                      uploadingProof ? "pointer-events-none opacity-60" : ""
+                    }`}
+                  >
+                    <Icon name="upload" className="size-4" />
+                    {uploadingProof ? "Uploading…" : proofFileName ? "Change file" : "Upload proof"}
+                  </label>
+                  <input
+                    id="co-proof"
+                    type="file"
+                    accept="image/*,application/pdf"
+                    className="sr-only"
+                    onChange={handleProofChange}
+                    disabled={uploadingProof}
+                  />
+                  {proofFileName && !uploadingProof && (
+                    <span className="flex min-w-0 items-center gap-1.5 text-[13px] text-noir-400 light:text-noir-600">
+                      <Icon name="check" className="size-4 shrink-0 text-status-booked" />
+                      <span className="truncate">{proofFileName}</span>
+                    </span>
+                  )}
+                </div>
                 <span className="err">Please upload proof of your bank transfer.</span>
-                {uploadingProof && <p className="mt-1.5 text-[13px] text-noir-400 light:text-noir-600">Uploading…</p>}
-                {proofFileName && !uploadingProof && (
-                  <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-noir-400 light:text-noir-600">
-                    <Icon name="check" className="size-4 text-status-booked" /> {proofFileName}
-                  </p>
-                )}
                 {uploadError && <p className="mt-1.5 text-[13px] font-medium text-status-cancelled">{uploadError}</p>}
               </div>
 

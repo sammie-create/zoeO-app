@@ -75,6 +75,31 @@ export async function submitContactMessage(input: {
   }
 }
 
+export async function submitReview(input: {
+  customerName: string;
+  rating: number;
+  body: string;
+  photoUrl: string | null;
+  serviceId: string | null;
+  productId: string | null;
+}) {
+  if (input.customerName.trim().length === 0) throw new Error("Name is required");
+  if (input.rating < 1 || input.rating > 5) throw new Error("Choose a star rating");
+  if (input.body.trim().length < 10) throw new Error("Tell us a little more (10+ characters)");
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("create_guest_review", {
+    p_customer_name: input.customerName.trim(),
+    p_rating: input.rating,
+    p_body: input.body.trim(),
+    p_photo_url: input.photoUrl,
+    p_service_id: input.serviceId,
+    p_product_id: input.productId,
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
 export async function placeBooking(input: {
   name: string;
   phone: string;

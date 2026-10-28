@@ -680,6 +680,39 @@ export interface Database {
         };
         Relationships: [];
       };
+      reviews: {
+        Row: {
+          id: string;
+          customer_name: string;
+          rating: number;
+          body: string;
+          photo_url: string | null;
+          service_id: string | null;
+          product_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          customer_name: string;
+          rating: number;
+          body: string;
+          photo_url?: string | null;
+          service_id?: string | null;
+          product_id?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          customer_name?: string;
+          rating?: number;
+          body?: string;
+          photo_url?: string | null;
+          service_id?: string | null;
+          product_id?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -715,6 +748,17 @@ export interface Database {
           p_notes: string | null;
         };
         Returns: Database["public"]["Tables"]["bookings"]["Row"];
+      };
+      create_guest_review: {
+        Args: {
+          p_customer_name: string;
+          p_rating: number;
+          p_body: string;
+          p_photo_url: string | null;
+          p_service_id: string | null;
+          p_product_id: string | null;
+        };
+        Returns: Database["public"]["Tables"]["reviews"]["Row"];
       };
     };
     Enums: {

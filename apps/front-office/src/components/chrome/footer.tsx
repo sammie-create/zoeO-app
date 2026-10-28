@@ -19,9 +19,19 @@ const shopLinks = [
 const companyLinks = [
   { label: "About Us", href: "/about" },
   { label: "Our Story", href: "/about#story" },
+  { label: "Reviews", href: "/reviews" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
   { label: "Careers", href: "/contact?topic=careers" },
+];
+
+const policyLinks = [
+  { label: "Terms & Conditions", href: "/terms" },
+  { label: "Service Policy", href: "/service-policy" },
+  { label: "Sales & Delivery", href: "/sales-delivery-policy" },
+  { label: "Returns & Refunds", href: "/returns-policy" },
+  { label: "Warranty & Hair Care", href: "/warranty-policy" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
 ];
 
 const socialIcons = [
@@ -49,7 +59,7 @@ export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-noir-900 pt-20">
       <div className="mx-auto max-w-[calc(1280px_+_clamp(16px,5vw,80px)*2)] px-[clamp(16px,5vw,80px)]">
-        <div className="grid grid-cols-[1.35fr_.8fr_.8fr_1.3fr] gap-12 max-[1080px]:grid-cols-2 max-[760px]:gap-9">
+        <div className="grid grid-cols-[1.25fr_.65fr_.75fr_.9fr_1.15fr] gap-10 max-[1200px]:grid-cols-3 max-[1080px]:grid-cols-2 max-[760px]:gap-9">
           <Reveal className="max-[760px]:col-span-2">
             <Brand forceDark />
             <p className="mt-5.5 mb-[26px] max-w-[340px] text-[15px] text-noir-300">
@@ -114,7 +124,16 @@ export function Footer() {
             ))}
           </Reveal>
 
-          <Reveal delay={240} className="max-[760px]:col-span-2">
+          <Reveal delay={200}>
+            <h4 className="mb-5 text-sm font-bold tracking-[.02em] text-white uppercase">Policies</h4>
+            {policyLinks.map((l) => (
+              <Link key={l.label} href={l.href} className="block py-1.5 text-[15px] text-noir-300 transition-all hover:translate-x-1 hover:text-white">
+                {l.label}
+              </Link>
+            ))}
+          </Reveal>
+
+          <Reveal delay={280} className="max-[760px]:col-span-2">
             <h3 className="font-display mb-3.5 text-[26px] font-bold text-white">Subscribe to our newsletter</h3>
             <p className="mb-6 text-[15px] text-noir-300">Stay in the loop with exclusive offers and product previews.</p>
             <form
@@ -144,14 +163,22 @@ export function Footer() {
         </div>
 
         <div className="mt-[72px] flex flex-wrap items-center justify-between gap-5 border-t border-white/8 py-6.5 text-sm text-noir-400">
-          <div>
-            © 2026 ZoeO Allure. All rights reserved.
-            <a
-              href="mailto:hello@zoeoallure.com"
-              className="ml-6 text-noir-200 hover:text-violet-300 max-[760px]:ml-0 max-[760px]:block"
-            >
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <span>© 2026 ZoeO Allure. All rights reserved.</span>
+            <a href="mailto:hello@zoeoallure.com" className="text-noir-200 hover:text-violet-300">
               hello@zoeoallure.com
             </a>
+            <span className="legal-links">
+              <Link href="/terms" className="hover:text-white">
+                Terms
+              </Link>
+              <Link href="/privacy-policy" className="hover:text-white">
+                Privacy
+              </Link>
+              <Link href="/returns-policy" className="hover:text-white">
+                Returns
+              </Link>
+            </span>
           </div>
           <div className="flex flex-wrap gap-2.5">
             <span className="grid h-[30px] place-items-center rounded-md border border-white/16 px-3 text-[11px] font-bold">VISA</span>

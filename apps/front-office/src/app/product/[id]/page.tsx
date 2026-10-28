@@ -70,9 +70,12 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
               <span className="pulse-dot size-2 rounded-full" />
               {product.stock_units > 0 ? `${product.stock_units} in stock — ships out tomorrow` : "Currently out of stock"}
             </div>
-            <div className="muted">
+            {/* Paused — store pickup isn't an offered fulfilment option right
+                now (checkout is delivery-only). Re-enable once pickup is
+                actually supported. */}
+            {/* <div className="muted">
               <Icon name="store" className="size-4" /> Store pickup available at ZoeO Allure Boutique, Lagos
-            </div>
+            </div> */}
           </div>
 
           <div className="badges">
@@ -80,13 +83,10 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
               <Icon name="truck" className="size-4" /> Fast Delivery
             </span>
             <span>
-              <Icon name="shield" className="size-4" /> 30 Days Return
+              <Icon name="shield" className="size-4" /> 3-Day Exchange
             </span>
             <span>
-              <Icon name="checkCircle" className="size-4" /> 2 Year Warranty
-            </span>
-            <span>
-              <Icon name="leaf" className="size-4" /> 100% Organic
+              <Icon name="checkCircle" className="size-4" /> Warranty Protected
             </span>
           </div>
 

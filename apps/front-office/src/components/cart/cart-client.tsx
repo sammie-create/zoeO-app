@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, type FormEvent } from "react";
-import { toast } from "sonner";
+import { useMemo, useState } from "react";
 import { Icon } from "@/components/shared/icon";
 import { MoneyLabel } from "@/components/shared/money-label";
 import { ProductCard } from "@/components/shop/product-card";
@@ -10,64 +9,72 @@ import type { Product } from "@/lib/queries";
 import { useCart } from "@/lib/store/cart";
 import { useCurrency } from "@/lib/store/currency";
 
-const FREE_SHIP = 50000;
-const WRAP = 1500;
-const PROTECT = 600;
-const CODES: Record<string, number> = { ALLURE10: 0.1, CIRCLE15: 0.15 };
-const payLogos = ["Visa", "Mastercard", "Amex", "Paystack", "Apple Pay", "Google Pay"];
+// Paused — free-shipping progress, gift wrap, shipping protection, discount
+// codes and payment-method logos below are all commented out together until
+// there's a real plan (pricing, actual codes, actual payment integrations)
+// behind them.
+// const FREE_SHIP = 50000;
+// const WRAP = 1500;
+// const PROTECT = 600;
+// const CODES: Record<string, number> = { ALLURE10: 0.1, CIRCLE15: 0.15 };
+// const payLogos = ["Visa", "Mastercard", "Amex", "Paystack", "Apple Pay", "Google Pay"];
 
 export function CartClient({ products }: { products: Product[] }) {
   const { items, setQty, remove } = useCart();
   const { money } = useCurrency();
   const [note, setNote] = useState("");
-  const [wrap, setWrap] = useState(false);
-  const [protect, setProtect] = useState(true);
-  const [code, setCode] = useState("");
-  const [appliedCode, setAppliedCode] = useState("");
-  const [shipping, setShipping] = useState<number | null>(null);
-  const [deliveryDays, setDeliveryDays] = useState("");
-  const [country, setCountry] = useState("Nigeria");
-  const [province, setProvince] = useState("Lagos");
+  // Paused along with their UI below — see the comment near the top of the file.
+  // const [wrap, setWrap] = useState(false);
+  // const [protect, setProtect] = useState(true);
+  // const [code, setCode] = useState("");
+  // const [appliedCode, setAppliedCode] = useState("");
+  // const [shipping, setShipping] = useState<number | null>(null);
+  // const [deliveryDays, setDeliveryDays] = useState("");
+  // const [country, setCountry] = useState("Nigeria");
+  // const [province, setProvince] = useState("Lagos");
 
   const rows = items
     .map((i) => ({ item: i, product: products.find((p) => p.id === i.id) }))
     .filter((r): r is { item: (typeof items)[number]; product: Product } => !!r.product);
 
   const subtotal = rows.reduce((s, r) => s + r.product.price * r.item.qty, 0);
-  const discountRate = CODES[appliedCode] ?? 0;
-  const discount = Math.round(subtotal * discountRate);
-  const extras = (wrap ? WRAP : 0) + (protect ? PROTECT : 0);
-  const freeLeft = Math.max(0, FREE_SHIP - subtotal);
-  const grandTotal = subtotal - discount + extras + (shipping ?? 0);
+  // const discountRate = CODES[appliedCode] ?? 0;
+  // const discount = Math.round(subtotal * discountRate);
+  const discount = 0;
+  // const extras = (wrap ? WRAP : 0) + (protect ? PROTECT : 0);
+  const extras = 0;
+  // const freeLeft = Math.max(0, FREE_SHIP - subtotal);
+  // const grandTotal = subtotal - discount + extras + (shipping ?? 0);
+  const grandTotal = subtotal - discount + extras;
 
   const suggestions = useMemo(
     () => products.filter((p) => !items.some((i) => i.id === p.id)).slice(0, 4),
     [products, items],
   );
 
-  function applyCode(e: FormEvent) {
-    e.preventDefault();
-    const c = code.trim().toUpperCase();
-    if (!c) {
-      setAppliedCode("");
-      return;
-    }
-    if (CODES[c]) {
-      setAppliedCode(c);
-      toast.success("Code applied", { description: `${c} — ${CODES[c] * 100}% off your items.` });
-    } else {
-      toast.error("Code not recognised", { description: "Try ALLURE10 for 10% off." });
-    }
-  }
+  // function applyCode(e: FormEvent) {
+  //   e.preventDefault();
+  //   const c = code.trim().toUpperCase();
+  //   if (!c) {
+  //     setAppliedCode("");
+  //     return;
+  //   }
+  //   if (CODES[c]) {
+  //     setAppliedCode(c);
+  //     toast.success("Code applied", { description: `${c} — ${CODES[c] * 100}% off your items.` });
+  //   } else {
+  //     toast.error("Code not recognised", { description: "Try ALLURE10 for 10% off." });
+  //   }
+  // }
 
-  function estimateShipping() {
-    let base = country !== "Nigeria" ? 25000 : province === "Lagos" ? 2500 : 4500;
-    if (country === "Nigeria" && subtotal >= FREE_SHIP) base = 0;
-    setShipping(base);
-    setDeliveryDays(
-      country !== "Nigeria" ? "5–9 business days" : province === "Lagos" ? "1–2 business days" : "2–4 business days",
-    );
-  }
+  // function estimateShipping() {
+  //   let base = country !== "Nigeria" ? 25000 : province === "Lagos" ? 2500 : 4500;
+  //   if (country === "Nigeria" && subtotal >= FREE_SHIP) base = 0;
+  //   setShipping(base);
+  //   setDeliveryDays(
+  //     country !== "Nigeria" ? "5–9 business days" : province === "Lagos" ? "1–2 business days" : "2–4 business days",
+  //   );
+  // }
 
   return (
     <>
@@ -154,7 +161,10 @@ export function CartClient({ products }: { products: Product[] }) {
                 ))}
               </div>
 
-              <div className="panel ship-est">
+              {/* Paused — estimate-shipping-rates panel. Re-enable together with its
+                  state (country/province/shipping/deliveryDays) and estimateShipping()
+                  near the top of this file. */}
+              {/* <div className="panel ship-est">
                 <h3>Estimate shipping rates</h3>
                 <div className="ship-est__grid">
                   <select
@@ -194,20 +204,25 @@ export function CartClient({ products }: { products: Product[] }) {
                     <strong>{shipping === 0 ? "Free" : money(shipping, { decimals: true })}</strong> · {deliveryDays}
                   </p>
                 )}
-              </div>
+              </div> */}
             </div>
 
             <aside className="panel summary">
-              <div className="promo-box">
+              {/* Paused — promo banner. Re-enable together with the CODES constant
+                  near the top of this file. */}
+              {/* <div className="promo-box">
                 <strong>
                   <Icon name="tag" className="size-4" /> Special Allure Promo
                 </strong>
                 <p>
                   Use code <b>ALLURE10</b> for 10% off your first luxury care box.
                 </p>
-              </div>
+              </div> */}
 
-              <p className="text-sm">
+              {/* Paused — free-shipping progress message/bar. Re-enable together
+                  with the `freeLeft`/FREE_SHIP calculation near the top of this
+                  file. */}
+              {/* <p className="text-sm">
                 {freeLeft > 0 ? (
                   <>
                     You are <strong>{money(freeLeft, { decimals: true })}</strong> away from free shipping!
@@ -218,7 +233,7 @@ export function CartClient({ products }: { products: Product[] }) {
               </p>
               <div className="progress">
                 <i style={{ width: `${Math.min(100, (subtotal / FREE_SHIP) * 100)}%` }} />
-              </div>
+              </div> */}
 
               <label className="block text-sm">
                 Add order note
@@ -231,12 +246,16 @@ export function CartClient({ products }: { products: Product[] }) {
                 />
               </label>
 
-              <label className="mt-4.5 flex items-center gap-2 text-sm text-noir-300">
+              {/* Paused — gift wrap checkbox. Re-enable together with the `wrap`
+                  state and WRAP constant near the top of this file. */}
+              {/* <label className="mt-4.5 flex items-center gap-2 text-sm text-noir-300">
                 <input type="checkbox" checked={wrap} onChange={(e) => setWrap(e.target.checked)} />
                 For {money(WRAP, { decimals: true })}, please wrap the products in this order
-              </label>
+              </label> */}
 
-              <div className="protect">
+              {/* Paused — shipping protection toggle. Re-enable together with the
+                  `protect` state and PROTECT constant near the top of this file. */}
+              {/* <div className="protect">
                 <Icon name="shield" className="size-6 text-violet-300 light:text-violet-600" />
                 <div>
                   <strong>Shipping Protection</strong>
@@ -251,22 +270,28 @@ export function CartClient({ products }: { products: Product[] }) {
                   onClick={() => setProtect((v) => !v)}
                   className={`toggle ${protect ? "is-on" : ""}`}
                 />
-              </div>
+              </div> */}
 
-              <label className="block text-sm">
+              {/* Paused — discount code input. Re-enable together with the
+                  `code`/`appliedCode` state, CODES constant and applyCode()
+                  near the top of this file. */}
+              {/* <label className="block text-sm">
                 Discount
                 <form onSubmit={applyCode} className="discount-form">
                   <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="Discount code" />
                   <button type="submit">Apply</button>
                 </form>
-              </label>
+              </label> */}
 
               <div className="totals">
                 <div className="sum-row">
                   <span>Items</span>
                   <span>{money(subtotal, { decimals: true })}</span>
                 </div>
-                {discount > 0 && (
+                {/* Discount and extras rows are paused along with the UI that sets
+                    them (discount/extras are hardcoded to 0 above), so they never
+                    render as-is. Re-enable together with the sections above. */}
+                {/* {discount > 0 && (
                   <div className="sum-row">
                     <span>Discount ({appliedCode})</span>
                     <span className="text-status-booked">−{money(discount, { decimals: true })}</span>
@@ -283,7 +308,7 @@ export function CartClient({ products }: { products: Product[] }) {
                     <span>Shipping (est.)</span>
                     <span>{shipping === 0 ? "Free" : money(shipping, { decimals: true })}</span>
                   </div>
-                )}
+                )} */}
                 <div className="sum-row grand">
                   <span>Subtotal</span>
                   <strong>{money(grandTotal, { decimals: true })}</strong>
@@ -294,11 +319,13 @@ export function CartClient({ products }: { products: Product[] }) {
               <Link href="/checkout" className="btn-checkout flex items-center justify-center rounded-full bg-violet-500 font-bold text-white">
                 Check out
               </Link>
-              <div className="pay-logos">
+              {/* Paused — payment method logos. Re-enable together with the
+                  payLogos constant near the top of this file. */}
+              {/* <div className="pay-logos">
                 {payLogos.map((p) => (
                   <span key={p}>{p}</span>
                 ))}
-              </div>
+              </div> */}
             </aside>
           </div>
         )}
