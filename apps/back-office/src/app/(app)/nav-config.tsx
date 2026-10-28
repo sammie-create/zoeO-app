@@ -157,6 +157,16 @@ export const NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
+        key: "reviews",
+        label: "Reviews",
+        href: "/reviews",
+        icon: (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <path d="M12 3.5l2.6 5.3 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8L3.5 9.6l5.9-.8L12 3.5z" />
+          </svg>
+        ),
+      },
+      {
         key: "faq",
         label: "FAQ",
         href: "/faq",

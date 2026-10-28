@@ -8,7 +8,7 @@ import { getFaqs } from "@/lib/queries";
 export const metadata = { title: "Contact Us — ZoeO Allure" };
 
 const cards = [
-  { icon: "phone" as const, title: "Call or WhatsApp", text: "+234 817 318 9961", href: "tel:+2348173189961" },
+  { icon: "phone" as const, title: "Call or WhatsApp", text: "+234 805 257 9324", href: "tel:+2348052579324" },
   { icon: "mail" as const, title: "Email", text: "hello@zoeoallure.com", href: "mailto:hello@zoeoallure.com" },
   // { icon: "pin" as const, title: "Visit the boutique", text: "ZoeO Allure Boutique, Ikeja, Lagos" },
   {

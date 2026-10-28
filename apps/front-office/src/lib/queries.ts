@@ -8,6 +8,7 @@ export type Post = Tables<"journal_posts">;
 export type Faq = Tables<"faqs">;
 export type AboutStat = Tables<"about_stats">;
 export type SiteSettings = Tables<"site_settings">;
+export type Review = Tables<"reviews">;
 
 export async function getProducts() {
   const supabase = await createClient();
@@ -112,6 +113,12 @@ export async function getFaqs(page?: "services" | "contact") {
 export async function getAboutStats() {
   const supabase = await createClient();
   const { data } = await supabase.from("about_stats").select("*").order("sort_order", { ascending: true });
+  return data ?? [];
+}
+
+export async function getReviews() {
+  const supabase = await createClient();
+  const { data } = await supabase.from("reviews").select("*").order("created_at", { ascending: false });
   return data ?? [];
 }
 

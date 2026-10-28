@@ -13,6 +13,7 @@ const navItems = [
   { label: "Shop", href: "/shop", match: ["/shop", "/product", "/cart", "/checkout"] },
   { label: "Services", href: "/services", match: ["/services"] },
   { label: "About", href: "/about", match: ["/about"] },
+  { label: "Reviews", href: "/reviews", match: ["/reviews"] },
   { label: "Blog", href: "/blog", match: ["/blog"] },
 ];
 

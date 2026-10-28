@@ -217,11 +217,11 @@ export default async function ServicesPage() {
         </div>
         <div className="ed-block ed-block--img">
           {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-          <img src="/img/value-community.webp" alt="Portrait with a gold statement collar" style={{ objectPosition: "50% 30%" }} />
+          <img src="/img/gele-bow-glam-smile.webp" alt="Smiling woman in a magenta bow-style gele with shimmery eyeshadow" style={{ objectPosition: "50% 25%" }} />
         </div>
         <div className="ed-block ed-block--img bw">
           {/* eslint-disable-next-line @next/next/no-img-element -- static marketing asset */}
-          <img src="/img/pureglow-banner.webp" alt="Smiling woman, black and white portrait" style={{ objectPosition: "50% 30%" }} />
+          <img src="/img/gele-bow-glam-portrait.webp" alt="Portrait in a magenta bow-style gele, gold hoop earrings" style={{ objectPosition: "50% 80%" }} />
         </div>
         <div className="ed-block ed-block--champ">
           <h3>

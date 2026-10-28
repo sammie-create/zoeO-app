@@ -272,6 +272,18 @@ const paths = {
     </>
   ),
   chevronDown: <path d="M6 9l6 6 6-6" />,
+  copy: (
+    <>
+      <rect x="9" y="9" width="12" height="12" rx="2" />
+      <path d="M5 15V5a2 2 0 012-2h10" />
+    </>
+  ),
+  upload: (
+    <>
+      <path d="M12 15.5V4M7.5 8.5L12 4l4.5 4.5" />
+      <path d="M4.5 15.5v3a2 2 0 002 2h11a2 2 0 002-2v-3" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof paths;

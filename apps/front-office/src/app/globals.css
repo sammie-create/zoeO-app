@@ -4743,23 +4743,23 @@ html.theme-anim *::after {
    .input/.select/.textarea/.field classes are unaffected. border-color on
    these already flips via --line/--line-strong; only the literal backgrounds
    and text colors need an override here. */
-[data-theme="light"] :is(.contact-grid, .checkout, .ed-book) .field label {
+[data-theme="light"] :is(.contact-grid, .checkout, .ed-book, .rv-write) .field label {
   color: var(--muted-foreground);
 }
-[data-theme="light"] :is(.contact-grid, .checkout, .ed-book) .field .err {
+[data-theme="light"] :is(.contact-grid, .checkout, .ed-book, .rv-write) .field .err {
   color: var(--color-status-cancelled);
 }
-[data-theme="light"] :is(.contact-grid, .checkout, .ed-book) :is(.input, .select, .textarea) {
+[data-theme="light"] :is(.contact-grid, .checkout, .ed-book, .rv-write) :is(.input, .select, .textarea) {
   background-color: #fff;
   color: var(--foreground);
 }
-[data-theme="light"] :is(.contact-grid, .checkout, .ed-book) :is(.input, .textarea)::placeholder {
+[data-theme="light"] :is(.contact-grid, .checkout, .ed-book, .rv-write) :is(.input, .textarea)::placeholder {
   color: var(--color-noir-400);
 }
-[data-theme="light"] :is(.contact-grid, .checkout, .ed-book) .select {
+[data-theme="light"] :is(.contact-grid, .checkout, .ed-book, .rv-write) .select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%230e0c12' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M3 5l4 4 4-4'/%3E%3C/svg%3E");
 }
-[data-theme="light"] :is(.contact-grid, .checkout, .ed-book) .select option {
+[data-theme="light"] :is(.contact-grid, .checkout, .ed-book, .rv-write) .select option {
   background: #fff;
   color: var(--color-noir-900);
 }
@@ -4973,6 +4973,228 @@ html.theme-anim *::after {
 @media (max-width: 760px) {
   .blog-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   POLICY / LEGAL PAGES (terms, service-policy, sales-delivery-policy,
+   returns-policy, warranty-policy, privacy-policy)
+   ========================================================================== */
+.policy-hero {
+  max-width: 820px;
+  padding: clamp(24px, 4vw, 56px) 0 clamp(32px, 4vw, 48px);
+}
+.policy-hero .h1 {
+  margin: 6px 0 16px;
+}
+.policy-note {
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--color-noir-400);
+}
+
+.policy-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
+  border-top: 1px solid var(--line);
+  padding-top: clamp(32px, 4vw, 48px);
+}
+.policy-side {
+  position: sticky;
+  top: 110px;
+}
+.policy-nav {
+  display: grid;
+  gap: 2px;
+}
+.policy-nav span {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-noir-400);
+  margin-bottom: 12px;
+}
+.policy-nav a {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  color: var(--color-noir-200);
+  border-left: 2px solid transparent;
+  transition:
+    background var(--t-fast),
+    color var(--t-fast);
+}
+[data-theme="light"] .policy-nav a {
+  color: var(--color-noir-600);
+}
+.policy-nav a:hover {
+  background: rgba(127, 35, 224, 0.1);
+  color: var(--foreground);
+}
+.policy-nav a.is-active {
+  background: rgba(127, 35, 224, 0.16);
+  color: var(--foreground);
+  border-left-color: var(--color-violet-500);
+  font-weight: 600;
+}
+
+.policy-body {
+  max-width: 760px;
+}
+.policy-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  align-items: center;
+  margin-bottom: 36px;
+}
+.policy-toc span {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-noir-400);
+  margin-right: 4px;
+}
+.policy-toc a {
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 99px;
+  color: var(--color-noir-200);
+}
+[data-theme="light"] .policy-toc a {
+  color: var(--color-noir-600);
+}
+.policy-toc a:hover {
+  border-color: var(--color-violet-400);
+  color: var(--foreground);
+}
+
+.policy-sec {
+  scroll-margin-top: 110px;
+}
+.policy-sec + .policy-sec {
+  margin-top: 48px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+.policy-sec h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(24px, 2.4vw, 32px);
+  margin-bottom: 18px;
+}
+.policy-sec h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 28px 0 10px;
+  color: var(--foreground);
+}
+.policy-sec h2 + h3 {
+  margin-top: 0;
+}
+.policy-sec p,
+.policy-sec li {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--color-noir-200);
+}
+[data-theme="light"] .policy-sec p,
+[data-theme="light"] .policy-sec li {
+  color: var(--color-noir-600);
+}
+.policy-sec p + p {
+  margin-top: 10px;
+}
+.policy-sec ul {
+  margin: 12px 0 16px;
+  padding-left: 0;
+  display: grid;
+  gap: 6px;
+}
+.policy-sec li {
+  position: relative;
+  padding-left: 22px;
+  list-style: none;
+}
+.policy-sec li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.7em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-violet-400);
+}
+.policy-sec a {
+  color: var(--color-violet-300);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.policy-help {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 56px;
+  padding: 24px 28px;
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background: rgba(127, 35, 224, 0.08);
+}
+.policy-help strong {
+  display: block;
+  font-size: 17px;
+  margin-bottom: 4px;
+  color: var(--foreground);
+}
+.policy-help span {
+  font-size: 14px;
+  color: var(--color-noir-400);
+}
+.policy-help__links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.legal-links {
+  display: inline-flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .policy-layout {
+    grid-template-columns: 1fr;
+  }
+  .policy-side {
+    position: static;
+  }
+  .policy-nav {
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 6px;
+  }
+  .policy-nav span {
+    display: none;
+  }
+  .policy-nav a {
+    border-left: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 99px;
+    padding: 8px 14px;
+    font-size: 14px;
+    white-space: nowrap;
   }
 }
 
